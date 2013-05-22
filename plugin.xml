@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+xmlns:android="http://schemas.android.com/apk/res/android"
+id="org.apache.cordova.core.AudioHandler"
+    version="0.1.0">
+    <name>Media</name>
+
+    <js-module src="www/MediaError.js" name="MediaError">
+        <clobbers target="window.MediaError" />
+    </js-module>
+    
+    <js-module src="www/Media.js" name="Media">
+        <clobbers target="window.Media" />
+    </js-module>
+    
+    <!-- android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/cordova/plugins">
+            <plugin name="Media" value="org.apache.cordova.core.AudioHandler"/>
+        </config-file>
+
+        <source-file src="AudioHandler.java" target-dir="org/apache/cordova/core" />
+     </platform>
+     
+     <!-- ios -->
+     <platform name="ios">    
+         <config-file target="config.xml" parent="/*">
+             <feature name="Media">
+                 <param name="ios-package" value="CDVSound" /> 
+             </feature>
+         </config-file>
+         <header-file src="src/ios/CDVSound.h" />
+         <source-file src="src/ios/CDVSound.m" />
+     </platform>
+    
+            
+</plugin>
