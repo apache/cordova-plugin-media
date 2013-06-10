@@ -33,6 +33,19 @@ id="org.apache.cordova.core.AudioHandler"
          <header-file src="src/ios/CDVSound.h" />
          <source-file src="src/ios/CDVSound.m" />
      </platform>
+
+    <!-- wp7 -->
+    <platform name="wp7">
+        <config-file target="config.xml" parent="/*">
+            <feature name="Media">
+                <param name="wp-package" value="Media"/>
+            </feature>
+        </config-file>
+
+        <source-file src="src/wp7/Media.cs" /> 
+        <source-file src="src/wp7/AudioPlayer.cs" /> 
+        <source-file src="src/wp7/AudioFormatsHelper.cs" /> 
+    </platform>
     
             
 </plugin>
