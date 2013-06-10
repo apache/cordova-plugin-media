@@ -44,7 +44,6 @@ id="org.apache.cordova.core.AudioHandler"
 
         <source-file src="src/wp7/Media.cs" /> 
         <source-file src="src/wp7/AudioPlayer.cs" /> 
-        <source-file src="src/wp7/AudioFormatsHelper.cs" /> 
     </platform>
     
             
