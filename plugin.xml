@@ -42,6 +42,10 @@ id="org.apache.cordova.core.AudioHandler"
             </feature>
         </config-file>
 
+        <config-file target="Properties/WMAppManifest.xml" parent="/Deployment/App/Capabilities">
+            <Capability Name="ID_CAP_MEDIALIB"/>
+        </config-file>
+
         <source-file src="src/wp7/Media.cs" /> 
         <source-file src="src/wp7/AudioPlayer.cs" /> 
     </platform>
