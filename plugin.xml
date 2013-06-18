@@ -16,11 +16,17 @@ id="org.apache.cordova.core.AudioHandler"
     
     <!-- android -->
     <platform name="android">
-        <config-file target="config.xml" parent="/*">
+        <config-file target="res/xml/config.xml" parent="/*">
             <plugin name="Media" value="org.apache.cordova.core.AudioHandler"/>
         </config-file>
-
+        
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.RECORD_AUDIO" />
+            <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+        </config-file>
+        
         <source-file src="src/android/AudioHandler.java" target-dir="src/org/apache/cordova/core" />
+        <source-file src="src/android/AudioPlayer.java" target-dir="src/org/apache/cordova/core" />
      </platform>
      
      <!-- ios -->
