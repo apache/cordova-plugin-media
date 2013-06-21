@@ -18,8 +18,8 @@
  */
 
 #import "CDVSound.h"
-#import <NSArray+Comparisons.h>
-#import <cordova/CDVJSON.h>
+#import <Cordova/NSArray+Comparisons.h>
+#import <Cordova/CDVJSON.h>
 
 #define DOCUMENTS_SCHEME_PREFIX @"documents://"
 #define HTTP_SCHEME_PREFIX @"http://"
