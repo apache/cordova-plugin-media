@@ -61,10 +61,28 @@ id="org.apache.cordova.core.AudioHandler"
 
         <config-file target="Properties/WMAppManifest.xml" parent="/Deployment/App/Capabilities">
             <Capability Name="ID_CAP_MEDIALIB"/>
+            <Capability Name="ID_CAP_MICROPHONE"/>
         </config-file>
 
-        <source-file src="src/wp7/Media.cs" /> 
-        <source-file src="src/wp7/AudioPlayer.cs" /> 
+        <source-file src="src/wp7/Media.cs" />
+        <source-file src="src/wp7/AudioPlayer.cs" />
+    </platform>
+
+    <!-- wp8 -->
+    <platform name="wp8">
+        <config-file target="config.xml" parent="/*">
+            <feature name="Media">
+                <param name="wp-package" value="Media"/>
+            </feature>
+        </config-file>
+
+        <config-file target="Properties/WMAppManifest.xml" parent="/Deployment/App/Capabilities">
+            <Capability Name="ID_CAP_MEDIALIB"/>
+            <Capability Name="ID_CAP_MICROPHONE"/>
+        </config-file>
+
+        <source-file src="src/wp8/Media.cs" />
+        <source-file src="src/wp8/AudioPlayer.cs" />
     </platform>
     
             
