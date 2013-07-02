@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+<plugin xmlns="http://cordova.apache.org/ns/plugins/1.0"
 xmlns:android="http://schemas.android.com/apk/res/android"
 id="org.apache.cordova.core.AudioHandler"
     version="0.1.0">
@@ -77,7 +77,9 @@ id="org.apache.cordova.core.AudioHandler"
         </config-file>
 
         <config-file target="Properties/WMAppManifest.xml" parent="/Deployment/App/Capabilities">
-            <Capability Name="ID_CAP_MEDIALIB"/>
+            <Capability Name="ID_CAP_MEDIALIB_AUDIO"/>
+            <Capability Name="ID_CAP_MEDIALIB_VIDEO"/>
+            <Capability Name="ID_CAP_MEDIALIB_PLAYBACK"/>
             <Capability Name="ID_CAP_MICROPHONE"/>
         </config-file>
 
