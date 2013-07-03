@@ -78,7 +78,6 @@ id="org.apache.cordova.core.AudioHandler"
 
         <config-file target="Properties/WMAppManifest.xml" parent="/Deployment/App/Capabilities">
             <Capability Name="ID_CAP_MEDIALIB_AUDIO"/>
-            <Capability Name="ID_CAP_MEDIALIB_VIDEO"/>
             <Capability Name="ID_CAP_MEDIALIB_PLAYBACK"/>
             <Capability Name="ID_CAP_MICROPHONE"/>
         </config-file>
