@@ -19,15 +19,15 @@
 package org.apache.cordova.core;
 
 import org.apache.cordova.FileHelper;
-import org.apache.cordova.api.CallbackContext;
-import org.apache.cordova.api.CordovaPlugin;
+import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaPlugin;
 
 import android.content.Context;
 import android.media.AudioManager;
 
 import java.util.ArrayList;
 
-import org.apache.cordova.api.PluginResult;
+import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import java.util.HashMap;
