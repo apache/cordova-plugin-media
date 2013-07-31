@@ -88,6 +88,13 @@ id="org.apache.cordova.core.AudioHandler"
         <source-file src="src/wp/Media.cs" />
         <source-file src="src/wp/AudioPlayer.cs" />
     </platform>
+
+    <!-- windows8 -->
+    <platform name="windows8">
+        <js-module src="src/windows8/MediaProxy.js" name="MediaProxy">
+            <merges target="" />
+        </js-module>
+    </platform>
     
             
 </plugin>
