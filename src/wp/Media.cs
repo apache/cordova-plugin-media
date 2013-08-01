@@ -53,6 +53,8 @@ namespace WPCordovaClassLib.Cordova.Commands
             /// </summary>
             [DataMember(Name = "milliseconds")]
             public int Milliseconds { get; set; }
+
+            public string CallbackId { get; set; }
         }
 
         /// <summary>
@@ -60,25 +62,26 @@ namespace WPCordovaClassLib.Cordova.Commands
         /// </summary>  
         public void release(string options)
         {
+            string callbackId = this.CurrentCommandCallbackId;
             try
             {
-                MediaOptions mediaOptions;
+                MediaOptions mediaOptions = new MediaOptions();
 
                 try
                 {
                     string[] optionsString = JSON.JsonHelper.Deserialize<string[]>(options);
-                    mediaOptions = new MediaOptions();
                     mediaOptions.Id = optionsString[0];
+                    callbackId = mediaOptions.CallbackId = optionsString[1];
                 }
                 catch (Exception)
                 {
-                    DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION));
+                    DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION), callbackId);
                     return;
                 }
 
                 if (!Media.players.ContainsKey(mediaOptions.Id))
                 {
-                    DispatchCommandResult(new PluginResult(PluginResult.Status.OK, false));
+                    DispatchCommandResult(new PluginResult(PluginResult.Status.OK, false), callbackId);
                     return;
                 }
 
@@ -89,18 +92,37 @@ namespace WPCordovaClassLib.Cordova.Commands
                         AudioPlayer audio = Media.players[mediaOptions.Id];
                         Media.players.Remove(mediaOptions.Id);
                         audio.Dispose();
-                        DispatchCommandResult(new PluginResult(PluginResult.Status.OK, true));
+                        DispatchCommandResult(new PluginResult(PluginResult.Status.OK, true), mediaOptions.CallbackId);
                     }
                     catch (Exception e)
                     {
-                        DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message));
+                        DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message), mediaOptions.CallbackId);
                     }
                 });
             }
             catch (Exception e)
             {
-                DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message));
+                DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message), callbackId);
             }
+        }
+
+        private AudioPlayer GetOrCreatePlayerById(string id)
+        {
+            AudioPlayer audio = null;
+
+            lock (Media.players)
+            {
+                if (!Media.players.TryGetValue(id, out audio))
+                {
+                    audio = new AudioPlayer(this, id);
+                    Media.players.Add(id, audio);
+                    Debug.WriteLine("Media Created in GetOrCreatePlayerById");
+                }
+            }
+            
+            
+
+            return audio;
         }
 
         /// <summary>
@@ -108,20 +130,21 @@ namespace WPCordovaClassLib.Cordova.Commands
         /// </summary>
         public void startRecordingAudio(string options)
         {
+            string callbackId = this.CurrentCommandCallbackId;
             try
             {
-                MediaOptions mediaOptions;
+                MediaOptions mediaOptions = new MediaOptions();
 
                 try
                 {
                     string[] optionsString = JSON.JsonHelper.Deserialize<string[]>(options);
-                    mediaOptions = new MediaOptions();
                     mediaOptions.Id = optionsString[0];
                     mediaOptions.Src = optionsString[1];
+                    callbackId = mediaOptions.CallbackId = optionsString[2];
                 }
                 catch (Exception)
                 {
-                    DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION));
+                    DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION), mediaOptions.CallbackId);
                     return;
                 }
 
@@ -146,30 +169,31 @@ namespace WPCordovaClassLib.Cordova.Commands
                             if (audio != null)
                             {
                                 audio.startRecording(mediaOptions.Src);
-                                DispatchCommandResult(new PluginResult(PluginResult.Status.OK));
+                                DispatchCommandResult(new PluginResult(PluginResult.Status.OK), mediaOptions.CallbackId);
                             }
                             else
                             {
-                                DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, "Error accessing AudioPlayer for key " + mediaOptions.Id));
+                                DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR,
+                                                        "Error accessing AudioPlayer for key " + mediaOptions.Id), mediaOptions.CallbackId);
                             }
                             
                             
                         }
                         catch (Exception e)
                         {
-                            DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message));
+                            DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message), mediaOptions.CallbackId);
                         }
 
                     });
                 }
                 else
                 {
-                    DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION));
+                    DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION), mediaOptions.CallbackId);
                 }
             }
             catch (Exception e)
             {
-                DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message));
+                DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message), callbackId);
             }
         }
 
@@ -178,9 +202,13 @@ namespace WPCordovaClassLib.Cordova.Commands
         /// </summary>
         public void stopRecordingAudio(string options)
         {
+            string callbackId = this.CurrentCommandCallbackId;
+
             try
             {
-                string mediaId = JSON.JsonHelper.Deserialize<string[]>(options)[0];
+                string[] optStrings = JSON.JsonHelper.Deserialize<string[]>(options);
+                string mediaId = optStrings[0];
+                callbackId = optStrings[1];
                 Deployment.Current.Dispatcher.BeginInvoke(() =>
                 {
                     try
@@ -191,27 +219,31 @@ namespace WPCordovaClassLib.Cordova.Commands
                             audio.stopRecording();
                             Media.players.Remove(mediaId);
                         }
-                        DispatchCommandResult(new PluginResult(PluginResult.Status.OK));
+                        DispatchCommandResult(new PluginResult(PluginResult.Status.OK), callbackId);
                     }
                     catch (Exception e)
                     {
-                        DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message));
+                        DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message), callbackId);
                     }
                 });
             }
             catch (Exception)
             {
-                DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION));
+                DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION), callbackId);
             }
         }
 
         public void setVolume(string options) // id,volume
         {
+            string callbackId = this.CurrentCommandCallbackId;
             try
             {
                 string[] optionsString = JSON.JsonHelper.Deserialize<string[]>(options);
                 string id = optionsString[0];
-                double volume = double.Parse(optionsString[1]);
+                double volume = 0.0d;
+                double.TryParse(optionsString[1], out volume);
+
+                callbackId = optionsString[2];
 
                 if (Media.players.ContainsKey(id))
                 {
@@ -224,15 +256,15 @@ namespace WPCordovaClassLib.Cordova.Commands
                         }
                         catch (Exception e)
                         {
-                            DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message));
+                            DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message), callbackId);
                         }
                     });
                 }
             }
             catch (Exception)
             {
-                DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION, "Error parsing options into setVolume method"));
-                return;
+                DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION, 
+                                                        "Error parsing options into setVolume method"), callbackId);
             }
         }
 
@@ -241,10 +273,10 @@ namespace WPCordovaClassLib.Cordova.Commands
         // While playing, a MediaElement stops all other media playback on the phone.
         // Multiple MediaElement controls are NOT supported
 
-        // Called when you create a new Media('blah') object in JS.
+        // Called when you create a new Media('blah.wav') object in JS.
         public void create(string options)
         {
-            // Debug.WriteLine("Creating Audio :: " + options);
+            string callbackId = this.CurrentCommandCallbackId;
             try
             {
                 MediaOptions mediaOptions;
@@ -254,21 +286,22 @@ namespace WPCordovaClassLib.Cordova.Commands
                     mediaOptions = new MediaOptions();
                     mediaOptions.Id = optionsString[0];
                     mediaOptions.Src = optionsString[1];
+                    callbackId = mediaOptions.CallbackId = optionsString[2];
                 }
                 catch (Exception)
                 {
-                    DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION, "Error parsing options into create method"));
+                    DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION,
+                                            "Error parsing options into create method"), callbackId);
                     return;
                 }
 
-                AudioPlayer audio = new AudioPlayer(this, mediaOptions.Id);
-                Media.players.Add(mediaOptions.Id, audio);
-                DispatchCommandResult(new PluginResult(PluginResult.Status.OK));
+                GetOrCreatePlayerById(mediaOptions.Id);
+                DispatchCommandResult(new PluginResult(PluginResult.Status.OK), callbackId);
 
             }
             catch (Exception e)
             {
-                DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message));
+                DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message), callbackId);
             }
         }
 
@@ -277,6 +310,7 @@ namespace WPCordovaClassLib.Cordova.Commands
         /// </summary>
         public void startPlayingAudio(string options)
         {
+            string callbackId = this.CurrentCommandCallbackId;
             try
             {
                 MediaOptions mediaOptions;
@@ -286,47 +320,38 @@ namespace WPCordovaClassLib.Cordova.Commands
                     mediaOptions = new MediaOptions();
                     mediaOptions.Id = optionsString[0];
                     mediaOptions.Src = optionsString[1];
-                    if (optionsString.Length > 2 && optionsString[2] != null)
+                    int msec = 0;
+                    if (int.TryParse(optionsString[2], out msec))
                     {
-                        mediaOptions.Milliseconds = int.Parse(optionsString[2]);
+                        mediaOptions.Milliseconds = msec;
                     }
+                    callbackId = mediaOptions.CallbackId = optionsString[3];
 
                 }
                 catch (Exception)
                 {
-                    DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION));
+                    DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION), callbackId);
                     return;
                 }
 
-                AudioPlayer audio;
-
-                if (!Media.players.ContainsKey(mediaOptions.Id))
-                {
-                    audio = new AudioPlayer(this, mediaOptions.Id);
-                    Media.players.Add(mediaOptions.Id, audio);
-                }
-                else
-                {
-                    //Debug.WriteLine("INFO: startPlayingAudio FOUND mediaPlayer for " + mediaOptions.Id);
-                    audio = Media.players[mediaOptions.Id];
-                }
+                AudioPlayer audio = GetOrCreatePlayerById(mediaOptions.Id);
 
                 Deployment.Current.Dispatcher.BeginInvoke(() =>
                 {
                     try
                     {
                         audio.startPlaying(mediaOptions.Src);
-                        DispatchCommandResult(new PluginResult(PluginResult.Status.OK));
+                        DispatchCommandResult(new PluginResult(PluginResult.Status.OK), callbackId);
                     }
                     catch (Exception e)
                     {
-                        DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message));
+                        DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message), callbackId);
                     }
                 });
             }
             catch (Exception e)
             {
-                DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message));
+                DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message), callbackId);
             }
         }
 
@@ -336,6 +361,7 @@ namespace WPCordovaClassLib.Cordova.Commands
         /// </summary>
         public void seekToAudio(string options)
         {
+            string callbackId = this.CurrentCommandCallbackId;
             try
             {
                 MediaOptions mediaOptions;
@@ -345,14 +371,17 @@ namespace WPCordovaClassLib.Cordova.Commands
                     string[] optionsString = JSON.JsonHelper.Deserialize<string[]>(options);
                     mediaOptions = new MediaOptions();
                     mediaOptions.Id = optionsString[0];
-                    if (optionsString.Length > 1 && optionsString[1] != null)
+                    int msec = 0;
+                    if (int.TryParse(optionsString[2], out msec))
                     {
-                        mediaOptions.Milliseconds = int.Parse(optionsString[1]);
+                        mediaOptions.Milliseconds = msec;
                     }
+                    callbackId = mediaOptions.CallbackId = optionsString[3];
+
                 }
                 catch (Exception)
                 {
-                    DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION));
+                    DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION), callbackId);
                     return;
                 }
 
@@ -370,17 +399,17 @@ namespace WPCordovaClassLib.Cordova.Commands
                             Debug.WriteLine("ERROR: seekToAudio could not find mediaPlayer for " + mediaOptions.Id);
                         }
 
-                        DispatchCommandResult(new PluginResult(PluginResult.Status.OK));
+                        DispatchCommandResult(new PluginResult(PluginResult.Status.OK), callbackId);
                     }
                     catch (Exception e)
                     {
-                        DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message));
+                        DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message), callbackId);
                     }
                 });
             }
             catch (Exception e)
             {
-                DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message));
+                DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message), callbackId);
             }
         }
 
@@ -389,10 +418,12 @@ namespace WPCordovaClassLib.Cordova.Commands
         /// </summary>
         public void pausePlayingAudio(string options)
         {
-
+            string callbackId = this.CurrentCommandCallbackId;
             try
             {
-                string mediaId = JSON.JsonHelper.Deserialize<string[]>(options)[0];
+                string[] optionsString = JSON.JsonHelper.Deserialize<string[]>(options);
+                string mediaId = optionsString[0];
+                callbackId = optionsString[1]; 
 
                 Deployment.Current.Dispatcher.BeginInvoke(() =>
                 {
@@ -408,11 +439,11 @@ namespace WPCordovaClassLib.Cordova.Commands
                             Debug.WriteLine("ERROR: pausePlayingAudio could not find mediaPlayer for " + mediaId);
                         }
 
-                        DispatchCommandResult(new PluginResult(PluginResult.Status.OK));
+                        DispatchCommandResult(new PluginResult(PluginResult.Status.OK), callbackId);
                     }
                     catch (Exception e)
                     {
-                        DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message));
+                        DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message),callbackId);
                     }
                 });
 
@@ -420,7 +451,7 @@ namespace WPCordovaClassLib.Cordova.Commands
             }
             catch (Exception)
             {
-                DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION));
+                DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION),callbackId);
             }
 
 
@@ -432,9 +463,12 @@ namespace WPCordovaClassLib.Cordova.Commands
         /// </summary>
         public void stopPlayingAudio(String options)
         {
+            string callbackId = this.CurrentCommandCallbackId;
             try
             {
-                string mediaId = JSON.JsonHelper.Deserialize<string[]>(options)[0];
+                string[] optionsStrings = JSON.JsonHelper.Deserialize<string[]>(options);
+                string mediaId = optionsStrings[0];
+                callbackId = optionsStrings[1];
                 Deployment.Current.Dispatcher.BeginInvoke(() =>
                 {
                     try
@@ -449,18 +483,18 @@ namespace WPCordovaClassLib.Cordova.Commands
                             Debug.WriteLine("stopPlaying could not find mediaPlayer for " + mediaId);
                         }
 
-                        DispatchCommandResult(new PluginResult(PluginResult.Status.OK));
+                        DispatchCommandResult(new PluginResult(PluginResult.Status.OK), callbackId);
                     }
                     catch (Exception e)
                     {
-                        DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message));
+                        DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message), callbackId);
                     }
                 });
 
             }
             catch (Exception)
             {
-                DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION));
+                DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION), callbackId);
             }
         }
 
@@ -469,9 +503,12 @@ namespace WPCordovaClassLib.Cordova.Commands
         /// </summary>
         public void getCurrentPositionAudio(string options)
         {
+            string callbackId = this.CurrentCommandCallbackId;
             try
             {
-                string mediaId = JSON.JsonHelper.Deserialize<string[]>(options)[0];
+                string[] optionsStrings = JSON.JsonHelper.Deserialize<string[]>(options);
+                string mediaId = optionsStrings[0];
+                callbackId = optionsStrings[1];
                 Deployment.Current.Dispatcher.BeginInvoke(() =>
                 {
                     try
@@ -479,22 +516,22 @@ namespace WPCordovaClassLib.Cordova.Commands
                         if (Media.players.ContainsKey(mediaId))
                         {
                             AudioPlayer audio = Media.players[mediaId];
-                            DispatchCommandResult(new PluginResult(PluginResult.Status.OK, audio.getCurrentPosition()));
+                            DispatchCommandResult(new PluginResult(PluginResult.Status.OK, audio.getCurrentPosition()), callbackId);
                         }
                         else
                         {
-                            DispatchCommandResult(new PluginResult(PluginResult.Status.OK, -1));
+                            DispatchCommandResult(new PluginResult(PluginResult.Status.OK, -1), callbackId);
                         }
                     }
                     catch (Exception e)
                     {
-                        DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message));
+                        DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message), callbackId);
                     }
                 });
             }
             catch (Exception)
             {
-                DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION));
+                DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION), callbackId);
                 return;
             }
         }
@@ -507,17 +544,23 @@ namespace WPCordovaClassLib.Cordova.Commands
         [Obsolete("This method will be removed shortly")]
         public void getDurationAudio(string options)
         {
+            string callbackId = this.CurrentCommandCallbackId;
             try
             {
                 MediaOptions mediaOptions;
 
                 try
                 {
-                    mediaOptions = JSON.JsonHelper.Deserialize<MediaOptions>(options);
+                    string[] optionsString = JSON.JsonHelper.Deserialize<string[]>(options);
+
+                    mediaOptions = new MediaOptions();
+                    mediaOptions.Id = optionsString[0];
+                    mediaOptions.Src = optionsString[1];
+                    callbackId = mediaOptions.CallbackId = optionsString[2];
                 }
                 catch (Exception)
                 {
-                    DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION));
+                    DispatchCommandResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION), callbackId);
                     return;
                 }
 
@@ -535,12 +578,12 @@ namespace WPCordovaClassLib.Cordova.Commands
 
                 Deployment.Current.Dispatcher.BeginInvoke(() =>
                 {
-                    DispatchCommandResult(new PluginResult(PluginResult.Status.OK, audio.getDuration(mediaOptions.Src)));
+                    DispatchCommandResult(new PluginResult(PluginResult.Status.OK, audio.getDuration(mediaOptions.Src)), callbackId);
                 });
             }
             catch (Exception e)
             {
-                DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message));
+                DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR, e.Message), callbackId);
             }
         }
     }
