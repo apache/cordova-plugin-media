@@ -6,7 +6,7 @@ id="org.apache.cordova.core.AudioHandler"
     version="0.1.0">
     <name>Media</name>
     <description>Cordova Media Plugin</description>
-    <license>Apache</license>
+    <license>Apache 2.0</license>
     <keywords>cordova,media</keywords>
 
     <js-module src="www/MediaError.js" name="MediaError">
