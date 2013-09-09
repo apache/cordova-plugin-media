@@ -65,9 +65,9 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     // Media error codes
     private static int MEDIA_ERR_NONE_ACTIVE    = 0;
     private static int MEDIA_ERR_ABORTED        = 1;
-    private static int MEDIA_ERR_NETWORK        = 2;
-    private static int MEDIA_ERR_DECODE         = 3;
-    private static int MEDIA_ERR_NONE_SUPPORTED = 4;
+//    private static int MEDIA_ERR_NETWORK        = 2;
+//    private static int MEDIA_ERR_DECODE         = 3;
+//    private static int MEDIA_ERR_NONE_SUPPORTED = 4;
 
     private AudioHandler handler;           // The AudioHandler object
     private String id;                      // The id of this player (used to identify Media object in JavaScript)
@@ -541,7 +541,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                     fileInputStream.close();
                 }
                 else {
-                    this.player.setDataSource("/sdcard/" + file);
+                    this.player.setDataSource(Environment.getExternalStorageDirectory().getPath() + "/" + file);
                 }
             }
                 this.setState(STATE.MEDIA_STARTING);
