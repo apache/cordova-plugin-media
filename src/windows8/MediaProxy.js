@@ -22,9 +22,9 @@
 /*global Windows:true */
 
 var cordova = require('cordova'),
-    Media = require('org.apache.cordova.core.AudioHandler.Media');
+    Media = require('org.apache.cordova.AudioHandler.Media');
 
-var MediaError = require('org.apache.cordova.core.AudioHandler.MediaError');
+var MediaError = require('org.apache.cordova.AudioHandler.MediaError');
 
 module.exports = {
     mediaCaptureMrg:null,
