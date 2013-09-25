@@ -180,4 +180,4 @@ module.exports = {
     }
 };
 
-require("cordova/commandProxy").add("Media",module.exports);
+require("cordova/windows8/commandProxy").add("Media",module.exports);
