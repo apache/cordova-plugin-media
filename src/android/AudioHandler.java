@@ -18,7 +18,6 @@
 */
 package org.apache.cordova.media;
 
-import org.apache.cordova.FileHelper;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 
