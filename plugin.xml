@@ -36,6 +36,12 @@ id="org.apache.cordova.media"
         <source-file src="src/android/FileHelper.java" target-dir="src/org/apache/cordova/media" />
      </platform>
      
+     <!-- ubuntu -->
+     <platform name="ubuntu">
+         <header-file src="src/ubuntu/media.h" />
+         <source-file src="src/ubuntu/media.cpp" />
+     </platform>
+
      <!-- ios -->
      <platform name="ios">    
          <config-file target="config.xml" parent="/*">
