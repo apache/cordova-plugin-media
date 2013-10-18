@@ -38,6 +38,26 @@ id="org.apache.cordova.media"
         <source-file src="src/android/FileHelper.java" target-dir="src/org/apache/cordova/media" />
      </platform>
      
+     <!-- amazon-fireos -->
+    <platform name="amazon-fireos">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="Media" >
+                <param name="android-package" value="org.apache.cordova.media.AudioHandler"/>
+            </feature>
+        </config-file>
+        
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.RECORD_AUDIO" />
+            <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+        </config-file>
+        
+        <source-file src="src/android/AudioHandler.java" target-dir="src/org/apache/cordova/media" />
+        <source-file src="src/android/AudioPlayer.java" target-dir="src/org/apache/cordova/media" />
+        <source-file src="src/android/FileHelper.java" target-dir="src/org/apache/cordova/media" />
+     </platform>
+
+
      <!-- ios -->
      <platform name="ios">    
          <config-file target="config.xml" parent="/*">
