@@ -39,3 +39,7 @@
 ### 0.2.4 (Oct 9, 2013)
 * [CB-4928] plugin-media doesn't load on windows8
 * [CB-4915] Incremented plugin version on dev branch.
+
+### 0.2.5 (Oct 28, 2013)
+* CB-5128: add repo + issue tag to plugin.xml for media plugin
+* [CB-5010] Incremented plugin version on dev branch.
