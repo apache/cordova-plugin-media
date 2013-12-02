@@ -98,6 +98,11 @@ id="org.apache.cordova.media"
             <merges target="" />
         </js-module>
     </platform>
-    
-            
+
+    <!-- tizen -->
+    <platform name="tizen">
+        <js-module src="src/tizen/MediaProxy.js" name="MediaProxy">
+            <runs/>
+        </js-module>
+    </platform>
 </plugin>
