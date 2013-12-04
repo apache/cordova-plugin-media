@@ -43,3 +43,9 @@
 ### 0.2.5 (Oct 28, 2013)
 * CB-5128: add repo + issue tag to plugin.xml for media plugin
 * [CB-5010] Incremented plugin version on dev branch.
+
+ 
+### 0.2.6 (Dec 4, 2013)
+* [ubuntu] specify policy_group
+* add ubuntu platform
+* Added amazon-fireos platform. Change to use amazon-fireos as a platform if the user agent string contains 'cordova-amazon-fireos'
