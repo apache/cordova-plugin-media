@@ -87,7 +87,7 @@ Permissions
 
 #### app/res/xml/config.xml
 
-    <plugin name="Media" value="org.apache.cordova.AudioHandler" />
+    <plugin name="Media" value="org.apache.cordova.media.AudioHandler" />
 
 #### app/AndroidManifest.xml
 
