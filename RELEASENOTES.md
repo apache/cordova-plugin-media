@@ -49,3 +49,7 @@
 * [ubuntu] specify policy_group
 * add ubuntu platform
 * Added amazon-fireos platform. Change to use amazon-fireos as a platform if the user agent string contains 'cordova-amazon-fireos'
+
+### 0.2.7 (Jan 02, 2014)
+* CB-5658 Add doc/index.md for Media plugin
+* Adding READ_PHONE_STATE to the plugin permissions
