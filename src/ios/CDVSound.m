@@ -267,16 +267,15 @@
     NSString* mediaId = [command.arguments objectAtIndex:0];
     NSNumber* volume = [command.arguments objectAtIndex:1 withDefault:[NSNumber numberWithFloat:1.0]];
 
-    CDVAudioFile* audioFile;
-    if ([self soundCache] == nil) {
-        [self setSoundCache:[NSMutableDictionary dictionaryWithCapacity:1]];
-    } else {
-        audioFile = [[self soundCache] objectForKey:mediaId];
-        audioFile.volume = volume;
-        if (audioFile.player) {
-            audioFile.player.volume = [volume floatValue];
+    if ([self soundCache] != nil) {
+        CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
+        if (audioFile != nil) {
+            audioFile.volume = volume;
+            if (audioFile.player) {
+                audioFile.player.volume = [volume floatValue];
+            }
+            [[self soundCache] setObject:audioFile forKey:mediaId];
         }
-        [[self soundCache] setObject:audioFile forKey:mediaId];
     }
 
     // don't care for any callbacks
