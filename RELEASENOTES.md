@@ -53,3 +53,7 @@
 ### 0.2.7 (Jan 02, 2014)
 * CB-5658 Add doc/index.md for Media plugin
 * Adding READ_PHONE_STATE to the plugin permissions
+
+### 0.2.8 (Feb 05, 2014)
+* Add preliminary support for Tizen.
+* [CB-4755] Fix crash in Media.setVolume on iOS
