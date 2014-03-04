@@ -18,12 +18,14 @@
  */
 
 #import "CDVSound.h"
+#import "CDVFile.h"
 #import <Cordova/NSArray+Comparisons.h>
 #import <Cordova/CDVJSON.h>
 
 #define DOCUMENTS_SCHEME_PREFIX @"documents://"
 #define HTTP_SCHEME_PREFIX @"http://"
 #define HTTPS_SCHEME_PREFIX @"https://"
+#define CDVFILE_PREFIX @"cdvfile://"
 #define RECORDING_WAV @"wav"
 
 @implementation CDVSound
@@ -85,6 +87,13 @@
         // try to find Documents:// resources
         filePath = [resourcePath stringByReplacingOccurrencesOfString:DOCUMENTS_SCHEME_PREFIX withString:[NSString stringWithFormat:@"%@/", docsPath]];
         NSLog(@"Will use resource '%@' from the documents folder with path = %@", resourcePath, filePath);
+    } else if ([resourcePath hasPrefix:CDVFILE_PREFIX]) {
+        CDVFile *filePlugin = [self.commandDelegate getCommandInstance:@"File"];
+        CDVFilesystemURL *url = [CDVFilesystemURL fileSystemURLWithString:resourcePath];
+        filePath = [filePlugin filesystemPathForURL:url];
+        if (filePath == nil) {
+            resourceURL = [NSURL URLWithString:resourcePath];
+        }
     } else {
         // if resourcePath is not from FileSystem put in tmp dir, else attempt to use provided resource path
         NSString* tmpPath = [NSTemporaryDirectory()stringByStandardizingPath];
@@ -122,6 +131,13 @@
         NSString* docsPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
         filePath = [resourcePath stringByReplacingOccurrencesOfString:DOCUMENTS_SCHEME_PREFIX withString:[NSString stringWithFormat:@"%@/", docsPath]];
         NSLog(@"Will use resource '%@' from the documents folder with path = %@", resourcePath, filePath);
+    } else if ([resourcePath hasPrefix:CDVFILE_PREFIX]) {
+        CDVFile *filePlugin = [self.commandDelegate getCommandInstance:@"File"];
+        CDVFilesystemURL *url = [CDVFilesystemURL fileSystemURLWithString:resourcePath];
+        filePath = [filePlugin filesystemPathForURL:url];
+        if (filePath == nil) {
+            resourceURL = [NSURL URLWithString:resourcePath];
+        }
     } else {
         // attempt to find file path in www directory or LocalFileSystem.TEMPORARY directory
         filePath = [self.commandDelegate pathForResource:resourcePath];
@@ -141,7 +157,7 @@
             NSLog(@"Found resource '%@' in the web folder.", filePath);
         }
     }
-    // check that file exists for all but HTTP_SHEME_PREFIX
+    // if the resourcePath resolved to a file path, check that file exists
     if (filePath != nil) {
         // create resourceURL
         resourceURL = [NSURL fileURLWithPath:filePath];
@@ -561,6 +577,7 @@
                 if (recordingSuccess) {
                     NSLog(@"Started recording audio sample '%@'", audioFile.resourcePath);
                     jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('org.apache.cordova.media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_RUNNING];
+                    [self.commandDelegate evalJs:jsString];
                 }
             }
             
@@ -575,6 +592,7 @@
                     [self.avSession setActive:NO error:nil];
                 }
                 jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('org.apache.cordova.media.Media').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_ABORTED message:errorMsg]];
+                [self.commandDelegate evalJs:jsString];
             }
         };
         
