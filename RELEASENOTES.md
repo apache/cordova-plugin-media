@@ -61,3 +61,11 @@
 ### 0.2.9 (Feb 26, 2014)
 * CB-6051 Update media plugin to work with new cdvfile:// urls
 * CB-5748 Make sure that Media.onStatus is called when recording is started.
+
+### 0.2.10 (Apr 17, 2014)
+* CB-6422: [windows8] use cordova/exec/proxy
+* CB-6212: [iOS] fix warnings compiled under arm64 64-bit
+* CB-6225: Specify plugin dependency on File plugin 1.0.1
+* CB-6460: Update license headers
+* CB-6465: Add license headers to Tizen code
+* Add NOTICE file
