@@ -36,25 +36,32 @@
 {
     NSURL* resourceURL = nil;
     NSString* filePath = nil;
-
+    NSString* docsPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+    
     // first try to find HTTP:// or Documents:// resources
-
+    
     if ([resourcePath hasPrefix:HTTP_SCHEME_PREFIX] || [resourcePath hasPrefix:HTTPS_SCHEME_PREFIX]) {
         // if it is a http url, use it
         NSLog(@"Will use resource '%@' from the Internet.", resourcePath);
         resourceURL = [NSURL URLWithString:resourcePath];
     } else if ([resourcePath hasPrefix:DOCUMENTS_SCHEME_PREFIX]) {
-        NSString* docsPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
         filePath = [resourcePath stringByReplacingOccurrencesOfString:DOCUMENTS_SCHEME_PREFIX withString:[NSString stringWithFormat:@"%@/", docsPath]];
         NSLog(@"Will use resource '%@' from the documents folder with path = %@", resourcePath, filePath);
     } else {
-        // attempt to find file path in www directory
-        filePath = [self.commandDelegate pathForResource:resourcePath];
-        if (filePath != nil) {
-            NSLog(@"Found resource '%@' in the web folder.", filePath);
+        // by default always first check Documents directory
+        NSString *resourceDocsPath = [NSString stringWithFormat:@"%@/%@", docsPath, resourcePath];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:resourceDocsPath]) {
+            filePath = resourceDocsPath;
         } else {
-            filePath = resourcePath;
-            NSLog(@"Will attempt to use file resource '%@'", filePath);
+            
+            // attempt to find file path in www directory
+            filePath = [self.commandDelegate pathForResource:resourcePath];
+            if (filePath != nil) {
+                NSLog(@"Found resource '%@' in the web folder.", filePath);
+            } else {
+                filePath = resourcePath;
+                NSLog(@"Will attempt to use file resource '%@'", filePath);
+            }
         }
     }
     // check that file exists for all but HTTP_SHEME_PREFIX
