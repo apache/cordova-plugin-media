@@ -131,27 +131,27 @@ module.exports = {
         thisM.mediaCaptureMgr.initializeAsync(captureInitSettings).done(function (result) {
             thisM.mediaCaptureMgr.addEventListener("recordlimitationexceeded", lose);
             thisM.mediaCaptureMgr.addEventListener("failed", lose);
-        }, lose);
-        // Start recording
-        Windows.Storage.KnownFolders.musicLibrary.createFileAsync(src, Windows.Storage.CreationCollisionOption.replaceExisting).done(function (newFile) {
-            var storageFile = newFile;
-            var fileType = this.src.split('.').pop();
-            var encodingProfile = null;
-            switch (fileType) {
-                case 'm4a':
-                    encodingProfile = Windows.Media.MediaProperties.MediaEncodingProfile.createM4a(Windows.Media.MediaProperties.AudioEncodingQuality.auto);
-                    break;
-                case 'mp3':
-                    encodingProfile = Windows.Media.MediaProperties.MediaEncodingProfile.createMp3(Windows.Media.MediaProperties.AudioEncodingQuality.auto);
-                    break;
-                case 'wma':
-                    encodingProfile = Windows.Media.MediaProperties.MediaEncodingProfile.createWma(Windows.Media.MediaProperties.AudioEncodingQuality.auto);
-                    break;
-                default:
-                    lose("Invalid file type for record");
-                    break;
-            }
-            thisM.mediaCaptureMgr.startRecordToStorageFileAsync(encodingProfile, storageFile).done(win, lose);
+            
+            // Start recording
+            Windows.Storage.KnownFolders.musicLibrary.createFileAsync(src, Windows.Storage.CreationCollisionOption.replaceExisting).done(function (newFile) {
+                var storageFile = newFile;
+                var encodingProfile = null;
+                switch (newFile.fileType) {
+                    case '.m4a':
+                        encodingProfile = Windows.Media.MediaProperties.MediaEncodingProfile.createM4a(Windows.Media.MediaProperties.AudioEncodingQuality.auto);
+                        break;
+                    case '.mp3':
+                        encodingProfile = Windows.Media.MediaProperties.MediaEncodingProfile.createMp3(Windows.Media.MediaProperties.AudioEncodingQuality.auto);
+                        break;
+                    case '.wma':
+                        encodingProfile = Windows.Media.MediaProperties.MediaEncodingProfile.createWma(Windows.Media.MediaProperties.AudioEncodingQuality.auto);
+                        break;
+                    default:
+                        lose("Invalid file type for record");
+                        break;
+                }
+                thisM.mediaCaptureMgr.startRecordToStorageFileAsync(encodingProfile, storageFile).done(win, lose);
+            }, lose);
         }, lose);
     },
 
