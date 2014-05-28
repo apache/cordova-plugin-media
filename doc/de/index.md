@@ -19,101 +19,101 @@
 
 # org.apache.cordova.media
 
-このプラグインは、記録し、デバイス上のオーディオ ファイルを再生する機能を提供します。
+Dieses Plugin bietet die Möglichkeit zum Aufzeichnen und Wiedergeben von audio-Dateien auf einem Gerät.
 
-**注**: 現在の実装では、メディアのキャプチャのための W3C 仕様に準拠していないとは便宜上提供されるだけです。 将来の実装を最新の W3C 仕様に準拠し、現在 Api をとがめることがあります。
+**Hinweis**: die aktuelle Implementierung eine W3C-Spezifikation für Medien-Capture nicht einhalten, und wird nur zu Informationszwecken zur Verfügung gestellt. Zukünftiger Implementierungen wird an der aktuellen W3C-Spezifikation und kann die aktuellen APIs entweiht.
 
-## インストール
+## Installation
 
     cordova plugin add org.apache.cordova.media
     
 
-## サポートされているプラットフォーム
+## Unterstützte Plattformen
 
-*   アンドロイド
-*   ブラックベリー 10
+*   Android
+*   BlackBerry 10
 *   iOS
-*   Windows Phone 7 と 8
+*   Windows Phone 7 und 8
 *   Tizen
 *   Windows 8
 
-## Windows Phone の癖
+## Windows Phone Macken
 
-*   のみ 1 つのメディア ファイルは、一度に再生できます。
+*   Nur eine Mediendatei kann gleichzeitig abgespielt werden.
 
-*   アプリケーションと他のメディアとの対話に厳格な制限があります。 [詳細については、Microsoft のマニュアル][1]を参照してください。.
+*   Es gibt strenge Beschränkungen, wie Ihre Anwendung mit anderen Medien interagiert. Finden Sie in der [Microsoft-Dokumentation für details][1].
 
  [1]: http://msdn.microsoft.com/en-us/library/windowsphone/develop/hh184838(v=vs.92).aspx
 
-## メディア
+## Medien
 
     var media = new Media(src, mediaSuccess, [mediaError], [mediaStatus]);
     
 
-### パラメーター
+### Parameter
 
-*   **src**: オーディオのコンテンツを含む URI。*（，）*
+*   **Src**: ein URI mit der audio-Inhalte. *(DOM-String und enthält)*
 
-*   **mediaSuccess**: (省略可能) 後に実行するコールバックを `Media` 再生用に現在、レコード、または stop アクション オブジェクトが完了しました。*(機能)*
+*   **MediaSuccess**: (Optional) der Rückruf, der nach dem führt ein `Media` -Objekt abgeschlossen hat, die aktuelle Wiedergabe, Aufzeichnung oder Stop-Action. *(Funktion)*
 
-*   **mediaError**: (省略可能) エラーが発生した場合に実行されるコールバック。*(機能)*
+*   **Medienfehler**: (Optional) der Rückruf, der ausgeführt wird, wenn ein Fehler auftritt. *(Funktion)*
 
-*   **mediaStatus**: (省略可能) 状態の変化を示すために実行されるコールバック。*(機能)*
+*   **MediaStatus**: (Optional) der Rückruf, der ausgeführt wird, um Statusänderungen anzugeben. *(Funktion)*
 
-### 定数
+### Konstanten
 
-次の定数を唯一のパラメーターとして報告されます、 `mediaStatus` コールバック。
+Die folgenden Konstanten werden gemeldet, als einzigem Parameter an die `mediaStatus` Rückruf:
 
-*   `Media.MEDIA_NONE` = 0;
-*   `Media.MEDIA_STARTING` = 1;
-*   `Media.MEDIA_RUNNING` = 2;
-*   `Media.MEDIA_PAUSED` = 3;
-*   `Media.MEDIA_STOPPED` = 4;
+*   `Media.MEDIA_NONE`= 0;
+*   `Media.MEDIA_STARTING`= 1;
+*   `Media.MEDIA_RUNNING`= 2;
+*   `Media.MEDIA_PAUSED`= 3;
+*   `Media.MEDIA_STOPPED`= 4;
 
-### メソッド
+### Methoden
 
-*   `media.getCurrentPosition`: オーディオ ファイル内の現在位置を返します。
+*   `media.getCurrentPosition`: Gibt die aktuelle Position in einer Audiodatei.
 
-*   `media.getDuration`: オーディオ ファイルの継続時間を返します。
+*   `media.getDuration`: Gibt die Dauer einer Audiodatei.
 
-*   `media.play`: 開始またはオーディオ ファイルの再生を再開します。
+*   `media.play`: Starten Sie oder fortsetzen Sie der Wiedergabe einer Audiodatei.
 
-*   `media.pause`： オーディオ ファイルの再生を一時停止。
+*   `media.pause`: Anhalten der Wiedergabe einer Audiodatei.
 
-*   `media.release`: 基になるオペレーティング システムのオーディオ リソースを解放します。
+*   `media.release`: Das zugrunde liegende Betriebssystem audio Ressourcen frei.
 
-*   `media.seekTo`: オーディオ ファイル内の位置を移動します。
+*   `media.seekTo`: Verschiebt die Position innerhalb der audio-Datei.
 
-*   `media.setVolume`: オーディオの再生ボリュームを設定します。
+*   `media.setVolume`: Stellen Sie die Lautstärke für die Audiowiedergabe.
 
-*   `media.startRecord`： オーディオ ファイルの録音を開始します。
+*   `media.startRecord`: Starten der Aufnahme einer audio-Datei.
 
-*   `media.stopRecord`: オーディオ ファイルの録音を停止します。
+*   `media.stopRecord`: Stoppen Sie die Aufnahme einer audio-Datei.
 
-*   `media.stop`: オーディオ ファイルの再生を停止します。
+*   `media.stop`: Abspielen einer Audiodatei zu stoppen.
 
-### 追加読み取り専用パラメーター
+### Zusätzliche ReadOnly-Parameter
 
-*   **位置**： 数秒でオーディオの再生では、内の位置。
+*   **Position**: die Position innerhalb der audio-Wiedergabe in Sekunden.
     
-    *   自動的に更新されません; のプレイ中にコール `getCurrentPosition` を更新します。
+    *   Nicht während des Spiels automatisch aktualisiert; Rufen Sie `getCurrentPosition` zu aktualisieren.
 
-*   **期間**: 秒で、メディアの期間。
+*   **Dauer**: die Dauer der Medien, in Sekunden.
 
 ## media.getCurrentPosition
 
-オーディオ ファイル内の現在位置を返します。また更新して、 `Media` オブジェクトの `position` パラメーター。
+Gibt die aktuelle Position in einer Audiodatei. Aktualisiert auch die `Media` des Objekts `position` Parameter.
 
     media.getCurrentPosition(mediaSuccess, [mediaError]);
     
 
-### パラメーター
+### Parameter
 
-*   **mediaSuccess**: 秒の現在の位置を渡されるコールバック。
+*   **MediaSuccess**: der Rückruf, der die aktuelle Position in Sekunden übergeben wird.
 
-*   **mediaError**: (省略可能) コールバックでエラーが発生した場合に実行します。
+*   **Medienfehler**: (Optional) der Rückruf ausgeführt, wenn ein Fehler auftritt.
 
-### 簡単な例
+### Kleines Beispiel
 
     // Audio player
     //
@@ -139,12 +139,12 @@
 
 ## media.getDuration
 
-オーディオ ファイルの継続時間 (秒単位) を返します。期間は知られている、-1 の値が返されます。
+Gibt die Dauer einer Audiodatei in Sekunden. Wenn die Dauer unbekannt ist, wird der Wert-1 zurückgegeben.
 
     media.getDuration();
     
 
-### 簡単な例
+### Kleines Beispiel
 
     // Audio player
     //
@@ -165,14 +165,14 @@
     }, 100);
     
 
-## media.pause
+## Media.Pause
 
-オーディオ ファイルの再生を一時停止します。
+Pausen Abspielen einer Audiodatei.
 
     media.pause();
     
 
-### 簡単な例
+### Kleines Beispiel
 
     // Play audio
     //
@@ -195,14 +195,14 @@
     }
     
 
-## media.play
+## Media.Play
 
-開始またはオーディオ ファイルの再生を再開します。
+Startet oder setzt fort, Abspielen einer Audiodatei.
 
     media.play();
     
 
-### 簡単な例
+### Kleines Beispiel
 
     // Play audio
     //
@@ -223,21 +223,21 @@
     }
     
 
-### iOS の癖
+### iOS Macken
 
-*   **numberOfLoops**: このオプションを指定して、 `play` メディア ファイルを再生する、例えば回数を指定する方法。
+*   **NumberOfLoops**: übergeben Sie diese Option, um die `play` -Methode können Sie die Anzahl der angeben soll die Mediendatei ausspielen, z.B.:
     
         var myMedia = new Media("http://audio.ibeat.org/content/p1rj1s/p1rj1s_-_rockGuitar.mp3")
         myMedia.play({ numberOfLoops: 2 })
         
 
-*   **playAudioWhenScreenIsLocked**: このオプションを渡す、 `play` 、画面がロックされているときに再生を許可するかどうかを指定するメソッド。 場合に設定されている `true` (既定値)、例えば、ハードウェア ミュート ボタンの状態は無視されます。
+*   **PlayAudioWhenScreenIsLocked**: übergeben Sie diese Option, um die `play` -Methode können Sie angeben, ob Sie möchten Wiedergabe zu ermöglichen, wenn der Bildschirm gesperrt ist. Wenn legen Sie auf `true` (der Standardwert), der Zustand der die mute Taste wird ignoriert, z.B.:
     
         var myMedia = new Media("http://audio.ibeat.org/content/p1rj1s/p1rj1s_-_rockGuitar.mp3")
         myMedia.play({ playAudioWhenScreenIsLocked : false })
         
 
-*   **ファイル検索の順序**: iOS の検索でファイル名または単純なパスのみが提供される場合、 `www` ディレクトリ、ファイルをアプリケーションの `documents/tmp` ディレクトリ。
+*   **Reihenfolge der Dateisuche**: Wenn nur ein Dateiname oder Pfad angegeben wird, sucht iOS in das `www` Verzeichnis für die Datei, dann in der Anwendung `documents/tmp` Verzeichnis:
     
         var myMedia = new Media("audio/beer.mp3")
         myMedia.play()  // first looks for file in www/audio/beer.mp3 then in <application>/documents/tmp/audio/beer.mp3
@@ -245,12 +245,12 @@
 
 ## media.release
 
-基になるオペレーティング システムのオーディオ リソースを解放します。 メディアの再生のための OpenCore インスタンスの有限な量があるので、人造人間のため特に重要です。 アプリケーションを呼び出す必要があります、 `release` 任意の関数 `Media` は、もはや必要なリソースです。
+Das zugrunde liegende Betriebssystem audio Ressourcen frei. Dies ist besonders wichtig für Android, da gibt es eine begrenzte Anzahl von OpenCore-Instanzen für die Medienwiedergabe. Anwendungen rufen die `release` -Funktion für alle `Media` Ressource, die nicht mehr benötigt wird.
 
     media.release();
     
 
-### 簡単な例
+### Kleines Beispiel
 
     // Audio player
     //
@@ -263,16 +263,16 @@
 
 ## media.seekTo
 
-オーディオ ファイル内の現在位置を設定します。
+Legt die aktuelle Position in einer Audiodatei.
 
     media.seekTo(milliseconds);
     
 
-### パラメーター
+### Parameter
 
-*   **ミリ秒単位**： ミリ秒単位で、オーディオの再生位置を設定する位置。
+*   **Millisekunden**: die Position die Wiedergabeposition innerhalb des Audiotracks in Millisekunden festgelegt.
 
-### 簡単な例
+### Kleines Beispiel
 
     // Audio player
     //
@@ -284,27 +284,27 @@
     }, 5000);
     
 
-### ブラックベリー 10 癖
+### BlackBerry 10 Macken
 
-*   ブラックベリー OS 5 デバイスでサポートされていません。
+*   BlackBerry OS 5-Geräten unterstützt nicht.
 
 ## media.setVolume
 
-オーディオ ファイルの音量を設定します。
+Stellen Sie die Lautstärke für eine audio-Datei.
 
     media.setVolume(volume);
     
 
-### パラメーター
+### Parameter
 
-*   **ボリューム**: ボリュームの再生を設定します。値は 0.0 ～ 1.0 の範囲内である必要があります。
+*   **Lautstärke**: die Lautstärke für Wiedergabe fest. Der Wert muss im Bereich zwischen 0,0 und 1,0 liegen.
 
-### サポートされているプラットフォーム
+### Unterstützte Plattformen
 
-*   アンドロイド
+*   Android
 *   iOS
 
-### 簡単な例
+### Kleines Beispiel
 
     // Play audio
     //
@@ -337,19 +337,19 @@
 
 ## media.startRecord
 
-オーディオ ファイルの録音を開始します。
+Beginnt mit der Aufnahme einer audio-Datei.
 
     media.startRecord();
     
 
-### サポートされているプラットフォーム
+### Unterstützte Plattformen
 
-*   アンドロイド
+*   Android
 *   iOS
-*   Windows Phone 7 と 8
+*   Windows Phone 7 und 8
 *   Windows 8
 
-### 簡単な例
+### Kleines Beispiel
 
     // Record audio
     //
@@ -371,33 +371,33 @@
     }
     
 
-### Android の癖
+### Android Macken
 
-*   Android 端末適応型マルチレート形式にオーディオを録音します。指定したファイルは、 *.amr*拡張子で終わる必要があります。
+*   Android-Geräte aufnehmen Audio im Adaptive Sprachcodecs Format. Die angegebene Datei sollte mit einer Endung *.amr* enden.
 
-### iOS の癖
+### iOS Macken
 
-*   iOS の種類*.wav*と返しますエラー場合は、ファイル名拡張子がファイルをレコードのみが修正されません。
+*   iOS nur Datensätze, die Dateien des Typs *WAV* und gibt ein Fehler, wenn die Dateinamen-Erweiterung ist richtig nicht.
 
-*   記録は、アプリケーションの配置の完全なパスを指定しない場合 `documents/tmp` ディレクトリ。 これを介してアクセスすることができます、 `File` API を使用して `LocalFileSystem.TEMPORARY` 。 記録時に指定された任意のサブディレクトリに存在する必要があります。
+*   Wenn ein vollständiger Pfad nicht angegeben ist, wird die Aufzeichnung in der Anwendung platziert `documents/tmp` Verzeichnis. Erreichbar über die `File` -API verwenden `LocalFileSystem.TEMPORARY` . Allen Unterverzeichnissen in Rekordzeit angegeben muss bereits vorhanden sein.
 
-*   ファイルを記録し、再生することができますドキュメント URI を使用して。
+*   Dateien können aufgezeichnet und spielte mit die Dokumenten URI zurück:
     
         var myMedia = new Media("documents://beer.mp3")
         
 
-### Tizen の癖
+### Tizen Macken
 
-*   Tizen のデバイスでサポートされていません。
+*   Tizen Geräten unterstützt nicht.
 
 ## media.stop
 
-オーディオ ファイルの再生を停止します。
+Beendet die Wiedergabe einer Audiodatei.
 
-    media.stop();
+    Media.Stop();
     
 
-### 簡単な例
+### Kleines Beispiel
 
     // Play audio
     //
@@ -426,19 +426,19 @@
 
 ## media.stopRecord
 
-オーディオ ファイルの録音を停止します。
+Stoppt die Aufnahme einer audio-Datei.
 
     media.stopRecord();
     
 
-### サポートされているプラットフォーム
+### Unterstützte Plattformen
 
-*   アンドロイド
+*   Android
 *   iOS
-*   Windows Phone 7 と 8
+*   Windows Phone 7 und 8
 *   Windows 8
 
-### 簡単な例
+### Kleines Beispiel
 
     // Record audio
     //
@@ -466,21 +466,21 @@
     }
     
 
-### Tizen の癖
+### Tizen Macken
 
-*   Tizen のデバイスでサポートされていません。
+*   Tizen Geräten unterstützt nicht.
 
-## MediaError
+## Medienfehler
 
-A `MediaError` オブジェクトに返される、 `mediaError` コールバック関数でエラーが発生したとき。
+A `MediaError` Objekt wird zurückgegeben, um die `mediaError` Callback-Funktion, wenn ein Fehler auftritt.
 
-### プロパティ
+### Eigenschaften
 
-*   **コード**: 次のいずれかの定義済みのエラー コード。
+*   **Code**: einer der vordefinierten Fehlercodes aufgeführt.
 
-*   **メッセージ**: エラーの詳細を説明するエラー メッセージ。
+*   **Nachricht**: eine Fehlermeldung beschreibt die Details des Fehlers.
 
-### 定数
+### Konstanten
 
 *   `MediaError.MEDIA_ERR_ABORTED`
 *   `MediaError.MEDIA_ERR_NETWORK`
