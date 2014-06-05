@@ -69,3 +69,11 @@
 * CB-6460: Update license headers
 * CB-6465: Add license headers to Tizen code
 * Add NOTICE file
+
+### 0.2.11 (Jun 05, 2014)
+* CB-6127 Spanish and French Translations added. Github close #13
+* CB-6807 Add license
+* CB-6706: Relax dependency on file plugin
+* CB-6478: Fix exception when try to record audio file on windows 8
+* CB-6477: Add musicLibrary and microphone capabilities to windows 8 platform
+* CB-6491 add CONTRIBUTING.md
