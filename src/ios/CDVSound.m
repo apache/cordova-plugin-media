@@ -299,6 +299,12 @@
 
 - (void)startPlayingAudio:(CDVInvokedUrlCommand*)command
 {
+    // this code necessary for queue playing in background mode
+    if (!isBeginReceiveRemoteControlsSet) {
+        [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+        isBeginReceiveRemoteControlsSet = TRUE;
+    }
+    
     NSString* callbackId = command.callbackId;
 
 #pragma unused(callbackId)
