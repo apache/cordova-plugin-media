@@ -229,3 +229,540 @@ exports.defineAutoTests = function () {
         });
     });
 };
+
+//******************************************************************************************
+//***************************************Manual Tests***************************************
+//******************************************************************************************
+
+exports.defineManualTests = function (contentEl, createActionButton) {
+    //-------------------------------------------------------------------------
+    // Audio player
+    //-------------------------------------------------------------------------
+    var media1 = null;
+    var media1Timer = null;
+    var audioSrc = null;
+    var defaultaudio = "http://cordova.apache.org/downloads/BlueZedEx.mp3";
+
+    //Play audio function
+    function playAudio(url) {
+        console.log("playAudio()");
+        console.log(" -- media=" + media1);
+
+        var src = defaultaudio;
+
+        if (url) {
+            src = url;
+        }
+
+        // Stop playing if src is different from currently playing source
+        if (src !== audioSrc) {
+            if (media1 !== null) {
+                stopAudio();
+                media1 = null;
+            }
+        }
+
+        if (media1 === null) {
+
+            // TEST STREAMING AUDIO PLAYBACK
+            //var src = "http://nunzioweb.com/misc/Bon_Jovi-Crush_Mystery_Train.mp3";   // works
+            //var src = "http://nunzioweb.com/misc/Bon_Jovi-Crush_Mystery_Train.m3u"; // doesn't work
+            //var src = "http://www.wav-sounds.com/cartoon/bugsbunny1.wav"; // works
+            //var src = "http://www.angelfire.com/fl5/html-tutorial/a/couldyou.mid"; // doesn't work
+            //var src = "MusicSearch/mp3/train.mp3";    // works
+            //var src = "bryce.mp3";  // works
+            //var src = "/android_asset/www/bryce.mp3"; // works
+
+            media1 = new Media(src,
+                    function () {
+                    console.log("playAudio():Audio Success");
+                },
+                    function (err) {
+                    console.log("playAudio():Audio Error: " + err.code);
+                    setAudioStatus("Error: " + err.code);
+                },
+                    function (status) {
+                    console.log("playAudio():Audio Status: " + status);
+                    setAudioStatus(Media.MEDIA_MSG[status]);
+
+                    // If stopped, then stop getting current position
+                    if (Media.MEDIA_STOPPED == status) {
+                        clearInterval(media1Timer);
+                        media1Timer = null;
+                        setAudioPosition("0 sec");
+                    }
+                });
+        }
+        audioSrc = src;
+        document.getElementById('durationValue').innerHTML = "";
+        // Play audio
+        media1.play();
+        if (media1Timer === null && media1.getCurrentPosition) {
+            media1Timer = setInterval(
+                    function () {
+                    media1.getCurrentPosition(
+                        function (position) {
+                        if (position >= 0.0) {
+                            setAudioPosition(position + " sec");
+                        }
+                    },
+                        function (e) {
+                        console.log("Error getting pos=" + e);
+                        setAudioPosition("Error: " + e);
+                    });
+                },
+                    1000);
+        }
+
+        // Get duration
+        var counter = 0;
+        var timerDur = setInterval(
+                function () {
+                counter = counter + 100;
+                if (counter > 2000) {
+                    clearInterval(timerDur);
+                }
+                var dur = media1.getDuration();
+                if (dur > 0) {
+                    clearInterval(timerDur);
+                    document.getElementById('durationValue').innerHTML = dur + " sec";
+                }
+            }, 100);
+    }
+
+    //Pause audio playback
+    function pauseAudio() {
+        console.log("pauseAudio()");
+        if (media1) {
+            media1.pause();
+        }
+    }
+
+    //Stop audio
+    function stopAudio() {
+        console.log("stopAudio()");
+        if (media1) {
+            media1.stop();
+        }
+        clearInterval(media1Timer);
+        media1Timer = null;
+    }
+
+    //Release audio
+    function releaseAudio() {
+        console.log("releaseAudio()");
+        if (media1) {
+            media1.stop(); //imlied stop of playback, resets timer
+            media1.release();
+        }
+    }
+
+    //Set audio status
+    function setAudioStatus(status) {
+        document.getElementById('statusValue').innerHTML = status;
+    }
+
+    //Set audio position
+    function setAudioPosition(position) {
+        document.getElementById('positionValue').innerHTML = position;
+    }
+
+    //Seek audio
+    function seekAudio(mode) {
+        var time = document.getElementById("seekinput").value;
+        if (time === "") {
+            time = 5000;
+        } else {
+            time = time * 1000; //we expect the input to be in seconds
+        }
+        if (media1 === null) {
+            console.log("seekTo requested while media1 is null");
+            if (audioSrc === null) {
+                audioSrc = defaultaudio;
+            }
+            media1 = new Media(audioSrc,
+                    function () {
+                    console.log("seekToAudio():Audio Success");
+                },
+                    function (err) {
+                    console.log("seekAudio():Audio Error: " + err.code);
+                    setAudioStatus("Error: " + err.code);
+                },
+                    function (status) {
+                    console.log("seekAudio():Audio Status: " + status);
+                    setAudioStatus(Media.MEDIA_MSG[status]);
+
+                    // If stopped, then stop getting current position
+                    if (Media.MEDIA_STOPPED == status) {
+                        clearInterval(media1Timer);
+                        media1Timer = null;
+                        setAudioPosition("0 sec");
+                    }
+                });
+        }
+
+        media1.getCurrentPosition(
+            function (position) {
+            var deltat = time;
+            if (mode === "by") {
+                deltat = time + position * 1000;
+            }
+            media1.seekTo(deltat,
+                function () {
+                console.log("seekAudioTo():Audio Success");
+                //force an update on the position display
+                updatePosition();
+            },
+                function (err) {
+                console.log("seekAudioTo():Audio Error: " + err.code);
+            });
+        },
+            function (e) {
+            console.log("Error getting pos=" + e);
+            setAudioPosition("Error: " + e);
+        });
+    }
+
+    //for forced updates of position after a successful seek
+
+    function updatePosition() {
+        media1.getCurrentPosition(
+            function (position) {
+            if (position >= 0.0) {
+                setAudioPosition(position + " sec");
+            }
+        },
+            function (e) {
+            console.log("Error getting pos=" + e);
+            setAudioPosition("Error: " + e);
+        });
+    }
+
+    //-------------------------------------------------------------------------
+    // Audio recorder
+    //-------------------------------------------------------------------------
+    var mediaRec = null;
+    var recTime = 0;
+    var recordSrc = "myRecording.mp3";
+
+    //Record audio
+    function recordAudio() {
+        console.log("recordAudio()");
+        console.log(" -- media=" + mediaRec);
+        if (mediaRec == null) {
+            var src = recordSrc;
+            mediaRec = new Media(src,
+                    function () {
+                    console.log("recordAudio():Audio Success");
+                },
+                    function (err) {
+                    console.log("recordAudio():Audio Error: " + err.code);
+                    setAudioStatus("Error: " + err.code);
+                },
+                    function (status) {
+                    console.log("recordAudio():Audio Status: " + status);
+                    setAudioStatus(Media.MEDIA_MSG[status]);
+                });
+        }
+
+        // Record audio
+        mediaRec.startRecord();
+
+        // Stop recording after 10 sec
+        recTime = 0;
+        var recInterval = setInterval(function () {
+                recTime = recTime + 1;
+                setAudioPosition(recTime + " sec");
+                if (recTime >= 10) {
+                    clearInterval(recInterval);
+                    if (mediaRec.stopAudioRecord) {
+                        mediaRec.stopAudioRecord();
+                    } else {
+                        mediaRec.stopRecord();
+                    }
+                    console.log("recordAudio(): stop");
+                }
+            }, 1000);
+    }
+
+    //Play back recorded audio
+    function playRecording() {
+        playAudio(recordSrc);
+    }
+
+    //Function to create a file for iOS recording
+
+    function getRecordSrc() {
+        var fsFail = function (error) {
+            console.log("error creating file for iOS recording");
+        };
+        var gotFile = function (file) {
+            recordSrc = file.fullPath;
+            //console.log("recording Src: " + recordSrc);
+        };
+        var gotFS = function (fileSystem) {
+            fileSystem.root.getFile("iOSRecording.wav", {
+                create : true
+            }, gotFile, fsFail);
+        };
+        window.requestFileSystem(LocalFileSystem.TEMPORARY, 0, gotFS, fsFail);
+    }
+
+    //Function to create a file for BB recording
+    function getRecordSrcBB() {
+        var fsFail = function (error) {
+            console.log("error creating file for BB recording");
+        };
+        var gotFile = function (file) {
+            recordSrc = file.fullPath;
+        };
+        var gotFS = function (fileSystem) {
+            fileSystem.root.getFile("BBRecording.amr", {
+                create : true
+            }, gotFile, fsFail);
+        };
+        window.requestFileSystem(LocalFileSystem.TEMPORARY, 0, gotFS, fsFail);
+    }
+
+//Generate Dynamic Table
+    function generateTable(tableId, rows, cells, elements) {
+        var table = document.createElement('table');
+        for (var r = 0; r < rows; r++) {
+            var row = table.insertRow(r);
+            for (var c = 0; c < cells; c++) {
+                var cell = row.insertCell(c);
+                cell.setAttribute("align", "center");
+                for (var e in elements) {
+                    if (elements[e].position.row == r && elements[e].position.cell == c) {
+                        var htmlElement = document.createElement(elements[e].tag);
+                        var content;
+
+                        if (elements[e].content !== "") {
+                            content = document.createTextNode(elements[e].content);
+                            htmlElement.appendChild(content);
+                        }
+                        if (elements[e].type) {
+                            htmlElement.type = elements[e].type;
+                        }
+                        htmlElement.setAttribute("id", elements[e].id);
+                        cell.appendChild(htmlElement);
+                    }
+                }
+            }
+        }
+        table.setAttribute("align", "center");
+        table.setAttribute("id", tableId);
+        return table;
+    }
+    
+//Audio && Record Elements
+    var elementsAudio =
+        [{
+            id : "tableName",
+            content : "Audio",
+            tag : "h2",
+            position : {
+                row : 0,
+                cell : 1
+            }
+        }, {
+            id : "statusTag",
+            content : "Status:",
+            tag : "div",
+            position : {
+                row : 1,
+                cell : 0
+            }
+        }, {
+            id : "statusValue",
+            content : "",
+            tag : "div",
+            position : {
+                row : 1,
+                cell : 2
+            }
+        }, {
+            id : "durationTag",
+            content : "Duration:",
+            tag : "div",
+            position : {
+                row : 2,
+                cell : 0
+            }
+        }, {
+            id : "durationValue",
+            content : "",
+            tag : "div",
+            position : {
+                row : 2,
+                cell : 2
+            }
+        }, {
+            id : "positionTag",
+            content : "Position:",
+            tag : "div",
+            position : {
+                row : 3,
+                cell : 0
+            }
+        }, {
+            id : "positionValue",
+            content : "",
+            tag : "div",
+            position : {
+                row : 3,
+                cell : 2
+            }
+        }, {
+            id : "actionTag",
+            content : "Actions",
+            tag : "h2",
+            position : {
+                row : 4,
+                cell : 1
+            }
+        }, {
+            id : "playBtn",
+            content : "",
+            tag : "div",
+            position : {
+                row : 5,
+                cell : 0
+            }
+        }, {
+            id : "pauseBtn",
+            content : "",
+            tag : "div",
+            position : {
+                row : 5,
+                cell : 1
+            }
+        }, {
+            id : "stopBtn",
+            content : "",
+            tag : "div",
+            position : {
+                row : 6,
+                cell : 0
+            }
+        }, {
+            id : "releaseBtn",
+            content : "",
+            tag : "div",
+            position : {
+                row : 6,
+                cell : 1
+            }
+        }, {
+            id : "seekByBtn",
+            content : "",
+            tag : "div",
+            position : {
+                row : 7,
+                cell : 0
+            }
+        }, {
+            id : "seekToBtn",
+            content : "",
+            tag : "div",
+            position : {
+                row : 7,
+                cell : 1
+            }
+        }, {
+            id : "textSeek",
+            content : "",
+            tag : "input",
+            type : "numeric",
+            position : {
+                row : 7,
+                cell : 2
+            }
+        }
+    ],
+    elementsRecord =
+        [{
+            id : "tableName",
+            content : "Record Audio",
+            tag : "h2",
+            position : {
+                row : 0,
+                cell : 1
+            }
+        }, {
+            id : "recordbtn",
+            content : "",
+            tag : "div",
+            position : {
+                row : 1,
+                cell : 0
+            }
+        }, {
+            id : "recordplayBtn",
+            content : "",
+            tag : "div",
+            position : {
+                row : 1,
+                cell : 1
+            }
+        }, {
+            id : "recordpauseBtn",
+            content : "",
+            tag : "div",
+            position : {
+                row : 2,
+                cell : 0
+            }
+        }, {
+            id : "recordstopBtn",
+            content : "",
+            tag : "div",
+            position : {
+                row : 2,
+                cell : 1
+            }
+        }
+    ];
+
+    audioTable = generateTable('audioContent', 8, 3, elementsAudio);
+    contentEl.appendChild(audioTable);
+    createActionButton('Play', function () {
+        playAudio();
+    }, 'playBtn');
+    createActionButton('Pause', function () {
+        pauseAudio();
+    }, 'pauseBtn');
+    createActionButton('Stop', function () {
+        stopAudio();
+    }, 'stopBtn');
+    createActionButton('Release', function () {
+        releaseAudio();
+    }, 'releaseBtn');
+    createActionButton('Seek By', function () {
+        seekAudio('by');
+    }, 'seekByBtn');
+    createActionButton('Seek To', function () {
+        seekAudio('to');
+    }, 'seekToBtn');
+    //get Special path to record if iOS || Blackberry
+    if (cordova.platformId === 'ios')
+        getRecordSrc();
+    else
+        if (cordova.platformId === 'blackberry')
+            getRecordSrcBB();
+
+    recordTable = generateTable('recordContent', 3, 3, elementsRecord);
+    contentEl.appendChild(recordTable);
+    createActionButton('Record Audio \n 10 sec', function () {
+        recordAudio();
+    }, 'recordbtn');
+    createActionButton('Play', function () {
+        playRecording();
+    }, 'recordplayBtn');
+    createActionButton('Pause', function () {
+        pauseAudio();
+    }, 'recordpauseBtn');
+    createActionButton('Stop', function () {
+        stopAudio();
+    }, 'recordstopBtn');
+};
