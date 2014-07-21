@@ -36,15 +36,18 @@ var mediaObjects = {};
  *                                  errorCallback(int errorCode) - OPTIONAL
  * @param statusCallback        The callback to be called when media status has changed.
  *                                  statusCallback(int statusCode) - OPTIONAL
+ * @param bufferedCallback      The callback to be called when media has progressed buffering.
+ *                                  bufferedCallback(int bufferedPercentage) - OPTIONAL
  */
-var Media = function(src, successCallback, errorCallback, statusCallback) {
-    argscheck.checkArgs('SFFF', 'Media', arguments);
+var Media = function(src, successCallback, errorCallback, statusCallback, bufferedCallback) {
+    argscheck.checkArgs('SFFFF', 'Media', arguments);
     this.id = utils.createUUID();
     mediaObjects[this.id] = this;
     this.src = src;
     this.successCallback = successCallback;
     this.errorCallback = errorCallback;
     this.statusCallback = statusCallback;
+    this.bufferedCallback = bufferedCallback;
     this._duration = -1;
     this._position = -1;
     exec(null, this.errorCallback, "Media", "create", [this.id, this.src]);
@@ -188,6 +191,18 @@ Media.onStatus = function(id, msgType, value) {
     }
     else {
          console.error && console.error("Received Media.onStatus callback for unknown media :: " + id);
+    }
+
+};
+
+Media.onBuffered = function(id, buffered) {
+    var media = mediaObjects[id];
+
+    if(media) {
+        media.bufferedCallback && media.bufferedCallback(buffered);
+    }
+    else {
+         console.error && console.error("Received Media.onBuffered callback for unknown media :: " + id);
     }
 
 };
