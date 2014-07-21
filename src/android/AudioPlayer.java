@@ -23,6 +23,7 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
+import android.media.MediaPlayer.OnBufferingUpdateListener;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.util.Log;
@@ -40,7 +41,7 @@ import java.io.IOException;
  *      android_asset:      file name must start with /android_asset/sound.mp3
  *      sdcard:             file name is just sound.mp3
  */
-public class AudioPlayer implements OnCompletionListener, OnPreparedListener, OnErrorListener {
+public class AudioPlayer implements OnCompletionListener, OnPreparedListener, OnErrorListener, OnBufferingUpdateListener {
 
     // AudioPlayer modes
     public enum MODE { NONE, PLAY, RECORD };
@@ -83,6 +84,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     private MediaPlayer player = null;      // Audio player object
     private boolean prepareOnly = true;     // playback after file prepare flag
     private int seekOnPrepared = 0;     // seek to this location once media is prepared
+
+    private int buffered = 0;               // Buffered percentage
 
     /**
      * Constructor.
@@ -277,6 +280,16 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     }
 
     /**
+     * Callback to be invoked when progress has been made on buffering media source
+     *
+     * @param player           The MediaPlayer that reached the end of the file
+     * @param percent          Buffered percentage
+     */
+    public void onBufferingUpdate(MediaPlayer player, int percent) {
+        this.setBuffered(percent);
+    }
+
+    /**
      * Get current position of playback.
      *
      * @return                  position in msec or -1 if not playing
@@ -347,6 +360,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     public void onPrepared(MediaPlayer player) {
         // Listen for playback completion
         this.player.setOnCompletionListener(this);
+        // Listen for download progress
+        this.player.setOnBufferingUpdateListener(this);
         // seek to any location received while not prepared
         this.seekToPlaying(this.seekOnPrepared);
         // If start playing after prepared
@@ -405,6 +420,16 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             this.handler.webView.sendJavascript("cordova.require('org.apache.cordova.media.Media').onStatus('" + this.id + "', " + MEDIA_STATE + ", " + state.ordinal() + ");");
         }
         this.state = state;
+    }
+
+    /**
+     * Set the buffered percentage
+     *
+     * @param buffered
+     */
+    private void setBuffered(int buffered) {
+        this.handler.webView.sendJavascript("cordova.require('org.apache.cordova.media.Media').onBuffered('" + this.id + "', " + buffered + ");");
+        this.buffered = buffered;
     }
 
     /**
