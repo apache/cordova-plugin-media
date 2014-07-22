@@ -49,7 +49,7 @@ and may deprecate the current APIs.
 
 ## Media
 
-    var media = new Media(src, mediaSuccess, [mediaError], [mediaStatus]);
+    var media = new Media(src, [mediaSuccess], [mediaError], [mediaStatus]);
 
 ### Parameters
 
