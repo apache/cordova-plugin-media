@@ -741,6 +741,40 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     else
         if (cordova.platformId === 'blackberry')
             getRecordSrcBB();
+
+    //testing process and details
+    function addItemToList(_list, _text)
+    {
+        var item = document.createElement('li');
+        item.appendChild(document.createTextNode(_text));
+        _list.appendChild(item);
+    }
+
+    div = document.createElement('h4');
+    div.appendChild(document.createTextNode('Recommended Test Procedure'));
+    contentEl.appendChild(div);
+
+    var list = document.createElement('ol');
+    addItemToList(list, 'Press play - Will start playing audio. Status: Running, Duration: 61.333 sec, Position: Current position of audio track');
+    addItemToList(list, 'Press pause - Will pause the audio. Status: Paused, Duration: 61.333 sec, Position: Position where track was paused');
+    addItemToList(list, 'Press play - Will begin playing where track left off from the pause');
+    addItemToList(list, 'Press stop - Will stop the audio. Status: Stopped, Duration: 61.333 sec, Position: 0 sec');
+    addItemToList(list, 'Press play - Will begin playing the audio track from the beginning');
+    addItemToList(list, 'Press release - Will stop the audio. Status: Stopped, Duration: 61.333 sec, Position: 0 sec');
+    addItemToList(list, 'Press play - Will begin playing the audio track from the beginning');
+    addItemToList(list, 'Type 10 in the text box beside Seek To button');
+    addItemToList(list, 'Press seek by - Will jump 10 seconds ahead in the audio track. Position: should jump by 10 sec');
+    addItemToList(list, 'Press stop if track is not already stopped');
+    addItemToList(list, 'Type 30 in the text box beside Seek To button');
+    addItemToList(list, 'Press play then seek to - Should jump to Position 30 sec');
+    addItemToList(list, 'Press stop');
+    addItemToList(list, 'Type 5 in the text box beside Seek To button');
+    addItemToList(list, 'Press play, let play past 10 seconds then press seek to - should jump back to position 5 sec');
+
+    div = document.createElement('div');
+    div.setAttribute("style", "background:#B0C4DE;border:1px solid #FFA07A;margin:15px 6px 0px;min-width:295px;max-width:97%;padding:4px 0px 2px 10px;min-height:160px;max-height:200px;overflow:auto");
+    div.appendChild(list);
+    contentEl.appendChild(div);
     
     //Title Record Audio
     div = document.createElement('h2');
@@ -761,4 +795,23 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     createActionButton('Stop', function () {
         stopAudio();
     }, 'recordstopBtn');
+
+    //testing process and details
+    div = document.createElement('h4');
+    div.appendChild(document.createTextNode('Recommended Test Procedure'));
+    contentEl.appendChild(div);
+
+    list = document.createElement('ol');
+    addItemToList(list, 'Press Record Audio 10 sec - Will start recording audio for 10 seconds. Status: Running, Position: number of seconds recorded (will stop at 10)');
+    addItemToList(list, 'Status will change to Stopped when finished recording');
+    addItemToList(list, 'Press play - Will begin playing the recording. Status: Running, Duration: # of seconds of recording, Position: Current position of recording');
+    addItemToList(list, 'Press stop - Will stop playing the recording. Status: Stopped, Duration: # of seconds of recording, Position: 0 sec');
+    addItemToList(list, 'Press play - Will begin playing the recording from the beginning');
+    addItemToList(list, 'Press pause - Will pause the playback of the recording. Status: Paused, Duration: # of seconds of recording, Position: Position where recording was paused');
+    addItemToList(list, 'Press play - Will begin playing the recording from where it was paused');
+
+    div = document.createElement('div');
+    div.setAttribute("style", "background:#B0C4DE;border:1px solid #FFA07A;margin:15px 6px 0px;min-width:295px;max-width:97%;padding:4px 0px 2px 10px;min-height:160px;max-height:200px;overflow:auto");
+    div.appendChild(list);
+    contentEl.appendChild(div);
 };
