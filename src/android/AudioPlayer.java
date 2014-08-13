@@ -282,7 +282,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     /**
      * Callback to be invoked when progress has been made on buffering media source
      *
-     * @param player           The MediaPlayer that reached the end of the file
+     * @param player           The MediaPlayer that has made progress
      * @param percent          Buffered percentage
      */
     public void onBufferingUpdate(MediaPlayer player, int percent) {
