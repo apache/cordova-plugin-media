@@ -200,9 +200,8 @@ Media.onBuffered = function(id, buffered) {
 
     if(media) {
         media.bufferedCallback && media.bufferedCallback(buffered);
-    }
-    else {
-         console.error && console.error("Received Media.onBuffered callback for unknown media :: " + id);
+    } else {
+        console.error && console.error("Received Media.onBuffered callback for unknown media :: " + id);
     }
 
 };
