@@ -521,35 +521,43 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         if (this.isStreaming(file)) {
             this.player.setDataSource(file);
             this.player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            //if it's a streaming file, play mode is implied
+            // If it's a streaming file, play mode is implied.
             this.setMode(MODE.PLAY);
             this.setState(STATE.MEDIA_STARTING);
             this.player.setOnPreparedListener(this);
             this.player.prepareAsync();
+            return;
         }
-        else {
-            if (file.startsWith("/android_asset/")) {
-                String f = file.substring(15);
-                android.content.res.AssetFileDescriptor fd = this.handler.cordova.getActivity().getAssets().openFd(f);
-                this.player.setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength());
-            }
-            else {
-                File fp = new File(file);
+        if (file.startsWith("/android_asset/")) {
+            String f = file.substring(15);
+            android.content.res.AssetFileDescriptor fd = this.handler.cordova.getActivity().getAssets().openFd(f);
+            this.player.setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength());
+        } else {
+            File fp = new File(file);
+            if (fp.exists()) {
+                FileInputStream fileInputStream = new FileInputStream(file);
+                this.player.setDataSource(fileInputStream.getFD());
+                fileInputStream.close();
+            } else {
+                String original_file = file;
+                file = Environment.getExternalStorageDirectory().getPath() + "/" + file;
+                // If the new file exists, set it as the data source.
+                // In case the file still doesn't exist, try the original method again.
+                fp = new File(file);
                 if (fp.exists()) {
-                    FileInputStream fileInputStream = new FileInputStream(file);
+                    this.player.setDataSource(file);
+                } else {
+                    FileInputStream fileInputStream = new FileInputStream(original_file);
                     this.player.setDataSource(fileInputStream.getFD());
                     fileInputStream.close();
                 }
-                else {
-                    this.player.setDataSource(Environment.getExternalStorageDirectory().getPath() + "/" + file);
-                }
             }
-                this.setState(STATE.MEDIA_STARTING);
-                this.player.setOnPreparedListener(this);
-                this.player.prepare();
-
-                // Get duration
-                this.duration = getDurationInSeconds();
-            }
+        }
+        this.setState(STATE.MEDIA_STARTING);
+        this.player.setOnPreparedListener(this);
+        this.player.prepare();
+        
+        // Get duration.
+        this.duration = getDurationInSeconds();
     }
 }
