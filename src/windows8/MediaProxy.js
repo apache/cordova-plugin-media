@@ -62,9 +62,16 @@ module.exports = {
         var id = args[0];
         //var src = args[1];
         //var options = args[2];
+
+        var thisM = Media.get(id);
+        // if Media was released, then node will be null and we need to create it again
+        if (!thisM.node) {
+            module.exports.create(win, lose, args);
+        }
+
         Media.onStatus(id, Media.MEDIA_STATE, Media.MEDIA_RUNNING);
 
-        (Media.get(id)).node.play();
+        thisM.node.play();
     },
 
     // Stops the playing audio
