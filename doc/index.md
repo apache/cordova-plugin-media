@@ -390,6 +390,12 @@ Starts recording an audio file.
 
         var myMedia = new Media("documents://beer.mp3")
 
+### Windows 8 Quirks
+
+- If a full path is not provided, the recording is placed in the AppData/temp directory. This can be accessed via the `File` API using `LocalFileSystem.TEMPORARY` or 'ms-appdata:///temp/<filename>' URI.
+
+- Any subdirectory specified at record time must already exist.
+
 ### Tizen Quirks
 
 - Not supported on Tizen devices.

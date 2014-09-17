@@ -524,6 +524,22 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         window.requestFileSystem(LocalFileSystem.TEMPORARY, 0, gotFS, fsFail);
     }
 
+    //Function to create a file for Windows recording
+    function getRecordSrcWin() {
+        var fsFail = function (error) {
+            console.log("error creating file for Win recording");
+        };
+        var gotFile = function (file) {
+            recordSrc = file.fullPath.replace(/\//g, '\\');
+        };
+        var gotFS = function (fileSystem) {
+            fileSystem.root.getFile("WinRecording.m4a", {
+                create: true
+            }, gotFile, fsFail);
+        };
+        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fsFail);
+    }
+
 //Generate Dynamic Table
     function generateTable(tableId, rows, cells, elements) {
         var table = document.createElement('table');
@@ -738,9 +754,10 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     //get Special path to record if iOS || Blackberry
     if (cordova.platformId === 'ios')
         getRecordSrc();
-    else
-        if (cordova.platformId === 'blackberry')
-            getRecordSrcBB();
+    else if (cordova.platformId === 'blackberry')
+        getRecordSrcBB();
+    else if (cordova.platformId === 'windows' || cordova.platformId === 'windows8')
+        getRecordSrcWin();
 
     //testing process and details
     function addItemToList(_list, _text)
