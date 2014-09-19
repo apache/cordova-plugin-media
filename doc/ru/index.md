@@ -386,6 +386,12 @@
         var myMedia = new Media("documents://beer.mp3")
         
 
+### Совместимости Windows 8
+
+*   Если не указан полный путь, запись помещается в каталоге AppData/temp. Это могут быть доступны через `Файл` С помощью API `LocalFileSystem.TEMPORARY` или ' ms-appdata: / / / temp /<filename>' URI.
+
+*   Любой подкаталог указанного в рекордное время должна уже существовать.
+
 ### Причуды Tizen
 
 *   Не поддерживается на устройствах Tizen.
@@ -482,7 +488,7 @@ A `MediaError` объект возвращается к `mediaError` функц�
 
 ### Константы
 
-*   `MediaError.MEDIA_ERR_ABORTED` = 1
-*   `MediaError.MEDIA_ERR_NETWORK` = 2
-*   `MediaError.MEDIA_ERR_DECODE` = 3
-*   `MediaError.MEDIA_ERR_NONE_SUPPORTED` = 4
+*   `MediaError.MEDIA_ERR_ABORTED`= 1
+*   `MediaError.MEDIA_ERR_NETWORK`= 2
+*   `MediaError.MEDIA_ERR_DECODE`= 3
+*   `MediaError.MEDIA_ERR_NONE_SUPPORTED`= 4

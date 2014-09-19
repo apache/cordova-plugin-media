@@ -386,6 +386,12 @@ Rozpoczyna nagrywanie pliku audio.
         var myMedia = new Media("documents://beer.mp3")
         
 
+### Windows 8 dziwactwa
+
+*   Jeśli nie podano pełną ścieżkę, nagrywanie jest umieszczony w katalogu AppData/temp. To mogą być dostępne za pośrednictwem `Plik` Za pomocą interfejsu API `LocalFileSystem.TEMPORARY` lub "ms-appdata: temp / / / /<filename>"URI.
+
+*   Każdy podkatalog określony w rekordowym czasie musi już istnieć.
+
 ### Osobliwości Tizen
 
 *   Nie obsługiwane na Tizen urządzenia.
@@ -482,7 +488,7 @@ A `MediaError` obiekt jest zwracany do `mediaError` funkcji wywołania zwrotnego
 
 ### Stałe
 
-*   `MediaError.MEDIA_ERR_ABORTED` = 1
-*   `MediaError.MEDIA_ERR_NETWORK` = 2
-*   `MediaError.MEDIA_ERR_DECODE` = 3
-*   `MediaError.MEDIA_ERR_NONE_SUPPORTED` = 4
+*   `MediaError.MEDIA_ERR_ABORTED`= 1
+*   `MediaError.MEDIA_ERR_NETWORK`= 2
+*   `MediaError.MEDIA_ERR_DECODE`= 3
+*   `MediaError.MEDIA_ERR_NONE_SUPPORTED`= 4

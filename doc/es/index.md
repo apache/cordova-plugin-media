@@ -386,6 +386,12 @@ Empieza a grabar un archivo de audio.
         var myMedia = new Media("documents://beer.mp3")
         
 
+### Rarezas de Windows 8
+
+*   Si no se proporciona una ruta completa, la grabación se coloca en el directorio AppData/temp. Esto puede accederse a través de la `Archivo` Usando API `LocalFileSystem.TEMPORARY` o ' ms-appdata: temporal / / / /<filename>' URI.
+
+*   Ya debe existir ningún subdirectorio especificado en un tiempo récord.
+
 ### Rarezas Tizen
 
 *   No compatible con dispositivos Tizen.
@@ -482,7 +488,7 @@ A `MediaError` objeto es devuelto a la `mediaError` función de devolución de l
 
 ### Constantes
 
-*   `MediaError.MEDIA_ERR_ABORTED` = 1
-*   `MediaError.MEDIA_ERR_NETWORK` = 2
-*   `MediaError.MEDIA_ERR_DECODE` = 3
-*   `MediaError.MEDIA_ERR_NONE_SUPPORTED` = 4
+*   `MediaError.MEDIA_ERR_ABORTED`= 1
+*   `MediaError.MEDIA_ERR_NETWORK`= 2
+*   `MediaError.MEDIA_ERR_DECODE`= 3
+*   `MediaError.MEDIA_ERR_NONE_SUPPORTED`= 4

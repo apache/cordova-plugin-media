@@ -386,6 +386,12 @@ Beginnt mit der Aufnahme einer audio-Datei.
         var myMedia = new Media("documents://beer.mp3")
         
 
+### Windows 8 Macken
+
+*   Wenn Sie ein vollständiger Pfad nicht angegeben ist, wird die Aufnahme im AppData/Temp-Verzeichnis platziert. Erreichbar über die `Datei` API verwenden `LocalFileSystem.TEMPORARY` oder "ms-Appdata: / / / Temp /<filename>' URI.
+
+*   Allen Unterverzeichnissen in Rekordzeit angegeben muss bereits vorhanden sein.
+
 ### Tizen Macken
 
 *   Tizen Geräten unterstützt nicht.
@@ -482,7 +488,7 @@ A `MediaError` Objekt wird zurückgegeben, um die `mediaError` Callback-Funktion
 
 ### Konstanten
 
-*   `MediaError.MEDIA_ERR_ABORTED` = 1
-*   `MediaError.MEDIA_ERR_NETWORK` = 2
-*   `MediaError.MEDIA_ERR_DECODE` = 3
-*   `MediaError.MEDIA_ERR_NONE_SUPPORTED` = 4
+*   `MediaError.MEDIA_ERR_ABORTED`= 1
+*   `MediaError.MEDIA_ERR_NETWORK`= 2
+*   `MediaError.MEDIA_ERR_DECODE`= 3
+*   `MediaError.MEDIA_ERR_NONE_SUPPORTED`= 4
