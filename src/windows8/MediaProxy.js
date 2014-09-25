@@ -47,11 +47,17 @@ module.exports = {
                 fn === 'm3u' || fn === 'wmx' || fn === 'm4a') {
                 thisM.node = new Audio(src);
                 thisM.node.load();
-                var dur = thisM.node.duration;
-                if (isNaN(dur)) {
-                    dur = -1;
-                }
-                Media.onStatus(id, Media.MEDIA_DURATION, dur);
+
+                var getDuration = function () {
+                    var dur = thisM.node.duration;
+                    if (isNaN(dur)) {
+                        dur = -1;
+                    }
+                    Media.onStatus(id, Media.MEDIA_DURATION, dur);
+                };
+
+                thisM.node.onloadedmetadata = getDuration;
+                getDuration();
             }
             else {
                 lose && lose({code:MediaError.MEDIA_ERR_ABORTED});
