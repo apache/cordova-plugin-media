@@ -42,7 +42,7 @@ module.exports = {
 
         var fn = src.split('.').pop(); // gets the file extension
         if (thisM.node === null) {
-            if (fn === 'mp3' || fn === 'wma' || fn === 'wma' ||
+            if (fn === 'mp3' || fn === 'wma' || fn === 'wav' ||
                 fn === 'cda' || fn === 'adx' || fn === 'wm' ||
                 fn === 'm3u' || fn === 'wmx' || fn === 'm4a') {
                 thisM.node = new Audio(src);
