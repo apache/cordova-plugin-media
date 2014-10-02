@@ -23,7 +23,7 @@ Plugin daje możliwość nagrywania i odtwarzania plików audio na urządzeniu.
 
 **Uwaga**: Obecna implementacja nie stosować się do specyfikacji W3C do przechwytywania mediów i jest dostarczane jedynie dla wygody. Przyszłej realizacji będą przylegać do najnowszych specyfikacji W3C i może potępiać bieżące interfejsów API.
 
-## Instalacji
+## Instalacja
 
     cordova plugin add org.apache.cordova.media
     
@@ -31,7 +31,7 @@ Plugin daje możliwość nagrywania i odtwarzania plików audio na urządzeniu.
 ## Obsługiwane platformy
 
 *   Android
-*   Jeżyna 10
+*   BlackBerry 10
 *   iOS
 *   Windows Phone 7 i 8
 *   Tizen
@@ -223,7 +223,7 @@ Rozpoczyna się lub wznawia odtwarzanie pliku audio.
     }
     
 
-### iOS dziwactwa
+### Dziwactwa iOS
 
 *   **numberOfLoops**: przekazać tę opcję, aby `play` Metoda, aby określić ile razy chcesz, pliku multimedialnego do gry, np.:
     
@@ -371,11 +371,11 @@ Rozpoczyna nagrywanie pliku audio.
     }
     
 
-### Android dziwactwa
+### Dziwactwa Androida
 
 *   Urządzenia z systemem Android nagrywanie dźwięku w formacie Adaptive Multi-Rate. Określony plik powinien kończyć się rozszerzeniem *AMR* .
 
-### iOS dziwactwa
+### Dziwactwa iOS
 
 *   iOS tylko rekordy do plików typu *.wav* i zwraca błąd, jeśli nazwa pliku rozszerzenie jest nie prawidłowe.
 
@@ -392,7 +392,7 @@ Rozpoczyna nagrywanie pliku audio.
 
 *   Każdy podkatalog określony w rekordowym czasie musi już istnieć.
 
-### Osobliwości Tizen
+### Dziwactwa Tizen
 
 *   Nie obsługiwane na Tizen urządzenia.
 
@@ -472,7 +472,7 @@ Zatrzymuje nagrywanie pliku audio.
     }
     
 
-### Osobliwości Tizen
+### Dziwactwa Tizen
 
 *   Nie obsługiwane na Tizen urządzenia.
 
