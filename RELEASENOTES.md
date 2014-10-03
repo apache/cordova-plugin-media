@@ -88,3 +88,11 @@
 * added documentation for manual tests
 * CB-6963 Port Media manual & automated tests
 * CB-6963 Port media tests to plugin-test-framework
+
+### 0.2.14 (Oct 03, 2014)
+* Amazon Specific changes: Added READ_PHONE_STATE permission same as done in Android
+* make possible plays wav file
+* CB-7638 Get audio duration properly on windows
+* CB-7454 Adds support for m4a audio format for Windows
+* CB-7547 Fixes audio recording on windows platform
+* CB-7531 Fixes play() failure after release() call
