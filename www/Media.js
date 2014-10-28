@@ -1,4 +1,4 @@
-/*
+cordova.define("org.apache.cordova.media.Media", function(require, exports, module) { /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -151,6 +151,11 @@ Media.prototype.release = function() {
 Media.prototype.setVolume = function(volume) {
     exec(null, null, "Media", "setVolume", [this.id, volume]);
 };
+               
+               
+Media.prototype.setLockScreenInfo = function(title, album, artist, pathToCover, duration) {
+    exec(null, this.errorCallback, "Media", "setLockScreenInfo", [this.id, title, album, artist, pathToCover, duration]);
+};
 
 /**
  * Audio has status update.
@@ -193,3 +198,5 @@ Media.onStatus = function(id, msgType, value) {
 };
 
 module.exports = Media;
+
+});

@@ -21,12 +21,42 @@
 #import "CDVFile.h"
 #import <Cordova/NSArray+Comparisons.h>
 #import <Cordova/CDVJSON.h>
+#import <MediaPlayer/MPNowPlayingInfoCenter.h>
+#import <MediaPlayer/MPMediaItem.h>
+#import <AVFoundation/AVFoundation.h>
+
+// нужно подключить CommonDigest.h
+#import <CommonCrypto/CommonDigest.h>
+
+// и можно определить категорию на NSString
+
+
+
+// использование
 
 #define DOCUMENTS_SCHEME_PREFIX @"documents://"
 #define HTTP_SCHEME_PREFIX @"http://"
 #define HTTPS_SCHEME_PREFIX @"https://"
 #define CDVFILE_PREFIX @"cdvfile://"
 #define RECORDING_WAV @"wav"
+
+@interface NSString (MD5_Hash)
++ (NSString *) md5String:(NSString*)concat;
+@end
+
+@implementation NSString (MD5_Hash)
+
++ (NSString *) md5String:(NSString*)concat {
+    const char *concat_str = [concat UTF8String];
+    unsigned char result[CC_MD5_DIGEST_LENGTH];
+    CC_MD5(concat_str, strlen(concat_str), result);
+    NSMutableString *hash = [NSMutableString string];
+    for (int i = 0; i < 16; i++)
+        [hash appendFormat:@"%02X", result[i]];
+    return [hash lowercaseString];
+}
+
+@end
 
 @implementation CDVSound
 
@@ -258,8 +288,36 @@
     return [errorDict JSONString];
 }
 
+- (void)handleRemoteControlEvents:(NSNotification *)notification //use notification method and logic
+{
+    NSDictionary *dictionary = [notification userInfo];
+    NSString *pauseKey = @"MP_PAUSE";
+    NSString *playKey = @"MP_PLAY";
+    NSString *stopKey = @"MP_STOP";
+    NSString *nextKey = @"MP_NEXT";
+    NSString *previousKey = @"MP_PREVIOUS";
+    NSString *positionKey = @"MP_POSITION";
+    
+    NSString *pauseValue = [dictionary valueForKey:pauseKey];
+    NSString *playValue = [dictionary valueForKey:playKey];
+    NSString *stopValue = [dictionary valueForKey:stopKey];
+    NSString *nextValue = [dictionary valueForKey:nextKey];
+    NSString *previousValue = [dictionary valueForKey:previousKey];
+    NSString *positionValue = [dictionary valueForKey:positionKey];
+    
+    NSLog(@"%@ %@ %@ %@ %@ %@", pauseValue, playValue, stopValue, nextValue, previousValue, positionValue);
+}
+
 - (void)create:(CDVInvokedUrlCommand*)command
 {
+    NSString *notificationName = @"MP_CONTROL_EVENTS";
+    
+    [[NSNotificationCenter defaultCenter]
+     addObserver:self
+     selector:@selector(handleRemoteControlEvents:)
+     name:notificationName
+     object:nil];
+    
     NSString* mediaId = [command.arguments objectAtIndex:0];
     NSString* resourcePath = [command.arguments objectAtIndex:1];
 
@@ -323,6 +381,7 @@
         if (!bError) {
             // audioFile.player != nil  or player was successfully created
             // get the audioSession and set the category to allow Playing when device is locked or ring/silent switch engaged
+            
             if ([self hasAudioSession]) {
                 NSError* __autoreleasing err = nil;
                 NSNumber* playAudioWhenScreenIsLocked = [options objectForKey:@"playAudioWhenScreenIsLocked"];
@@ -539,6 +598,41 @@
     NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);\n%@", @"cordova.require('org.apache.cordova.media.Media').onStatus", mediaId, MEDIA_POSITION, position, [result toSuccessCallbackString:callbackId]];
     [self.commandDelegate evalJs:jsString];
 }
+
+- (void)setLockScreenInfo:(CDVInvokedUrlCommand*)command
+{
+    NSString* title = [command.arguments objectAtIndex:1];
+    NSString* album = [command.arguments objectAtIndex:2];
+    NSString* artist = [command.arguments objectAtIndex:3];
+    NSString* pathToCover = [command.arguments objectAtIndex:4];
+    NSString* md5 = [NSString md5String:pathToCover];
+    NSNumber* duration = [command.arguments objectAtIndex:5 withDefault:[NSNumber numberWithFloat:1.0]];
+    
+
+    if ([MPNowPlayingInfoCenter class])  {
+        /* we're on iOS 5, so set up the now playing center */
+        NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
+        [songInfo setObject:title forKey:MPMediaItemPropertyTitle];
+        [songInfo setObject:artist forKey:MPMediaItemPropertyArtist];
+        [songInfo setObject:album forKey:MPMediaItemPropertyAlbumTitle];
+        [songInfo setObject:duration forKey:MPMediaItemPropertyPlaybackDuration];
+      
+        NSFileManager *filemgr;
+        NSString *currentpath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
+        currentpath = [NSString stringWithFormat:@"%@/files/cright/%@.jpg", currentpath, md5];
+        
+        UIImage *albumArtImage = [UIImage imageWithContentsOfFile:currentpath];
+        if (albumArtImage == nil) {
+            // create from default image
+            albumArtImage = [UIImage imageNamed:@"icon"];
+        }
+        MPMediaItemArtwork* albumArt = [[MPMediaItemArtwork alloc] initWithImage:albumArtImage];
+        [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
+
+        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = songInfo;
+    }
+}
+
 
 - (void)startRecordingAudio:(CDVInvokedUrlCommand*)command
 {

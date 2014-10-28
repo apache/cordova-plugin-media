@@ -89,12 +89,14 @@ typedef NSUInteger CDVMediaMsg;
 @property (nonatomic, strong) NSMutableDictionary* soundCache;
 @property (nonatomic, strong) AVAudioSession* avSession;
 
+- (void)handleRemoteControlEvents:(NSNotification *)notification;
 - (void)startPlayingAudio:(CDVInvokedUrlCommand*)command;
 - (void)pausePlayingAudio:(CDVInvokedUrlCommand*)command;
 - (void)stopPlayingAudio:(CDVInvokedUrlCommand*)command;
 - (void)seekToAudio:(CDVInvokedUrlCommand*)command;
 - (void)release:(CDVInvokedUrlCommand*)command;
 - (void)getCurrentPositionAudio:(CDVInvokedUrlCommand*)command;
+- (void)setLockScreenInfo:(CDVInvokedUrlCommand*)command;
 
 - (BOOL)hasAudioSession;
 
