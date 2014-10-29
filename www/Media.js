@@ -1,4 +1,3 @@
-cordova.define("org.apache.cordova.media.Media", function(require, exports, module) { /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -219,5 +218,3 @@ Media.prototype.remoteControlPressed = function(remoteControl) {
                
 
 module.exports = Media;
-    
-});
