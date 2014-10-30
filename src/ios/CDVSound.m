@@ -524,10 +524,22 @@
             [audioFile.player stop];
             audioFile.player.currentTime = 0;
             jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);\n%@(\"%@\",%d,%d);", @"cordova.require('org.apache.cordova.media.Media').onStatus", mediaId, MEDIA_POSITION, 0.0, @"cordova.require('org.apache.cordova.media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_STOPPED];
+            
+            MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
+            NSMutableDictionary *playingInfo = [NSMutableDictionary dictionaryWithDictionary:center.nowPlayingInfo];
+            [playingInfo setObject:[NSNumber numberWithFloat:0] forKey:MPNowPlayingInfoPropertyPlaybackRate];
+            center.nowPlayingInfo = playingInfo;
             // NSLog(@"seekToEndJsString=%@",jsString);
         } else {
             audioFile.player.currentTime = posInSeconds;
             jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%f);", @"cordova.require('org.apache.cordova.media.Media').onStatus", mediaId, MEDIA_POSITION, posInSeconds];
+            
+            // update info on the lock screen
+            MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
+            NSMutableDictionary *playingInfo = [NSMutableDictionary dictionaryWithDictionary:center.nowPlayingInfo];
+            [playingInfo setObject:[NSNumber numberWithFloat:audioFile.player.currentTime] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+            center.nowPlayingInfo = playingInfo;
+            
             // NSLog(@"seekJsString=%@",jsString);
         }
 
@@ -591,7 +603,6 @@
         [songInfo setObject:artist forKey:MPMediaItemPropertyArtist];
         [songInfo setObject:album forKey:MPMediaItemPropertyAlbumTitle];
         [songInfo setObject:duration forKey:MPMediaItemPropertyPlaybackDuration];
-        
       
         NSString *currentpath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
         currentpath = [NSString stringWithFormat:@"%@/files/%@", currentpath, pathToCover];
