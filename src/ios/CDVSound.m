@@ -25,38 +25,11 @@
 #import <MediaPlayer/MPMediaItem.h>
 #import <AVFoundation/AVFoundation.h>
 
-// нужно подключить CommonDigest.h
-#import <CommonCrypto/CommonDigest.h>
-
-// и можно определить категорию на NSString
-
-
-
-// использование
-
 #define DOCUMENTS_SCHEME_PREFIX @"documents://"
 #define HTTP_SCHEME_PREFIX @"http://"
 #define HTTPS_SCHEME_PREFIX @"https://"
 #define CDVFILE_PREFIX @"cdvfile://"
 #define RECORDING_WAV @"wav"
-
-@interface NSString (MD5_Hash)
-+ (NSString *) md5String:(NSString*)concat;
-@end
-
-@implementation NSString (MD5_Hash)
-
-+ (NSString *) md5String:(NSString*)concat {
-    const char *concat_str = [concat UTF8String];
-    unsigned char result[CC_MD5_DIGEST_LENGTH];
-    CC_MD5(concat_str, strlen(concat_str), result);
-    NSMutableString *hash = [NSMutableString string];
-    for (int i = 0; i < 16; i++)
-        [hash appendFormat:@"%02X", result[i]];
-    return [hash lowercaseString];
-}
-
-@end
 
 @implementation CDVSound
 
@@ -298,6 +271,24 @@
 
 - (void)create:(CDVInvokedUrlCommand*)command
 {
+    // this code necessary for queue playing in background mode
+    if (!isBeginReceiveRemoteControlsSet) {
+        [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+        isBeginReceiveRemoteControlsSet = TRUE;
+    }
+    
+    if ([self hasAudioSession]) {
+        NSError* __autoreleasing err = nil;
+        BOOL bPlayAudioWhenScreenIsLocked = YES;
+        
+        NSString* sessionCategory = bPlayAudioWhenScreenIsLocked ? AVAudioSessionCategoryPlayback : AVAudioSessionCategorySoloAmbient;
+        [self.avSession setCategory:sessionCategory error:&err];
+        if (![self.avSession setActive:YES error:&err]) {
+            // other audio with higher priority that does not allow mixing could cause this to fail
+            NSLog(@"Unable to play audio: %@", [err localizedFailureReason]);
+        }
+    }
+    
     NSString *notificationName = @"MP_CONTROL_EVENTS";
     
     [[NSNotificationCenter defaultCenter]
@@ -347,12 +338,6 @@
 
 - (void)startPlayingAudio:(CDVInvokedUrlCommand*)command
 {
-    // this code necessary for queue playing in background mode
-    if (!isBeginReceiveRemoteControlsSet) {
-        [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
-        isBeginReceiveRemoteControlsSet = TRUE;
-    }
-    
     NSString* callbackId = command.callbackId;
 
 #pragma unused(callbackId)
@@ -362,6 +347,27 @@
 
     BOOL bError = NO;
     NSString* jsString = nil;
+    if ([self hasAudioSession]) {
+        NSError* __autoreleasing err = nil;
+        NSNumber* playAudioWhenScreenIsLocked = [options objectForKey:@"playAudioWhenScreenIsLocked"];
+        BOOL bPlayAudioWhenScreenIsLocked = YES;
+        if (playAudioWhenScreenIsLocked != nil) {
+            bPlayAudioWhenScreenIsLocked = [playAudioWhenScreenIsLocked boolValue];
+        }
+        
+        NSString* sessionCategory = bPlayAudioWhenScreenIsLocked ? AVAudioSessionCategoryPlayback : AVAudioSessionCategorySoloAmbient;
+        [self.avSession setCategory:sessionCategory error:&err];
+        if (![self.avSession setActive:YES error:&err]) {
+            // other audio with higher priority that does not allow mixing could cause this to fail
+            NSLog(@"Unable to play audio: %@", [err localizedFailureReason]);
+            bError = YES;
+        }
+    }
+    NSNumber* loopOption = [options objectForKey:@"numberOfLoops"];
+    NSInteger numberOfLoops = 0;
+    if (loopOption != nil) {
+        numberOfLoops = [loopOption intValue] - 1;
+    }
 
     CDVAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:YES forRecording:NO];
     if ((audioFile != nil) && (audioFile.resourceURL != nil)) {
@@ -373,30 +379,9 @@
             // audioFile.player != nil  or player was successfully created
             // get the audioSession and set the category to allow Playing when device is locked or ring/silent switch engaged
             
-            if ([self hasAudioSession]) {
-                NSError* __autoreleasing err = nil;
-                NSNumber* playAudioWhenScreenIsLocked = [options objectForKey:@"playAudioWhenScreenIsLocked"];
-                BOOL bPlayAudioWhenScreenIsLocked = YES;
-                if (playAudioWhenScreenIsLocked != nil) {
-                    bPlayAudioWhenScreenIsLocked = [playAudioWhenScreenIsLocked boolValue];
-                }
-
-                NSString* sessionCategory = bPlayAudioWhenScreenIsLocked ? AVAudioSessionCategoryPlayback : AVAudioSessionCategorySoloAmbient;
-                [self.avSession setCategory:sessionCategory error:&err];
-                if (![self.avSession setActive:YES error:&err]) {
-                    // other audio with higher priority that does not allow mixing could cause this to fail
-                    NSLog(@"Unable to play audio: %@", [err localizedFailureReason]);
-                    bError = YES;
-                }
-            }
             if (!bError) {
                 NSLog(@"Playing audio sample '%@'", audioFile.resourcePath);
-                NSNumber* loopOption = [options objectForKey:@"numberOfLoops"];
-                NSInteger numberOfLoops = 0;
-                if (loopOption != nil) {
-                    numberOfLoops = [loopOption intValue] - 1;
-                }
-                audioFile.player.numberOfLoops = numberOfLoops;
+                                audioFile.player.numberOfLoops = numberOfLoops;
                 if (audioFile.player.isPlaying) {
                     [audioFile.player stop];
                     audioFile.player.currentTime = 0;
@@ -412,7 +397,7 @@
             }
         }
         if (bError) {
-            /*  I don't see a problem playing previously recorded audio so removing this section - BG
+            /*  I don't see a problem playing previously recorded audio so removing this section - BG */
             NSError* error;
             // try loading it one more time, in case the file was recorded previously
             audioFile.player = [[ AVAudioPlayer alloc ] initWithContentsOfURL:audioFile.resourceURL error:&error];
@@ -423,7 +408,7 @@
                 NSLog(@"Playing audio sample '%@'", audioFile.resourcePath);
                 audioFile.player.numberOfLoops = numberOfLoops;
                 [audioFile.player play];
-            } */
+            }
             // error creating the session or player
             // jsString = [NSString stringWithFormat: @"%@(\"%@\",%d,%d);", @"cordova.require('org.apache.cordova.media.Media').onStatus", mediaId, MEDIA_ERROR,  MEDIA_ERR_NONE_SUPPORTED];
             jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('org.apache.cordova.media.Media').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_NONE_SUPPORTED message:nil]];
