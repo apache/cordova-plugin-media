@@ -376,7 +376,7 @@
                 if (avPlayer) {
                     CMTime time = [avPlayer currentTime];
                     position = CMTimeGetSeconds(time);
-
+                    
                     [avPlayer play];
 
                 } else {
@@ -393,10 +393,8 @@
                     if (audioFile.volume != nil) {
                         audioFile.player.volume = [audioFile.volume floatValue];
                     }
-                    
                     [audioFile.player play];
                     position = round(audioFile.player.duration * 1000) / 1000;
-                    
                 }
                 jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);\n%@(\"%@\",%d,%d);", @"cordova.require('org.apache.cordova.media.Media').onStatus", mediaId, MEDIA_DURATION, position, @"cordova.require('org.apache.cordova.media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_RUNNING];
                 [self.commandDelegate evalJs:jsString];
@@ -542,6 +540,7 @@
                 [audioFile.player stop];
                 audioFile.player.currentTime = 0;
                 jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);\n%@(\"%@\",%d,%d);", @"cordova.require('org.apache.cordova.media.Media').onStatus", mediaId, MEDIA_POSITION, 0.0, @"cordova.require('org.apache.cordova.media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_STOPPED];
+                
                 // NSLog(@"seekToEndJsString=%@",jsString);
             } else {
                 audioFile.player.currentTime = posInSeconds;
@@ -552,15 +551,22 @@
         } else if (avPlayer != nil) {
             int32_t timeScale = avPlayer.currentItem.asset.duration.timescale;
             CMTime timeToSeek = CMTimeMakeWithSeconds(posInSeconds, timeScale);
+            // update info on the lock screen
+            
+           
+
             
             [avPlayer seekToTime: timeToSeek
                          toleranceBefore: kCMTimeZero
                           toleranceAfter: kCMTimeZero
                        completionHandler: ^(BOOL finished) {
-                           [avPlayer play];
+//                           [avPlayer play];
                        }];
         }
-        
+        MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
+        NSMutableDictionary *playingInfo = [NSMutableDictionary dictionaryWithDictionary:center.nowPlayingInfo];
+        [playingInfo setObject:[NSNumber numberWithFloat:posInSeconds] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+        center.nowPlayingInfo = playingInfo;
         
         
         [self.commandDelegate evalJs:jsString];
