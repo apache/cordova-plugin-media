@@ -378,7 +378,6 @@
                     position = CMTimeGetSeconds(time);
                     
                     [avPlayer play];
-
                 } else {
                     NSNumber* loopOption = [options objectForKey:@"numberOfLoops"];
                     NSInteger numberOfLoops = 0;
@@ -394,8 +393,10 @@
                         audioFile.player.volume = [audioFile.volume floatValue];
                     }
                     [audioFile.player play];
-                    position = round(audioFile.player.duration * 1000) / 1000;
+                    position = audioFile.player.currentTime;
                 }
+                
+                position = round(position * 1000) / 1000;
                 MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
                 NSMutableDictionary *playingInfo = [NSMutableDictionary dictionaryWithDictionary:center.nowPlayingInfo];
                 [playingInfo setObject:[NSNumber numberWithFloat:position] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
