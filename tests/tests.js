@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -169,7 +169,9 @@ exports.defineAutoTests = function () {
                 badMedia = new Media(fileName, succeed.bind(null, done, ' badMedia = new Media , Unexpected succees callback, it should not create Media object with invalid file name'), function (result) {
                         expect(result).toBeDefined();
                         expect(result.code).toBe(MediaError.MEDIA_ERR_ABORTED);
-                        badMedia.release();
+                        if (badMedia !== null) {
+                            badMedia.release();
+                        }
                         done();
                     });
                 badMedia.play();
@@ -196,7 +198,7 @@ exports.defineAutoTests = function () {
                         }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position'));
                     }, 1000);
                 }
-            };
+            },
             media1 = new Media(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile), statusChange);
             media1.play();
         });
