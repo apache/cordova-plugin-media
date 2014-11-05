@@ -396,6 +396,10 @@
                     [audioFile.player play];
                     position = round(audioFile.player.duration * 1000) / 1000;
                 }
+                MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
+                NSMutableDictionary *playingInfo = [NSMutableDictionary dictionaryWithDictionary:center.nowPlayingInfo];
+                [playingInfo setObject:[NSNumber numberWithFloat:position] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+                center.nowPlayingInfo = playingInfo;
                 jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);\n%@(\"%@\",%d,%d);", @"cordova.require('org.apache.cordova.media.Media').onStatus", mediaId, MEDIA_DURATION, position, @"cordova.require('org.apache.cordova.media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_RUNNING];
                 [self.commandDelegate evalJs:jsString];
             }
@@ -554,13 +558,13 @@
             // update info on the lock screen
             
            
-
+            BOOL isPlaying = (avPlayer.rate > 0 && !avPlayer.error);
             
             [avPlayer seekToTime: timeToSeek
                          toleranceBefore: kCMTimeZero
                           toleranceAfter: kCMTimeZero
                        completionHandler: ^(BOOL finished) {
-//                           [avPlayer play];
+                           if (isPlaying) [avPlayer play];
                        }];
         }
         MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
