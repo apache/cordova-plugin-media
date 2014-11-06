@@ -26,6 +26,15 @@ specification for media capture, and is provided for convenience only.
 A future implementation will adhere to the latest W3C specification
 and may deprecate the current APIs.
 
+This plugin defines a global `Media` Constructor.
+
+Although in the global scope, it is not available until after the `deviceready` event.
+
+    document.addEventListener("deviceready", onDeviceReady, false);
+    function onDeviceReady() {
+        console.log(Media);
+    }
+
 ## Installation
 
     cordova plugin add org.apache.cordova.media
