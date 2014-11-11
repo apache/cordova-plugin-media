@@ -291,7 +291,16 @@
     } else {
         NSURL* resourceUrl = [[NSURL alloc] initWithString:resourcePath];
         if (![resourceUrl isFileURL]) {
-            avPlayer = [[AVPlayer alloc] initWithURL:resourceUrl];
+            // First create an AVPlayerItem
+            AVPlayerItem* playerItem = [AVPlayerItem playerItemWithURL:resourceUrl];
+
+            // Subscribe to the AVPlayerItem's DidPlayToEndTime notification.
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:playerItem];
+
+            // Pass the AVPlayerItem to a new player
+            avPlayer = [[AVPlayer alloc] initWithPlayerItem:playerItem];
+
+            //avPlayer = [[AVPlayer alloc] initWithURL:resourceUrl];
         }
 
 
@@ -301,6 +310,7 @@
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }
 }
+
 
 - (void)setVolume:(CDVInvokedUrlCommand*)command
 {
@@ -819,6 +829,17 @@
     }
     [self.commandDelegate evalJs:jsString];
 }
+
+
+
+-(void)itemDidFinishPlaying:(NSNotification *) notification {
+    // Will be called when AVPlayer finishes playing playerItem
+    NSString* mediaId = self.currMediaId;
+    NSString* jsString = nil;
+    jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('org.apache.cordova.media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_STOPPED];
+    [self.commandDelegate evalJs:jsString];
+}
+
 
 - (void)onMemoryWarning
 {
