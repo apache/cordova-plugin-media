@@ -89,10 +89,13 @@ Media.prototype.stop = function() {
 /**
  * Seek or jump to a new time in the track..
  */
-Media.prototype.seekTo = function(milliseconds) {
+Media.prototype.seekTo = function(milliseconds, seekCompleteCallback) {
     var me = this;
     exec(function(p) {
         me._position = p;
+        if ( seekCompleteCallback ) {
+            seekCompleteCallback( me._position );
+        }
     }, this.errorCallback, "Media", "seekToAudio", [this.id, milliseconds]);
 };
 

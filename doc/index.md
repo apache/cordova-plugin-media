@@ -281,11 +281,12 @@ function for any `Media` resource that is no longer needed.
 
 Sets the current position within an audio file.
 
-    media.seekTo(milliseconds);
+    media.seekTo(milliseconds, seekCompleteCallback);
 
 ### Parameters
 
 - __milliseconds__: The position to set the playback position within the audio, in milliseconds.
+- __seekCompleteCallback__:  (Optional) The callback that executes after the `Media` object has completed the seek action. _(Function)_
 
 
 ### Quick Example
