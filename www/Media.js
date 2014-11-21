@@ -36,8 +36,9 @@ var mediaObjects = {};
  *                                  errorCallback(int errorCode) - OPTIONAL
  * @param statusCallback        The callback to be called when media status has changed.
  *                                  statusCallback(int statusCode) - OPTIONAL
+ * @param httpHeaders			Additional httpHeader to send, as JSON object
  */
-var Media = function(src, successCallback, errorCallback, statusCallback) {
+var Media = function(src, successCallback, errorCallback, statusCallback, httpHeaders) {
     argscheck.checkArgs('SFFF', 'Media', arguments);
     this.id = utils.createUUID();
     mediaObjects[this.id] = this;
@@ -47,7 +48,8 @@ var Media = function(src, successCallback, errorCallback, statusCallback) {
     this.statusCallback = statusCallback;
     this._duration = -1;
     this._position = -1;
-    exec(null, this.errorCallback, "Media", "create", [this.id, this.src]);
+    this.httpHeaders = httpHeaders;
+    exec(null, this.errorCallback, "Media", "create", [this.id, this.src, httpHeaders]);
 };
 
 // Media messages
@@ -73,7 +75,7 @@ Media.get = function(id) {
  * Start or resume playing audio file.
  */
 Media.prototype.play = function(options) {
-    exec(null, null, "Media", "startPlayingAudio", [this.id, this.src, options]);
+    exec(null, null, "Media", "startPlayingAudio", [this.id, this.src, options, this.httpHeaders]);
 };
 
 /**

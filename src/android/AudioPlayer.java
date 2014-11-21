@@ -18,18 +18,26 @@
 */
 package org.apache.cordova.media;
 
+import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
+
+import org.json.JSONObject;
+import org.json.JSONException;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * This class implements the audio playback and recording capabilities used by Cordova.
@@ -83,19 +91,23 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     private MediaPlayer player = null;      // Audio player object
     private boolean prepareOnly = true;     // playback after file prepare flag
     private int seekOnPrepared = 0;     // seek to this location once media is prepared
-
+	private Map<String, String> httpHeaders; // additional http headers to send
+	private Context context = null;
+	
     /**
      * Constructor.
      *
      * @param handler           The audio handler object
      * @param id                The id of this audio player
      */
-    public AudioPlayer(AudioHandler handler, String id, String file) {
+    public AudioPlayer(AudioHandler handler, String id, String file, JSONObject passedHttpHeaders, Context context) {
         this.handler = handler;
         this.id = id;
         this.audioFile = file;
         this.recorder = new MediaRecorder();
-
+        this.context = context;       	
+   		this.httpHeaders = mapHttpHeaders(passedHttpHeaders);
+	        
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             this.tempFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmprecording.3gp";
         } else {
@@ -103,6 +115,25 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         }
 
     }
+
+	private Map<String,String> mapHttpHeaders(JSONObject passedHttpHeaders) {
+		Map<String, String> httpHeaders = null;
+		if(passedHttpHeaders != null)
+       	{
+       		httpHeaders = new HashMap();
+       		String headerName;
+			for (Iterator<String> iter = passedHttpHeaders.keys(); iter.hasNext(); ) {
+				headerName = iter.next();
+				try {
+					httpHeaders.put(headerName, passedHttpHeaders.getString(headerName));
+				}
+				catch(JSONException exception){
+					Log.d(LOG_TAG, "Exception in mapping httpHeaders: " + exception.toString());
+				}
+			}
+		}
+		return httpHeaders;
+	}
 
     /**
      * Destroy player and stop audio playing or recording.
@@ -519,7 +550,13 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      */
     private void loadAudioFile(String file) throws IllegalArgumentException, SecurityException, IllegalStateException, IOException {
         if (this.isStreaming(file)) {
-            this.player.setDataSource(file);
+        	if(this.httpHeaders != null) {
+        		Uri uri = Uri.parse(file);
+        		this.player.setDataSource(this.context, uri, this.httpHeaders);
+        	}
+        	else {
+            	this.player.setDataSource(file);
+            }
             this.player.setAudioStreamType(AudioManager.STREAM_MUSIC);
             //if it's a streaming file, play mode is implied
             this.setMode(MODE.PLAY);
