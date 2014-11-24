@@ -391,8 +391,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         this.player.release();
 
         // Send error notification to JavaScript
-        this.handler.webView.sendJavascript("cordova.require('org.apache.cordova.media.Media').onStatus('" + this.id + "', { \"code\":" + arg1 + "});");
-        return false;
+        this.handler.webView.sendJavascript("cordova.require('org.apache.cordova.media.Media').onStatus('" + this.id + "', "+MEDIA_ERROR+", { \"code\":"+MEDIA_ERR_ABORTED+"});");
+		return false;
     }
 
     /**
@@ -525,6 +525,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             this.setMode(MODE.PLAY);
             this.setState(STATE.MEDIA_STARTING);
             this.player.setOnPreparedListener(this);
+			this.player.setOnErrorListener(this);
             this.player.prepareAsync();
         }
         else {
@@ -546,6 +547,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             }
                 this.setState(STATE.MEDIA_STARTING);
                 this.player.setOnPreparedListener(this);
+				this.player.setOnErrorListener(this);
                 this.player.prepare();
 
                 // Get duration
