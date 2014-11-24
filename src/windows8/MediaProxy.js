@@ -28,6 +28,18 @@ var MediaError = require('org.apache.cordova.media.MediaError');
 
 var recordedFile;
 
+var URI_Schema = [
+    {re:new RegExp('^ms-appdata://(localhost|)/local'),
+        path:Windows.Storage.ApplicationData.current.localFolder.path},
+    {re:new RegExp('^cdvfile://localhost/persistent'),
+        path:Windows.Storage.ApplicationData.current.localFolder.path},
+    {re:new RegExp('^ms-appdata://(localhost|)/temp'),
+        path:Windows.Storage.ApplicationData.current.temporaryFolder.path},
+    {re:new RegExp('^cdvfile://(localhost|)/temporary'),
+        path:Windows.Storage.ApplicationData.current.temporaryFolder.path},
+    {re:new RegExp('^file://(localhost|)/'), path:''}
+];
+
 module.exports = {
     mediaCaptureMrg:null,
 
@@ -60,7 +72,8 @@ module.exports = {
                 getDuration();
             }
             else {
-                lose && lose({code:MediaError.MEDIA_ERR_ABORTED});
+                if (lose)
+                    lose({code:MediaError.MEDIA_ERR_ABORTED});
             }
         }
     },
@@ -170,7 +183,14 @@ module.exports = {
                         lose("Invalid file type for record");
                         break;
                 }
-                thisM.mediaCaptureMgr.startRecordToStorageFileAsync(encodingProfile, newFile).done(win, lose);
+                thisM.mediaCaptureMgr.startRecordToStorageFileAsync(encodingProfile, newFile)
+                .done(
+                    function() {
+                        Media.onStatus(id, Media.MEDIA_STATE, Media.MEDIA_RUNNING);
+                        win();
+                    }, 
+                    lose
+                );
             }, lose);
         }, lose);
     },
@@ -179,19 +199,27 @@ module.exports = {
     stopRecordingAudio:function(win, lose, args) {
         var id = args[0];
         var thisM = Media.get(id);
-
-        var normalizedSrc = thisM.src.replace(/\//g, '\\');
-        var destPath = normalizedSrc.substr(0, normalizedSrc.lastIndexOf('\\'));
-        var destFileName = normalizedSrc.replace(destPath + '\\', '');
-
+        function done(cb,arg) {
+            Media.onStatus(id, Media.MEDIA_STATE, Media.MEDIA_STOPPED);
+            cb(arg);
+        }
         thisM.mediaCaptureMgr.stopRecordAsync().done(function () {
-            if (destPath) {
-                Windows.Storage.StorageFolder.getFolderFromPathAsync(destPath).done(function(destFolder) {
-                    recordedFile.copyAsync(destFolder, destFileName, Windows.Storage.CreationCollisionOption.replaceExisting).done(win, lose);
-                }, lose);
+            var fname = thisM.src.replace(/^.*[\\\/]([^\\\/]+)$/,'$1');
+            var path = thisM.src.substr(0,thisM.src.lastIndexOf(fname));
+            URI_Schema.every(function(s) {
+                if (!s.re.test(path))
+                    return true;
+                path=decodeURIComponent(path.replace(s.re,s.path));
+            });
+            path = path.replace(/\//g, '\\');
+            if (path && recordedFile.path != path+fname) {
+                Windows.Storage.StorageFolder.getFolderFromPathAsync(path).done(function(destFolder) {
+                    recordedFile.copyAsync(destFolder, fname, Windows.Storage.CreationCollisionOption.replaceExisting)
+                    .done(function(){done(win);}, function(err){done(lose,err);});
+                }, function(err){done(lose,err);});
             } else {
                 // if path is not defined, we leave recorded file in temporary folder (similar to iOS)
-                win();
+                done(win);
             }
         }, lose);
     },
@@ -202,6 +230,10 @@ module.exports = {
         var thisM = Media.get(id);
         try {
             delete thisM.node;
+            if (thisM.mediaCaptureMgr) {
+                thisM.mediaCaptureMgr.close();
+                delete thisM.mediaCaptureMgr;
+            }
         } catch (err) {
             lose("Failed to release: "+err);
         }
