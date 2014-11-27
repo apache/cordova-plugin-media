@@ -143,6 +143,9 @@ public class AudioHandler extends CordovaPlugin {
      * Stop all audio players and recorders.
      */
     public void onDestroy() {
+        if (!players.isEmpty()) {
+            onLastPlayerReleased();
+        }
         for (AudioPlayer audio : this.players.values()) {
             audio.destroy();
         }
