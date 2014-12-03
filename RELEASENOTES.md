@@ -96,3 +96,10 @@
 * CB-7454 Adds support for m4a audio format for Windows
 * CB-7547 Fixes audio recording on windows platform
 * CB-7531 Fixes play() failure after release() call
+
+### 0.2.15 (Dec 02, 2014)
+* CB-6153 **Android**: Add docs for volume control behaviour, and fix controls not being reset on page navigation
+* CB-6153 **Android**: Make volume buttons control music stream while any audio players are created
+* CB-7977 Mention `deviceready` in plugin docs
+* CB-7945 Made media.spec.15 and media.spec.16 auto tests green
+* CB-7700 cordova-plugin-media documentation translation: cordova-plugin-media
