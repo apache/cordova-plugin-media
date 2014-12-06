@@ -249,6 +249,13 @@ Starts or resumes playing an audio file.
         var myMedia = new Media("http://audio.ibeat.org/content/p1rj1s/p1rj1s_-_rockGuitar.mp3")
         myMedia.play({ playAudioWhenScreenIsLocked : false })
 
+- __ambient__: Pass in this option to the `play` method to specify that
+  this sound can be played at the same time as other sounds, or other
+  music apps, e.g:
+
+        var myMedia = new Media("http://audio.ibeat.org/content/p1rj1s/p1rj1s_-_rockGuitar.mp3")
+        myMedia.play({ ambient : true })
+
 - __order of file search__: When only a file name or simple path is
   provided, iOS searches in the `www` directory for the file, then in
   the application's `documents/tmp` directory:
