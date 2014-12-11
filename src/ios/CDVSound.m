@@ -32,46 +32,6 @@
 
 @synthesize soundCache, avSession;
 
-- (NSURL*)urlForResource:(NSString*)resourcePath
-{
-    NSURL* resourceURL = nil;
-    NSString* filePath = nil;
-
-    // first try to find HTTP:// or Documents:// resources
-
-    if ([resourcePath hasPrefix:HTTP_SCHEME_PREFIX] || [resourcePath hasPrefix:HTTPS_SCHEME_PREFIX]) {
-        // if it is a http url, use it
-        NSLog(@"Will use resource '%@' from the Internet.", resourcePath);
-        resourceURL = [NSURL URLWithString:resourcePath];
-    } else if ([resourcePath hasPrefix:DOCUMENTS_SCHEME_PREFIX]) {
-        NSString* docsPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
-        filePath = [resourcePath stringByReplacingOccurrencesOfString:DOCUMENTS_SCHEME_PREFIX withString:[NSString stringWithFormat:@"%@/", docsPath]];
-        NSLog(@"Will use resource '%@' from the documents folder with path = %@", resourcePath, filePath);
-    } else {
-        // attempt to find file path in www directory
-        filePath = [self.commandDelegate pathForResource:resourcePath];
-        if (filePath != nil) {
-            NSLog(@"Found resource '%@' in the web folder.", filePath);
-        } else {
-            filePath = resourcePath;
-            NSLog(@"Will attempt to use file resource '%@'", filePath);
-        }
-    }
-    // check that file exists for all but HTTP_SHEME_PREFIX
-    if (filePath != nil) {
-        // try to access file
-        NSFileManager* fMgr = [[NSFileManager alloc] init];
-        if (![fMgr fileExistsAtPath:filePath]) {
-            resourceURL = nil;
-            NSLog(@"Unknown resource '%@'", resourcePath);
-        } else {
-            // it's a valid file url, use it
-            resourceURL = [NSURL fileURLWithPath:filePath];
-        }
-    }
-    return resourceURL;
-}
-
 // Maps a url for a resource path for recording
 - (NSURL*)urlForRecording:(NSString*)resourcePath
 {
@@ -170,12 +130,6 @@
     }
 
     return resourceURL;
-}
-
-- (CDVAudioFile*)audioFileForResource:(NSString*)resourcePath withId:(NSString*)mediaId
-{
-    // will maintain backwards compatibility with original implementation
-    return [self audioFileForResource:resourcePath withId:mediaId doValidation:YES forRecording:NO];
 }
 
 // Creates or gets the cached audio file resource object
