@@ -153,6 +153,14 @@ Media.prototype.setVolume = function(volume) {
 };
 
 /**
+ * Adjust the playback rate.
+ */
+Media.prototype.setRate = function(rate) {
+    exec(null, null, "Media", "setRate", [this.id, rate]);
+};
+
+
+/**
  * Audio has status update.
  * PRIVATE
  *
