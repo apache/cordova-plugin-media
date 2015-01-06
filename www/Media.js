@@ -149,7 +149,11 @@ Media.prototype.release = function() {
  * Adjust the volume.
  */
 Media.prototype.setVolume = function(volume) {
-    exec(null, null, "Media", "setVolume", [this.id, volume]);
+    if (device.platform == 'iOS'){
+        exec(null, null, "Media", "setVolume", [this.id, volume]);
+    } else {
+        console.warn('media.setRate method is currently not supported for', device.platform, 'platform.')
+    }
 };
 
 /**
