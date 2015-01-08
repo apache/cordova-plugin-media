@@ -25,12 +25,15 @@ import org.apache.cordova.CordovaResourceApi;
 import android.content.Context;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.util.Log;
 
 import java.util.ArrayList;
 
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 
 /**
@@ -50,6 +53,7 @@ public class AudioHandler extends CordovaPlugin {
     HashMap<String, AudioPlayer> players;	// Audio player object
     ArrayList<AudioPlayer> pausedForPhone;     // Audio players that were paused when phone call came in
     private int origVolumeStream = -1;
+    private CallbackContext messageChannel;
 
     /**
      * Constructor.
@@ -128,6 +132,10 @@ public class AudioHandler extends CordovaPlugin {
         else if (action.equals("release")) {
             boolean b = this.release(args.getString(0));
             callbackContext.sendPluginResult(new PluginResult(status, b));
+            return true;
+        }
+        else if (action.equals("messageChannel")) {
+            messageChannel = callbackContext;
             return true;
         }
         else { // Unrecognized action.
@@ -379,6 +387,24 @@ public class AudioHandler extends CordovaPlugin {
         if (origVolumeStream != -1) {
             cordova.getActivity().setVolumeControlStream(origVolumeStream);
             origVolumeStream = -1;
+        }
+    }
+
+    void sendEventMessage(String action, JSONObject actionData) {
+        JSONObject message = new JSONObject();
+        try {
+            message.put("action", action);
+            if (actionData != null) {
+                message.put(action, actionData);
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "Failed to create event message", e);
+        }
+
+        PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, message);
+        pluginResult.setKeepCallback(true);
+        if (messageChannel != null) {
+            messageChannel.sendPluginResult(pluginResult);
         }
     }
 }

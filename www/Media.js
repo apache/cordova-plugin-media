@@ -193,3 +193,24 @@ Media.onStatus = function(id, msgType, value) {
 };
 
 module.exports = Media;
+
+function onMessageFromNative(msg) {
+    if (msg.action == 'status') {
+        Media.onStatus(msg.status.id, msg.status.msgType, msg.status.value);
+    } else {
+        throw new Error('Unknown media action' + msg.action);
+    }
+}
+
+if (cordova.platformId === 'android' || cordova.platformId === 'amazon-fireos') {
+
+    var channel = require('cordova/channel');
+
+    channel.createSticky('onMediaPluginReady');
+    channel.waitForInitialization('onMediaPluginReady');
+
+    channel.onCordovaReady.subscribe(function() {
+        exec(onMessageFromNative, undefined, 'Media', 'messageChannel', []);
+        channel.initializationComplete('onMediaPluginReady');
+    });
+}
