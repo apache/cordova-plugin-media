@@ -7,9 +7,9 @@
 # to you under the Apache License, Version 2.0 (the
 # "License"); you may not use this file except in compliance
 # with the License.  You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing,
 # software distributed under the License is distributed on an
 # "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -44,7 +44,7 @@
 * CB-5128: add repo + issue tag to plugin.xml for media plugin
 * [CB-5010] Incremented plugin version on dev branch.
 
- 
+
 ### 0.2.6 (Dec 4, 2013)
 * [ubuntu] specify policy_group
 * add ubuntu platform
@@ -103,3 +103,7 @@
 * CB-7977 Mention `deviceready` in plugin docs
 * CB-7945 Made media.spec.15 and media.spec.16 auto tests green
 * CB-7700 cordova-plugin-media documentation translation: cordova-plugin-media
+
+### 0.2.16 (Jan 08, 2015)
+* CB-8252 **Android/Amazon**: Use message channel/PluginResult to send events from native -> Javascript. Removes all use of inline javascript/eval()s
+
