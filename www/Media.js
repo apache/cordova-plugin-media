@@ -149,18 +149,18 @@ Media.prototype.release = function() {
  * Adjust the volume.
  */
 Media.prototype.setVolume = function(volume) {
-    if (device.platform == 'iOS'){
-        exec(null, null, "Media", "setVolume", [this.id, volume]);
-    } else {
-        console.warn('media.setRate method is currently not supported for', device.platform, 'platform.')
-    }
+    exec(null, null, "Media", "setVolume", [this.id, volume]);
 };
 
 /**
  * Adjust the playback rate.
  */
 Media.prototype.setRate = function(rate) {
-    exec(null, null, "Media", "setRate", [this.id, rate]);
+    if (cordova.platformId === 'ios'){
+        exec(null, null, "Media", "setRate", [this.id, rate]);
+    } else {
+        console.warn('media.setRate method is currently not supported for', cordova.platformId, 'platform.')
+    }
 };
 
 
