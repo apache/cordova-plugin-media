@@ -214,8 +214,8 @@
 
 - (void)create:(CDVInvokedUrlCommand*)command
 {
-    NSString* mediaId = [command.arguments objectAtIndex:0];
-    NSString* resourcePath = [command.arguments objectAtIndex:1];
+    NSString* mediaId = [command argumentAtIndex:0];
+    NSString* resourcePath = [command argumentAtIndex:1];
 
     CDVAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:NO forRecording:NO];
 
@@ -234,8 +234,8 @@
     NSString* callbackId = command.callbackId;
 
 #pragma unused(callbackId)
-    NSString* mediaId = [command.arguments objectAtIndex:0];
-    NSNumber* volume = [command.arguments objectAtIndex:1 withDefault:[NSNumber numberWithFloat:1.0]];
+    NSString* mediaId = [command argumentAtIndex:0];
+    NSNumber* volume = [command argumentAtIndex:1 withDefault:[NSNumber numberWithFloat:1.0]];
 
     if ([self soundCache] != nil) {
         CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
@@ -256,9 +256,9 @@
     NSString* callbackId = command.callbackId;
 
 #pragma unused(callbackId)
-    NSString* mediaId = [command.arguments objectAtIndex:0];
-    NSString* resourcePath = [command.arguments objectAtIndex:1];
-    NSDictionary* options = [command.arguments objectAtIndex:2 withDefault:nil];
+    NSString* mediaId = [command argumentAtIndex:0];
+    NSString* resourcePath = [command argumentAtIndex:1];
+    NSDictionary* options = [command argumentAtIndex:2 withDefault:nil];
 
     BOOL bError = NO;
     NSString* jsString = nil;
@@ -384,7 +384,7 @@
 
 - (void)stopPlayingAudio:(CDVInvokedUrlCommand*)command
 {
-    NSString* mediaId = [command.arguments objectAtIndex:0];
+    NSString* mediaId = [command argumentAtIndex:0];
     CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
     NSString* jsString = nil;
 
@@ -401,7 +401,7 @@
 
 - (void)pausePlayingAudio:(CDVInvokedUrlCommand*)command
 {
-    NSString* mediaId = [command.arguments objectAtIndex:0];
+    NSString* mediaId = [command argumentAtIndex:0];
     NSString* jsString = nil;
     CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
 
@@ -424,10 +424,10 @@
     // 1 = path to resource
     // 2 = seek to location in milliseconds
 
-    NSString* mediaId = [command.arguments objectAtIndex:0];
+    NSString* mediaId = [command argumentAtIndex:0];
 
     CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
-    double position = [[command.arguments objectAtIndex:1] doubleValue];
+    double position = [[command argumentAtIndex:1] doubleValue];
 
     if ((audioFile != nil) && (audioFile.player != nil)) {
         NSString* jsString;
@@ -450,7 +450,7 @@
 
 - (void)release:(CDVInvokedUrlCommand*)command
 {
-    NSString* mediaId = [command.arguments objectAtIndex:0];
+    NSString* mediaId = [command argumentAtIndex:0];
 
     if (mediaId != nil) {
         CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
@@ -474,7 +474,7 @@
 - (void)getCurrentPositionAudio:(CDVInvokedUrlCommand*)command
 {
     NSString* callbackId = command.callbackId;
-    NSString* mediaId = [command.arguments objectAtIndex:0];
+    NSString* mediaId = [command argumentAtIndex:0];
 
 #pragma unused(mediaId)
     CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
@@ -494,8 +494,8 @@
 
 #pragma unused(callbackId)
 
-    NSString* mediaId = [command.arguments objectAtIndex:0];
-    CDVAudioFile* audioFile = [self audioFileForResource:[command.arguments objectAtIndex:1] withId:mediaId doValidation:YES forRecording:YES];
+    NSString* mediaId = [command argumentAtIndex:0];
+    CDVAudioFile* audioFile = [self audioFileForResource:[command argumentAtIndex:1] withId:mediaId doValidation:YES forRecording:YES];
     __block NSString* jsString = nil;
     __block NSString* errorMsg = @"";
 
@@ -587,7 +587,7 @@
 
 - (void)stopRecordingAudio:(CDVInvokedUrlCommand*)command
 {
-    NSString* mediaId = [command.arguments objectAtIndex:0];
+    NSString* mediaId = [command argumentAtIndex:0];
 
     CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
     NSString* jsString = nil;
