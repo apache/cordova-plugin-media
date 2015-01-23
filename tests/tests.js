@@ -207,6 +207,7 @@ exports.defineAutoTests = function () {
             if (cordova.platformId === 'blackberry10') {
                 expect(true).toFailWithMessage('Platform does not supported this feature');
                 done();
+                return
             }
             var mediaFile = 'http://cordova.apache.org/downloads/BlueZedEx.mp3',
             mediaState = Media.MEDIA_STOPPED,
@@ -241,6 +242,7 @@ exports.defineAutoTests = function () {
             if (cordova.platformId !== 'ios') {
                 expect(true).toFailWithMessage('Platform does not supported this feature');
                 done();
+                return
             }
             var mediaFile = 'http://cordova.apache.org/downloads/BlueZedEx.mp3',
                 mediaState = Media.MEDIA_STOPPED,
