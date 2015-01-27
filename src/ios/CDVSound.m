@@ -20,7 +20,6 @@
 #import "CDVSound.h"
 #import "CDVFile.h"
 #import <Cordova/NSArray+Comparisons.h>
-#import <Cordova/CDVJSON.h>
 
 #define DOCUMENTS_SCHEME_PREFIX @"documents://"
 #define HTTP_SCHEME_PREFIX @"http://"
@@ -209,7 +208,9 @@
 
     [errorDict setObject:[NSNumber numberWithUnsignedInteger:code] forKey:@"code"];
     [errorDict setObject:message ? message:@"" forKey:@"message"];
-    return [errorDict JSONString];
+    
+    NSData* jsonData = [NSJSONSerialization dataWithJSONObject:errorDict options:0 error:nil];
+    return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 }
 
 - (void)create:(CDVInvokedUrlCommand*)command
@@ -484,8 +485,10 @@
         position = round(audioFile.player.currentTime * 1000) / 1000;
     }
     CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:position];
-    NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);\n%@", @"cordova.require('org.apache.cordova.media.Media').onStatus", mediaId, MEDIA_POSITION, position, [result toSuccessCallbackString:callbackId]];
+    
+    NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);", @"cordova.require('org.apache.cordova.media.Media').onStatus", mediaId, MEDIA_POSITION, position];
     [self.commandDelegate evalJs:jsString];
+    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
 }
 
 - (void)startRecordingAudio:(CDVInvokedUrlCommand*)command
