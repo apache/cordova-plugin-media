@@ -24,6 +24,7 @@ exports.defineAutoTests = function () {
         var info = typeof msg == 'undefined' ? 'Unexpected error callback' : msg;
         expect(true).toFailWithMessage(info + '\n' + JSON.stringify(error));
         done();
+        this.done = true;
     };
 
     var succeed = function (done, msg) {
@@ -179,6 +180,7 @@ exports.defineAutoTests = function () {
         });
 
         it("media.spec.16 position should be set properly", function (done) {
+            var self = this;
             var mediaFile = 'http://cordova.apache.org/downloads/BlueZedEx.mp3',
             mediaState = Media.MEDIA_STOPPED,
             successCallback,
@@ -194,16 +196,19 @@ exports.defineAutoTests = function () {
                             expect(position).toBeGreaterThan(0.0);
                             media1.stop();
                             media1.release();
-                            done();
-                        }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position'));
+                            if (!self.done) {
+                                done();
+                            }
+                        }, failed.bind(self, done, 'media1.getCurrentPosition - Error getting media current position'));
                     }, 1000);
                 }
             },
-            media1 = new Media(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile), statusChange);
+            media1 = new Media(mediaFile, successCallback, failed.bind(self, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile), statusChange);
             media1.play();
         });
 
         it("media.spec.17 duration should be set properly", function (done) {
+            var self = this;
             if (cordova.platformId === 'blackberry10') {
                 expect(true).toFailWithMessage('Platform does not supported this feature');
                 done();
@@ -222,11 +227,13 @@ exports.defineAutoTests = function () {
                         expect(media1.getDuration()).toBeGreaterThan(0.0);
                         media1.stop();
                         media1.release();
-                        done();
+                        if (!self.done) {
+                            done();
+                        }
                     }, 1000);
                 }
             },
-            media1 = new Media(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile), statusChange);
+            media1 = new Media(mediaFile, successCallback, failed.bind(self, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile), statusChange);
             media1.play();
         });
     });
@@ -572,9 +579,9 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         table.setAttribute("id", tableId);
         return table;
     }
-    
+
 //Audio && Record Elements
-    var elementsResultsAudio= 
+    var elementsResultsAudio=
     [{
             id : "statusTag",
             content : "Status:",
@@ -719,7 +726,7 @@ exports.defineManualTests = function (contentEl, createActionButton) {
             }
         }
     ];
-    
+
     //Title audio results
     var div = document.createElement('h2');
     div.appendChild(document.createTextNode('Audio'));
@@ -727,7 +734,7 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     contentEl.appendChild(div);
     //Generate and add results table
     contentEl.appendChild(generateTable('info', 3, 3, elementsResultsAudio));
-    
+
     //Title audio actions
     div = document.createElement('h2');
     div.appendChild(document.createTextNode('Actions'));
@@ -794,7 +801,7 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     div.setAttribute("style", "background:#B0C4DE;border:1px solid #FFA07A;margin:15px 6px 0px;min-width:295px;max-width:97%;padding:4px 0px 2px 10px;min-height:160px;max-height:200px;overflow:auto");
     div.appendChild(list);
     contentEl.appendChild(div);
-    
+
     //Title Record Audio
     div = document.createElement('h2');
     div.appendChild(document.createTextNode('Record Audio'));
