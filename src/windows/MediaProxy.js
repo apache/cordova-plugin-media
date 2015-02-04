@@ -60,9 +60,12 @@ module.exports = {
                 getDuration();
             }
             else {
-                lose && lose({code:MediaError.MEDIA_ERR_ABORTED});
+                lose && lose({ code: MediaError.MEDIA_ERR_ABORTED });
+                return false; // unable to create
             }
         }
+
+        return true; // successfully created
     },
 
     // Start playing the audio
@@ -74,12 +77,19 @@ module.exports = {
         var thisM = Media.get(id);
         // if Media was released, then node will be null and we need to create it again
         if (!thisM.node) {
-            module.exports.create(win, lose, args);
+            if (!module.exports.create(win, lose, args)) {
+                // there is no reason to continue if we can't create media
+                // corresponding callback has been invoked in create so we don't need to call it here
+                return;
+            }
         }
 
-        Media.onStatus(id, Media.MEDIA_STATE, Media.MEDIA_RUNNING);
-
-        thisM.node.play();
+        try {
+            thisM.node.play();
+            Media.onStatus(id, Media.MEDIA_STATE, Media.MEDIA_RUNNING);
+        } catch (err) {
+            lose && lose({code:MediaError.MEDIA_ERR_ABORTED});
+        }
     },
 
     // Stops the playing audio

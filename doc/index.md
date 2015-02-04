@@ -46,7 +46,7 @@ Although in the global scope, it is not available until after the `deviceready` 
 - iOS
 - Windows Phone 7 and 8
 - Tizen
-- Windows 8
+- Windows
 
 ## Windows Phone Quirks
 
@@ -361,7 +361,7 @@ Starts recording an audio file.
 - Android
 - iOS
 - Windows Phone 7 and 8
-- Windows 8
+- Windows
 
 ### Quick Example
 
@@ -400,7 +400,7 @@ Starts recording an audio file.
 
         var myMedia = new Media("documents://beer.mp3")
 
-### Windows 8 Quirks
+### Windows Quirks
 
 - If a full path is not provided, the recording is placed in the AppData/temp directory. This can be accessed via the `File` API using `LocalFileSystem.TEMPORARY` or 'ms-appdata:///temp/<filename>' URI.
 
@@ -454,7 +454,7 @@ Stops recording an audio file.
 - Android
 - iOS
 - Windows Phone 7 and 8
-- Windows 8
+- Windows
 
 ### Quick Example
 

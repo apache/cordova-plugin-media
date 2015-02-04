@@ -149,7 +149,19 @@ id="org.apache.cordova.media"
 
     <!-- windows8 -->
     <platform name="windows8">
-        <js-module src="src/windows8/MediaProxy.js" name="MediaProxy">
+        <js-module src="src/windows/MediaProxy.js" name="MediaProxy">
+            <merges target="" />
+        </js-module>
+
+        <config-file target="package.appxmanifest" parent="/Package/Capabilities">
+            <Capability Name="musicLibrary" />
+            <DeviceCapability Name="microphone" />
+        </config-file>
+    </platform>
+
+    <!-- windows -->
+    <platform name="windows">
+        <js-module src="src/windows/MediaProxy.js" name="MediaProxy">
             <merges target="" />
         </js-module>
 
