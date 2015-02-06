@@ -713,8 +713,7 @@
 
 @synthesize resourcePath;
 @synthesize resourceURL;
-@synthesize player, volume;
-@synthesize player, rate;
+@synthesize player, volume, rate;
 @synthesize recorder;
 
 @end
