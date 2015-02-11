@@ -96,8 +96,12 @@ module.exports = {
     stopPlayingAudio:function(win, lose, args) {
         var id = args[0];
         try {
-            (Media.get(id)).node.pause();
-            (Media.get(id)).node.currentTime = 0;
+            var thisM = Media.get(id);
+            thisM.node.pause();
+            if (thisM.node.currentTime != 0) {
+                // prevents failing w/ InvalidStateError if playback has not started
+                thisM.node.currentTime = 0;
+            }
             Media.onStatus(id, Media.MEDIA_STATE, Media.MEDIA_STOPPED);
             win();
         } catch (err) {

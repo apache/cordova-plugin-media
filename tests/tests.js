@@ -18,6 +18,10 @@
  * under the License.
  *
  */
+ 
+var isWindows = cordova.platformId == 'windows8' || cordova.platformId == 'windows';
+// detect whether audio hardware is available and enabled
+var isAudioSupported = isWindows ? Windows.Media.Devices.MediaDevice.getDefaultAudioRenderId(Windows.Media.Devices.AudioDeviceRole.default) : true;
 
 exports.defineAutoTests = function () {
     var failed = function (done, msg, error) {
@@ -180,6 +184,11 @@ exports.defineAutoTests = function () {
         });
 
         it("media.spec.16 position should be set properly", function (done) {
+            // no audio hardware available
+            if (!isAudioSupported) {
+                pending();
+                return;
+            }
             var self = this;
             var mediaFile = 'http://cordova.apache.org/downloads/BlueZedEx.mp3',
             mediaState = Media.MEDIA_STOPPED,
@@ -208,6 +217,11 @@ exports.defineAutoTests = function () {
         });
 
         it("media.spec.17 duration should be set properly", function (done) {
+            // no audio hardware available
+            if (!isAudioSupported) {
+                pending();
+                return;
+            }
             var self = this;
             if (cordova.platformId === 'blackberry10') {
                 expect(true).toFailWithMessage('Platform does not supported this feature');
