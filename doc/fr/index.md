@@ -23,9 +23,17 @@ Ce plugin permet d'enregistrer et de lire des fichiers audio sur un périphériq
 
 **Remarque**: l'implémentation actuelle n'est pas conforme à une spécification du W3C pour la capture de médias et est fournie pour plus de commodité seulement. Une prochaine implémentation adhèrera à la toute dernière spécification du W3C, ce qui aura probablement pour effet de déprécier l'API actuelle.
 
+Ce plugin définit un global `Media` constructeur.
+
+Bien que dans la portée globale, il n'est pas disponible jusqu'après la `deviceready` événement.
+
+    document.addEventListener (« deviceready », onDeviceReady, false) ;
+    function onDeviceReady() {console.log(Media);}
+    
+
 ## Installation
 
-    cordova plugin add org.apache.cordova.media
+    Cordova plugin ajouter org.apache.cordova.media
     
 
 ## Plates-formes prises en charge
@@ -35,7 +43,7 @@ Ce plugin permet d'enregistrer et de lire des fichiers audio sur un périphériq
 *   iOS
 *   Windows Phone 7 et 8
 *   Paciarelli
-*   Windows 8
+*   Windows
 
 ## Windows Phone Quirks
 
@@ -47,7 +55,7 @@ Ce plugin permet d'enregistrer et de lire des fichiers audio sur un périphériq
 
 ## Media
 
-    var media = new Media(src, mediaSuccess, [mediaError], [mediaStatus]);
+    médias var = new Media (src, mediaSuccess, [mediaError], [mediaStatus]) ;
     
 
 ### Paramètres
@@ -62,7 +70,7 @@ Ce plugin permet d'enregistrer et de lire des fichiers audio sur un périphériq
 
 ### Constantes
 
-Les constantes suivantes correspondent au seul paramètre transmis à la fonction callback `mediaStatus` :
+Les constantes suivantes sont déclarées comme le seul paramètre à la `mediaStatus` Rappel :
 
 *   `Media.MEDIA_NONE` = 0;
 *   `Media.MEDIA_STARTING` = 1;
@@ -104,7 +112,7 @@ Les constantes suivantes correspondent au seul paramètre transmis à la fonctio
 
 Retourne la position courante dans un fichier audio. Met également à jour la `Media` de l'objet `position` paramètre.
 
-    media.getCurrentPosition(mediaSuccess, [mediaError]);
+    media.getCurrentPosition (mediaSuccess, [mediaError]) ;
     
 
 ### Paramètres
@@ -115,83 +123,50 @@ Retourne la position courante dans un fichier audio. Met également à jour la `
 
 ### Petit exemple
 
-    // lecteur audio
-    //
-    var my_media = new Media(src, onSuccess, onError);
+    Lecteur audio / / var my_media = new Media (src, onSuccess, onError) ;
     
-    // met à jour la position de lecture du fichier à chaque seconde
-    var mediaTimer = setInterval(function () {
-        // récupère la position
-        my_media.getCurrentPosition(
-            // fonction callback de succès
-            function (position) {
-                if (position > -1) {
-                    console.log((position) + " secondes");
-                }
-            },
-            // fonction callback d'erreur
-            function (e) {
-                console.log("Erreur lors de l'obtention de la position : " + e);
+    Mise à jour media positionner chaque deuxième mediaTimer de var = setInterval(function () {/ / get médias position my_media.getCurrentPosition (/ / fonction de rappel réussi (position) {si (position > -1) {console.log((position) + "secondes") ;
+                }}, / / fonction de rappel d'erreur (e) {console.log ("Error getting pos =" + e) ;
             }
         );
-    }, 1000);
+    }, 1000) ;
     
 
 ## media.getDuration
 
 Retourne la durée d'un fichier audio en quelques secondes. Si on ne connaît pas la durée, elle retourne la valeur -1.
 
-    media.getDuration();
+    media.getDuration() ;
     
 
 ### Petit exemple
 
-    // lecteur audio
-    //
-    var my_media = new Media(src, onSuccess, onError);
+    Lecteur audio / / var my_media = new Media (src, onSuccess, onError) ;
     
-    // récupère la durée
-    var counter = 0;
-    var timerDur = setInterval(function() {
-        counter = counter + 100;
-        if (counter > 2000) {
-            clearInterval(timerDur);
-        }
-        var dur = my_media.getDuration();
-        if (dur > 0) {
-            clearInterval(timerDur);
-            document.getElementById('audio_duration').innerHTML = (dur) + " secondes";
-        }
-    }, 100);
+    Obtenez durée var compteur = 0 ;
+    var timerDur = setInterval(function() {Compteur = compteur + 100 ;
+        Si (contrer > 2000) {clearInterval(timerDur) ;
+        } var dur = my_media.getDuration() ;
+        Si (dur > 0) {clearInterval(timerDur) ;
+            document.getElementById('audio_duration').innerHTML = (dur) + "secondes" ;
+        }}, 100) ;
     
 
 ## media.pause
 
-Suspend la lecture d'un fichier audio.
+Suspendre la lecture d'un fichier audio.
 
-    media.pause();
+    Media.pause() ;
     
 
 ### Petit exemple
 
-    // joue le clip audio
-    //
-    function playAudio(url) {
-        // joue le fichier audio situé à cette url
-        var my_media = new Media(url,
-            // fonction callback de succès
-            function () { console.log("playAudio() : clip audio joué avec succès"); },
-            // error callback
-            function (err) { console.log("playAudio() : erreur lors de la lecture du clip audio: " + err); }
-        );
+    Lire les données audio / / function playAudio(url) {/ / lire le fichier audio à my_media var url = nouveaux médias (url, / / fonction de rappel réussi () {console.log ("playAudio (): Audio succès");}, / / fonction de rappel d'erreur (err) {console.log ("playAudio (): erreur Audio:" + err);}) ;
     
-        // lance la lecture du clip audio
-        my_media.play();
+        Lecture audio my_media.play() ;
     
-        // met la lecture en pause après 10 secondes
-        setTimeout(function () {
-            media.pause();
-        }, 10000);
+        Pause après 10 secondes setTimeout (function () {media.pause() ;
+        }, 10000) ;
     }
     
 
@@ -199,27 +174,16 @@ Suspend la lecture d'un fichier audio.
 
 Commence ou reprend la lecture d'un fichier audio.
 
-    media.play();
+    Media.Play() ;
     
 
 ### Petit exemple
 
-    // joue le clip audio
-    //
-    function playAudio(url) {
-        // joue le fichier audio situé à cette url
-        var my_media = new Media(url,
-            // fonction callback de succès
-            function () {
-                console.log("playAudio() : fichier audio lu avec succès");
-            },
-            // fonction callback d'erreur
-            function (err) {
-                console.log("playAudio() : erreur lors de la lecture du fichier audio : " + err);
+    Lire les données audio / / function playAudio(url) {/ / lire le fichier audio à url var my_media = new Media (url, / / fonction de rappel réussi () {console.log ("playAudio (): Audio succès") ;
+            }, / / fonction de rappel d'erreur (err) {console.log ("playAudio (): Audio Error:" + err) ;
             }
         );
-        // commence la lecture du clip audio
-        my_media.play();
+        Lecture audio my_media.play() ;
     }
     
 
@@ -245,27 +209,25 @@ Commence ou reprend la lecture d'un fichier audio.
 
 ## media.release
 
-Libère certaines ressources audio du système d'exploitation. Cela est particulièrement important pour Android, puisqu'il y a une quantité finie d'instances OpenCore pour la lecture du média. Les applications doivent en général appeler cette fonction `release` pour toute ressource `Media` qui n'est plus nécessaire.
+Libère les ressources audio du système d'exploitation sous-jacent. Cela est particulièrement important pour Android, puisqu'il y a une quantité finie d'instances OpenCore pour la lecture du média. Les applications doivent appeler le `release` fonction pour tout `Media` ressource qui n'est plus nécessaire.
 
-    media.release();
+    Media.Release() ;
     
 
 ### Petit exemple
 
-    // lecteur audio
-    //
-    var my_media = new Media(src, onSuccess, onError);
+    Lecteur audio / / var my_media = new Media (src, onSuccess, onError) ;
     
-    my_media.play();
-    my_media.stop();
-    my_media.release();
+    my_media.Play() ;
+    my_media.Stop() ;
+    my_media.Release() ;
     
 
 ## media.seekTo
 
-Définit la position de lecture actuelle dans un fichier audio.
+Définit la position actuelle dans un fichier audio.
 
-    media.seekTo(milliseconds);
+    media.seekTo(milliseconds) ;
     
 
 ### Paramètres
@@ -274,14 +236,9 @@ Définit la position de lecture actuelle dans un fichier audio.
 
 ### Petit exemple
 
-    // lecteur audio
-    //
-    var my_media = new Media(src, onSuccess, onError);
-        my_media.play();
-    // avance la position à 10 secondes du début du fichier après 5 secondes
-    setTimeout(function() {
-        my_media.seekTo(10000);
-    }, 5000);
+    Lecteur audio / / var my_media = new Media (src, onSuccess, onError) ;
+        my_media.Play() ;
+    SeekTo à 10 secondes après 5 secondes setTimeout(function() {my_media.seekTo(10000);}, 5000) ;
     
 
 ### BlackBerry 10 Quirks
@@ -290,9 +247,9 @@ Définit la position de lecture actuelle dans un fichier audio.
 
 ## media.setVolume
 
-Permet de régler le volume d'un fichier audio.
+Régler le volume du fichier audio.
 
-    media.setVolume(volume);
+    media.setVolume(volume) ;
     
 
 ### Paramètres
@@ -306,40 +263,25 @@ Permet de régler le volume d'un fichier audio.
 
 ### Petit exemple
 
-    // joue le clip audio
-    //
-    function playAudio(url) {
-        // joue le fichier audio situé à cette url
-        var my_media = new Media(url,
-            // fonction callback de succès
-            function() {
-                console.log("playAudio() : fichier audio lu avec succès");
-            },
-            // fonction callback d'erreur
-            function(err) {
-                console.log("playAudio() : erreur lors de la lecture du fichier audio : " + err);
+    Lire les données audio / / function playAudio(url) {/ / lire le fichier audio à my_media var url = nouveaux médias (url, / / réussite rappel function() {console.log ("playAudio (): Audio succès") ;
+            }, / / erreur rappel function(err) {console.log ("playAudio (): Audio Error:" + err) ;
         });
     
-        // lance la lecture du clip audio
-        my_media.play();
+        Lecture audio my_media.play() ;
     
-        // baisse le volume au maximum après 2 secondes
-        setTimeout(function() {
-            my_media.setVolume('0.0');
-        }, 2000);
+        Couper le volume après 2 secondes setTimeout(function() {my_media.setVolume('0.0') ;
+        }, 2000) ;
     
-        // monte le volume à 1.0 (maximum) après 5 secondes
-        setTimeout(function() {
-            my_media.setVolume('1.0');
-        }, 5000);
+        Réglez le volume à 1.0 après 5 secondes setTimeout(function() {my_media.setVolume('1.0') ;
+        }, 5000) ;
     }
     
 
 ## media.startRecord
 
-Permet de démarrer l'enregistrement d'un fichier audio.
+Pour démarrer l'enregistrement d'un fichier audio.
 
-    media.startRecord();
+    media.startRecord() ;
     
 
 ### Plates-formes prises en charge
@@ -347,33 +289,23 @@ Permet de démarrer l'enregistrement d'un fichier audio.
 *   Android
 *   iOS
 *   Windows Phone 7 et 8
-*   Windows 8
+*   Windows
 
 ### Petit exemple
 
-    // enregistrement audio
-    //
-    function recordAudio() {
-        var src = "myrecording.mp3";
-        var mediaRec = new Media(src,
-            // fonction callback de succès
-            function() {
-                console.log("recordAudio() : audio enregistré avec succès");
-            },
-    
-            // fonction callback d'erreur
-            function(err) {
-                console.log("recordAudio() : erreur lors de l'enregistrement audio : " + err.code);
+    Enregistrer de l'audio / / function recordAudio() {var src = « myrecording.mp3 » ;
+        var mediaRec = new Media (src, / / réussite rappel function() {console.log ("recordAudio (): Audio succès") ;
+            }, / / erreur rappel function(err) {console.log ("recordAudio (): Audio Error:" + err.code) ;
             });
     
-        // débute l'enregistrement audio
-        mediaRec.startRecord();
+        MediaRec.startRecord() audio record ;
     }
     
 
 ### Quirks Android
 
 *   Les appareils Android enregistrent de l'audio au format Adaptive Multi-Rate. Le nom de fichier spécifié doit donc comporter une extension *.amr*.
+*   Les contrôles de volume du matériel sont câblés jusqu'au volume de médias tandis que tous les objets multimédia sont vivants. Une fois créé le dernier objet multimédia a `release()` appelé à ce sujet, les contrôles de volume revenir à leur comportement par défaut. Les contrôles sont également réinitialisés sur la navigation de la page, car cela libère tous les objets multimédias.
 
 ### iOS Quirks
 
@@ -386,7 +318,7 @@ Permet de démarrer l'enregistrement d'un fichier audio.
         var myMedia = new Media("documents://beer.mp3")
         
 
-### Bizarreries de Windows 8
+### Bizarreries de Windows
 
 *   Si un chemin d'accès complet n'est pas fourni, l'enregistrement est placé dans le répertoire AppData/temp. Ce qui peut être consulté le `Fichier` À l'aide de l'API `LocalFileSystem.TEMPORARY` ou ' ms-appdata : temp / / / /<filename>' URI.
 
@@ -400,41 +332,28 @@ Permet de démarrer l'enregistrement d'un fichier audio.
 
 Arrête la lecture d'un fichier audio.
 
-    media.stop();
+    Media.Stop() ;
     
 
 ### Petit exemple
 
-    // joue le clip audio
-    //
-    function playAudio(url) {
-        // joue le fichier audio situé à cette url
-        var my_media = new Media(url,
-            // fonction callback de succès
-            function() {
-                console.log("playAudio() : clip audio lu avec succès");
-            },
-            // fonction callback d'erreur
-            function(err) {
-                console.log("playAudio() : erreur lors de la lecture du clip audio : " + err);
+    Lire les données audio / / function playAudio(url) {/ / lire le fichier audio à my_media var url = nouveaux médias (url, / / réussite rappel function() {console.log ("playAudio (): Audio succès") ;
+            }, / / erreur rappel function(err) {console.log ("playAudio (): Audio Error:" + err) ;
             }
         );
     
-        // démarre la lecture du clip audio
-        my_media.play();
+        Lecture audio my_media.play() ;
     
-        // arrête la lecture après 10 secondes
-        setTimeout(function() {
-            my_media.stop();
-        }, 10000);
+        Pause après 10 secondes setTimeout(function() {my_media.stop() ;
+        }, 10000) ;
     }
     
 
 ## media.stopRecord
 
-Arrête l'enregistrement d'un fichier audio.
+Arrête d'enregistrer un fichier audio.
 
-    media.stopRecord();
+    media.stopRecord() ;
     
 
 ### Plates-formes prises en charge
@@ -442,33 +361,20 @@ Arrête l'enregistrement d'un fichier audio.
 *   Android
 *   iOS
 *   Windows Phone 7 et 8
-*   Windows 8
+*   Windows
 
 ### Petit exemple
 
-    // enregistrement audio
-    //
-    function recordAudio() {
-        var src = "myrecording.mp3";
-        var mediaRec = new Media(src,
-            // fonction callback de succès
-            function() {
-                console.log("recordAudio() : audio enregistré avec succès");
-            },
-    
-            // fonction callback d'erreur
-            function(err) {
-                console.log("recordAudio() : erreur lors de l'enregistrement audio : " + err.code);
+    Enregistrer de l'audio / / function recordAudio() {var src = « myrecording.mp3 » ;
+        var mediaRec = new Media (src, / / réussite rappel function() {console.log ("recordAudio (): Audio succès") ;
+            }, / / erreur rappel function(err) {console.log ("recordAudio (): Audio Error:" + err.code) ;
             }
         );
     
-        // débute l'enregistrement audio
-        mediaRec.startRecord();
+        MediaRec.startRecord() audio record ;
     
-        // arrête l'enregistrement après 10 secondes
-        setTimeout(function() {
-            mediaRec.stopRecord();
-        }, 10000);
+        Arrêter l'enregistrement après 10 secondes setTimeout(function() {mediaRec.stopRecord() ;
+        }, 10000) ;
     }
     
 
@@ -478,7 +384,7 @@ Arrête l'enregistrement d'un fichier audio.
 
 ## MediaError
 
-Un objet `MediaError` est transmis à la fonction callback `mediaError` lorsqu'une erreur survient.
+A `MediaError` objet est retourné à la `mediaError` fonction de rappel lorsqu'une erreur survient.
 
 ### Propriétés
 

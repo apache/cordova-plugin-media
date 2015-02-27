@@ -23,6 +23,16 @@
 
 **참고**: 현재 구현 미디어 캡처에 대 한 W3C 사양을 준수 하지 않는 및 편의 위해서만 제공 됩니다. 미래 구현 최신 W3C 사양을 준수 한다 고 현재 Api 사용 중지 될 수 있습니다.
 
+이 플러그인은 글로벌 `Media` 생성자를 정의 합니다.
+
+전역 범위에 있지만 그것은 불가능까지 `deviceready` 이벤트 후.
+
+    document.addEventListener("deviceready", onDeviceReady, false);
+    function onDeviceReady() {
+        console.log(Media);
+    }
+    
+
 ## 설치
 
     cordova plugin add org.apache.cordova.media
@@ -35,7 +45,7 @@
 *   iOS
 *   Windows Phone 7과 8
 *   Tizen
-*   윈도우 8
+*   윈도우
 
 ## Windows Phone 단점
 
@@ -62,7 +72,7 @@
 
 ### 상수
 
-다음 상수를 유일한 매개 변수로 보고 되는 `mediaStatus` 콜백:
+다음 상수는 `mediaStatus`를 유일한 매개 변수로 보고 됩니다.
 
 *   `Media.MEDIA_NONE` = 0;
 *   `Media.MEDIA_STARTING` = 1;
@@ -102,7 +112,7 @@
 
 ## media.getCurrentPosition
 
-오디오 파일 내에서 현재 위치를 반환합니다. 또한 업데이트는 `Media` 개체의 `position` 매개 변수.
+오디오 파일 내에서 현재 위치를 반환합니다. 또한 `Media` 개체의 `position` 매개 변수를 업데이트합니다.
 
     media.getCurrentPosition(mediaSuccess, [mediaError]);
     
@@ -245,7 +255,7 @@
 
 ## media.release
 
-기본 운영 체제의 오디오 리소스를 해제합니다. 이것은 유한 양의 미디어 재생용 OpenCore 인스턴스 때문에 안 드 로이드를 위해 특히 중요 하다입니다. 응용 프로그램 호출 해야는 `release` 함수에 대 한 `Media` 리소스를 더 이상 필요 합니다.
+기본 운영 체제의 오디오 리소스를 해제합니다. 이것은 유한 양의 미디어 재생용 OpenCore 인스턴스 때문에 안 드 로이드를 위해 특히 중요 하다입니다. 응용 프로그램은 더 이상 필요 없는 모든 `Media` 리소스에 대 한 `release` 함수를 호출 해야 합니다.
 
     media.release();
     
@@ -347,7 +357,7 @@
 *   안 드 로이드
 *   iOS
 *   Windows Phone 7과 8
-*   윈도우 8
+*   윈도우
 
 ### 빠른 예제
 
@@ -374,6 +384,7 @@
 ### 안 드 로이드 단점
 
 *   안 드 로이드 장치 적응 다중 속도 형식에서 오디오를 기록합니다. 지정 된 파일 *.amr* 확장명으로 끝나야 합니다.
+*   하드웨어 볼륨 제어는 어떤 미디어 객체 살아 있는 동안 미디어 볼륨까지 유선. 일단 개체는 `release()` 호출 마지막 만든된 미디어 볼륨 컨트롤 그들의 기본 동작을 되돌립니다. 컨트롤은 또한 원래 대로 페이지 네비게이션이 모든 매체 개체를 출시.
 
 ### iOS 단점
 
@@ -386,7 +397,7 @@
         var myMedia = new Media("documents://beer.mp3")
         
 
-### 윈도우 8 단점
+### 윈도우 특수
 
 *   전체 경로 제공 하지 않으면 녹음 AppData/temp 디렉터리에 배치 됩니다. 이 통해 액세스할 수 있는 `파일` API를 사용 하 여 `LocalFileSystem.TEMPORARY` 또는 ' ms appdata: 온도 / / / /<filename>' URI.
 
@@ -442,7 +453,7 @@
 *   안 드 로이드
 *   iOS
 *   Windows Phone 7과 8
-*   윈도우 8
+*   윈도우
 
 ### 빠른 예제
 
@@ -478,7 +489,7 @@
 
 ## MediaError
 
-A `MediaError` 개체에 반환 됩니다는 `mediaError` 콜백 함수 오류가 발생 합니다.
+`MediaError` 개체는 오류가 발생 하면 `mediaError` 콜백 함수에 반환 됩니다.
 
 ### 속성
 
