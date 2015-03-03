@@ -19,4 +19,6 @@
 
 # org.apache.cordova.media
 
+[![Build Status](https://travis-ci.org/apache/cordova-plugin-media.svg)](https://travis-ci.org/apache/cordova-plugin-media)
+
 Plugin documentation: [doc/index.md](doc/index.md)
