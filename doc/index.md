@@ -58,7 +58,7 @@ Although in the global scope, it is not available until after the `deviceready` 
 
 ## Media
 
-    var media = new Media(src, mediaSuccess, [mediaError], [mediaStatus]);
+    var media = new Media(src, [mediaSuccess], [mediaError], [mediaStatus]);
 
 ### Parameters
 
