@@ -154,7 +154,6 @@ id="org.apache.cordova.media"
         </js-module>
 
         <config-file target="package.appxmanifest" parent="/Package/Capabilities">
-            <Capability Name="musicLibrary" />
             <DeviceCapability Name="microphone" />
         </config-file>
     </platform>
@@ -166,7 +165,6 @@ id="org.apache.cordova.media"
         </js-module>
 
         <config-file target="package.appxmanifest" parent="/Package/Capabilities">
-            <Capability Name="musicLibrary" />
             <DeviceCapability Name="microphone" />
         </config-file>
     </platform>
