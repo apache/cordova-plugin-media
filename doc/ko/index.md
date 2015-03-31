@@ -17,7 +17,7 @@
     under the License.
 -->
 
-# org.apache.cordova.media
+# cordova-plugin-media
 
 이 플러그인 기록 장치에 오디오 파일을 재생 하는 기능을 제공 합니다.
 
@@ -35,7 +35,7 @@
 
 ## 설치
 
-    cordova plugin add org.apache.cordova.media
+    cordova plugin add cordova-plugin-media
     
 
 ## 지원 되는 플랫폼

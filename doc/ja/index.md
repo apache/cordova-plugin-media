@@ -17,7 +17,7 @@
     under the License.
 -->
 
-# org.apache.cordova.media
+# cordova-plugin-media
 
 このプラグインは、記録し、デバイス上のオーディオ ファイルを再生する機能を提供します。
 
@@ -35,7 +35,7 @@
 
 ## インストール
 
-    cordova plugin add org.apache.cordova.media
+    cordova plugin add cordova-plugin-media
     
 
 ## サポートされているプラットフォーム

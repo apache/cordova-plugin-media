@@ -17,7 +17,7 @@
     under the License.
 -->
 
-# org.apache.cordova.media
+# cordova-plugin-media
 
 Этот плагин предоставляет возможность записывать и воспроизводить аудио файлы на устройство.
 
@@ -25,7 +25,7 @@
 
 ## Установка
 
-    cordova plugin add org.apache.cordova.media
+    cordova plugin add cordova-plugin-media
     
 
 ## Поддерживаемые платформы

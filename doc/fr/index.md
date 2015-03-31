@@ -17,7 +17,7 @@
     under the License.
 -->
 
-# org.apache.cordova.media
+# cordova-plugin-media
 
 Ce plugin permet d'enregistrer et de lire des fichiers audio sur un périphérique.
 
@@ -33,7 +33,7 @@ Bien que dans la portée globale, il n'est pas disponible jusqu'après la `devic
 
 ## Installation
 
-    Cordova plugin ajouter org.apache.cordova.media
+    Cordova plugin ajouter cordova-plugin-media
     
 
 ## Plates-formes prises en charge

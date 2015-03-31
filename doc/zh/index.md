@@ -17,7 +17,7 @@
     under the License.
 -->
 
-# org.apache.cordova.media
+# cordova-plugin-media
 
 這個外掛程式提供錄製和播放設備上的音訊檔的能力。
 
@@ -35,7 +35,7 @@
 
 ## 安裝
 
-    cordova plugin add org.apache.cordova.media
+    cordova plugin add cordova-plugin-media
     
 
 ## 支援的平臺

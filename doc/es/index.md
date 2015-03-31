@@ -17,7 +17,7 @@
     under the License.
 -->
 
-# org.apache.cordova.media
+# cordova-plugin-media
 
 Este plugin proporciona la capacidad de grabar y reproducir archivos de audio en un dispositivo.
 
@@ -33,7 +33,7 @@ Aunque en el ámbito global, no estará disponible hasta después de la `devicer
 
 ## Instalación
 
-    Cordova plugin agregar org.apache.cordova.media
+    Cordova plugin agregar cordova-plugin-media
     
 
 ## Plataformas soportadas
