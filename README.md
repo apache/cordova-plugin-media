@@ -406,6 +406,8 @@ Starts recording an audio file.
 
 ### Windows Quirks
 
+- Windows devices can use MP3, M4A and WMA formats for recorded audio. However in most cases it is not possible to use MP3 for audio recording on _Windows Phone 8.1_ devices, because an MP3 encoder is [not shipped with Windows Phone](https://msdn.microsoft.com/en-us/library/windows/apps/windows.media.mediaproperties.mediaencodingprofile.createmp3.aspx).
+
 - If a full path is not provided, the recording is placed in the AppData/temp directory. This can be accessed via the `File` API using `LocalFileSystem.TEMPORARY` or 'ms-appdata:///temp/<filename>' URI.
 
 - Any subdirectory specified at record time must already exist.
