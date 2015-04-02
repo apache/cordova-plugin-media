@@ -22,9 +22,9 @@
 /*global Windows:true */
 
 var cordova = require('cordova'),
-    Media = require('org.apache.cordova.media.Media');
+    Media = require('cordova-plugin-media.Media');
 
-var MediaError = require('org.apache.cordova.media.MediaError');
+var MediaError = require('cordova-plugin-media.MediaError');
 
 var recordedFile;
 

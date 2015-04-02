@@ -3,7 +3,7 @@
   "version": "0.2.17-dev",
   "description": "Cordova Media Plugin",
   "cordova": {
-    "id": "org.apache.cordova.media",
+    "id": "cordova-plugin-media",
     "platforms": [
       "android",
       "amazon-fireos",
