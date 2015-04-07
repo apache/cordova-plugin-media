@@ -31,6 +31,11 @@ namespace WPCordovaClassLib.Cordova.Commands
         private static Dictionary<string, AudioPlayer> players = new Dictionary<string, AudioPlayer>();
 
         /// <summary>
+        /// Callback id for Media events channel
+        /// </summary>
+        private static string messageChannelCallbackId;
+
+        /// <summary>
         /// Represents Media action options.
         /// </summary>
         [DataContract]
@@ -55,6 +60,89 @@ namespace WPCordovaClassLib.Cordova.Commands
             public int Milliseconds { get; set; }
 
             public string CallbackId { get; set; }
+        }
+
+        /// <summary>
+        /// Reperesent media channel status changed action
+        /// </summary>
+        [DataContract]
+        public class MediaChannelStatusAction
+        {
+            /// <summary>
+            /// Action type
+            /// </summary>
+            [DataMember(Name = "action", IsRequired = true)]
+            public string Action { get; set; }
+
+            /// <summary>
+            /// Status data
+            /// </summary>
+            [DataMember(Name = "status", IsRequired = true)]
+            public MediaStatus Status { get; set; }
+
+            /// <summary>
+            /// Initialize a new instance
+            /// </summary>
+            public MediaChannelStatusAction()
+            {
+                this.Action = "status";
+            }
+        }
+
+        /// <summary>
+        /// Represents Media error
+        /// </summary>
+        [DataContract]
+        public class MediaError
+        {
+            [DataMember(Name = "code", IsRequired = true)]
+            public int Code { get; set; }
+        }
+
+        /// <summary>
+        /// Represents Media status
+        /// </summary>
+        [DataContract]
+        [KnownType(typeof(MediaError))]
+        public class MediaStatus
+        {
+            /// <summary>
+            /// Audio player Id
+            /// </summary>
+            [DataMember(Name = "id", IsRequired = true)]
+            public string Id { get; set; }
+
+            /// <summary>
+            /// Status message type
+            /// </summary>
+            [DataMember(Name = "msgType", IsRequired = true)]
+            public int MsgType { get; set; }
+
+            /// <summary>
+            /// Status message value
+            /// </summary>
+            [DataMember(Name = "value")]
+            public dynamic Value { get; set; }
+        }
+
+        /// <summary>
+        /// Establish channel for Media events
+        /// </summary>
+        public void messageChannel(string options)
+        {
+            string[] optionsString = JSON.JsonHelper.Deserialize<string[]>(options);
+            messageChannelCallbackId = optionsString[0];
+        }
+
+        /// <summary>
+        /// Report Media status to JS
+        /// </summary>
+        public void ReportStatus(MediaStatus status)
+        {
+            PluginResult result = new PluginResult(PluginResult.Status.OK, new MediaChannelStatusAction() { Status = status });
+            result.KeepCallback = true;
+
+            DispatchCommandResult(result, messageChannelCallbackId);
         }
 
         /// <summary>
