@@ -151,31 +151,29 @@ namespace WPCordovaClassLib.Cordova.Commands
             this.FinalizeXnaGameLoop();
         }
 
-        private void InvokeCallback(int message, string value, bool removeHandler)
-        {
-            string args = string.Format("('{0}',{1},{2});", this.id, message, value);
-            string callback = @"(function(id,msg,value){
-                try {
-                    if (msg == Media.MEDIA_ERROR) {
-                        value = {'code':value};
-                    }
-                    Media.onStatus(id,msg,value);
-                }
-                catch(e) {
-                    console.log('Error calling Media.onStatus :: ' + e);
-                }
-            })" + args;
-            this.handler.InvokeCustomScript(new ScriptCallback("eval", new string[] { callback }), false);
-        }
-
         private void InvokeCallback(int message, int value, bool removeHandler)
         {
-            InvokeCallback(message, value.ToString(), removeHandler);
+            InvokeCallback(message, (double)value, removeHandler);
         }
 
         private void InvokeCallback(int message, double value, bool removeHandler)
         {
-            InvokeCallback(message, value.ToString(), removeHandler);
+            var status = new Media.MediaStatus()
+            {
+                Id = this.id,
+                MsgType = message
+            };
+
+            if (message == MediaError)
+            {
+                status.Value = new Media.MediaError() { Code = (int)value };
+            }
+            else
+            {
+                status.Value = value;
+            }
+
+            this.handler.ReportStatus(status);
         }
 
         /// <summary>

@@ -30,7 +30,7 @@ id="org.apache.cordova.media"
     <repo>https://git-wip-us.apache.org/repos/asf/cordova-plugin-media.git</repo>
     <issue>https://issues.apache.org/jira/browse/CB/component/12320647</issue>
     
-    <dependency id="org.apache.cordova.file" version=">=1.0.1" />
+    <dependency id="cordova-plugin-file" version=">=1.0.1" />
 
     <js-module src="www/MediaError.js" name="MediaError">
         <clobbers target="window.MediaError" />
