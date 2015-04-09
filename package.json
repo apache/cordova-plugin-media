@@ -36,9 +36,6 @@
     "cordova-windows",
     "cordova-tizen"
   ],
-  "peerDependencies": {
-    "cordova-plugin-file": ">=1.0.1"
-  }
   "author": "Apache Software Foundation",
   "license": "Apache 2.0"
 }
