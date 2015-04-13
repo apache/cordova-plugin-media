@@ -18,20 +18,25 @@
  * under the License.
  *
  */
+// increased timeout for actual playback to give device chance to download and play mp3 file
+var ACTUAL_PLAYBACK_TEST_TIMEOUT = 10000;
  
 var isWindows = cordova.platformId == 'windows8' || cordova.platformId == 'windows';
 // detect whether audio hardware is available and enabled
 var isAudioSupported = isWindows ? Windows.Media.Devices.MediaDevice.getDefaultAudioRenderId(Windows.Media.Devices.AudioDeviceRole.default) : true;
 
 exports.defineAutoTests = function () {
-    var failed = function (done, msg, error) {
+    var failed = function (done, msg, context) {
+        if (context && context.done) return;
+        context.done = true;
         var info = typeof msg == 'undefined' ? 'Unexpected error callback' : msg;
-        expect(true).toFailWithMessage(info + '\n' + JSON.stringify(error));
+        expect(true).toFailWithMessage(info);
         done();
-        this.done = true;
     };
 
-    var succeed = function (done, msg) {
+    var succeed = function (done, msg, context) {
+        if (context && context.done) return;
+        context.done = true;
         var info = typeof msg == 'undefined' ? 'Unexpected success callback' : msg;
         expect(true).toFailWithMessage(info);
         done();
@@ -159,96 +164,98 @@ exports.defineAutoTests = function () {
         });
 
         it("media.spec.15 should return MediaError for bad filename", function (done) {
-            var fileName = 'invalid.file.name';
-            //Error callback it has an unexpected behavior under Windows Phone,
-            //it enters to the error callback several times, instead of just one walk-through
-            //JIRA issue related with all details: CB-7092
-            //the conditional statement should be removed once the issue is fixed.
-
             //bb10 dialog pops up, preventing tests from running
-            if (cordova.platformId === 'blackberry10' || cordova.platformId === 'windowsphone') {
-                expect(true).toFailWithMessage('Platform does not support this feature');
-                done();
-            } else {
-                var badMedia = null;
-                badMedia = new Media(fileName, succeed.bind(null, done, ' badMedia = new Media , Unexpected succees callback, it should not create Media object with invalid file name'), function (result) {
-                        expect(result).toBeDefined();
-                        expect(result.code).toBe(MediaError.MEDIA_ERR_ABORTED);
-                        if (badMedia !== null) {
-                            badMedia.release();
-                        }
-                        done();
-                    });
-                badMedia.play();
-            }
-        });
-
-        it("media.spec.16 position should be set properly", function (done) {
-            // no audio hardware available
-            if (!isAudioSupported) {
-                pending();
-                return;
-            }
-            var self = this;
-            var mediaFile = 'http://cordova.apache.org/downloads/BlueZedEx.mp3',
-            mediaState = Media.MEDIA_STOPPED,
-            successCallback,
-            flag = true,
-            statusChange = function (statusCode) {
-                if (statusCode == Media.MEDIA_RUNNING && flag) {
-                    //flag variable used to ensure an extra security statement to ensure that the callback is processed only once,
-                    //in case for some reason the statusChange callback is reached more than one time with the same status code.
-                    //Some information about this kind of behavior it can be found at JIRA: CB-7099
-                    flag = false;
-                    setTimeout(function () {
-                        media1.getCurrentPosition(function (position) {
-                            expect(position).toBeGreaterThan(0.0);
-                            media1.stop();
-                            media1.release();
-                            if (!self.done) {
-                                done();
-                            }
-                        }, failed.bind(self, done, 'media1.getCurrentPosition - Error getting media current position'));
-                    }, 1000);
-                }
-            },
-            media1 = new Media(mediaFile, successCallback, failed.bind(self, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile), statusChange);
-            media1.play();
-        });
-
-        it("media.spec.17 duration should be set properly", function (done) {
-            // no audio hardware available
-            if (!isAudioSupported) {
-                pending();
-                return;
-            }
-            var self = this;
             if (cordova.platformId === 'blackberry10') {
-                expect(true).toFailWithMessage('Platform does not supported this feature');
-                done();
+                pending();
             }
-            var mediaFile = 'http://cordova.apache.org/downloads/BlueZedEx.mp3',
-            mediaState = Media.MEDIA_STOPPED,
-            successCallback,
-            flag = true,
-            statusChange = function (statusCode) {
-                if (statusCode == Media.MEDIA_RUNNING && flag) {
-                    //flag variable used to ensure an extra security statement to ensure that the callback is processed only once,
-                    //in case for some reason the statusChange callback is reached more than one time with the same status code.
-                    //Some information about this kind of behavior it can be found at JIRA: CB-7099.
-                    flag = false;
-                    setTimeout(function () {
-                        expect(media1.getDuration()).toBeGreaterThan(0.0);
-                        media1.stop();
-                        media1.release();
-                        if (!self.done) {
-                            done();
-                        }
-                    }, 1000);
+
+            var context = this,
+                fileName = 'invalid.file.name',
+                badMedia = new Media(fileName, succeed.bind(null, done, ' badMedia = new Media , Unexpected succees callback, it should not create Media object with invalid file name'), function (result) {
+                    if (context.done) return;
+                    context.done = true;
+
+                    expect(result).toBeDefined();
+                    expect(result.code).toBe(MediaError.MEDIA_ERR_ABORTED);
+                    if (badMedia) {
+                        badMedia.release();
+                    }
+                    done();
+                });
+            badMedia.play();
+        });
+
+        describe('actual playback', function() {
+            var checkInterval,
+                media;
+
+            afterEach(function() {
+                clearInterval(checkInterval);
+                if (media) {
+                    media.stop();
+                    media.release();
+                    media = null;
                 }
-            },
-            media1 = new Media(mediaFile, successCallback, failed.bind(self, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile), statusChange);
-            media1.play();
+            });
+
+            it("media.spec.16 position should be set properly", function (done) {
+                // no audio hardware available
+                if (!isAudioSupported) {
+                    pending();
+                }
+
+                //context variable used as an extra security statement to ensure that the callback is processed only once,
+                //in case the statusChange callback is reached more than one time with the same status code.
+                //Some information about this kind of behaviour can be found at JIRA: CB-7099.
+                var context = this,
+                    mediaFile = 'http://cordova.apache.org/downloads/BlueZedEx.mp3',
+                    successCallback = function () { },
+                    statusChange = function (statusCode) {
+                        if (!context.done && statusCode == Media.MEDIA_RUNNING) {
+                            checkInterval = setInterval(function () {
+                                if (context.done) return;
+                                media.getCurrentPosition(function successCallback(position) {
+                                    if (position > 0.0) {
+                                        context.done = true;
+                                        expect(true).toBe(true);
+                                        done();
+                                    }
+                                }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position', context));
+                            }, 1000);
+                        }
+                    };
+                media = new Media(mediaFile, successCallback, failed.bind(self, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
+                media.play();
+            }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
+
+            it("media.spec.17 duration should be set properly", function (done) {
+                if (!isAudioSupported || cordova.platformId === 'blackberry10') {
+                    pending();
+                }
+
+                //context variable used as an extra security statement to ensure that the callback is processed only once,
+                //in case the statusChange callback is reached more than one time with the same status code.
+                //Some information about this kind of behaviour can be found at JIRA: CB-7099.
+                var context = this,
+                    mediaFile = 'http://cordova.apache.org/downloads/BlueZedEx.mp3',
+                    successCallback = function () { },
+                    statusChange = function (statusCode) {
+                        if (!context.done && statusCode == Media.MEDIA_RUNNING) {
+                            checkInterval = setInterval(function () {
+                                if (context.done) return;
+                                media.getCurrentPosition(function (position) {
+                                    if (position > 0.0) {
+                                        context.done = true;
+                                        expect(media.getDuration()).toBeGreaterThan(0.0);
+                                        done();
+                                    }
+                                }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position', context));
+                            }, 1000);
+                        }
+                    };
+                media = new Media(mediaFile, successCallback, failed.bind(self, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
+                media.play();
+            }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
         });
     });
 };

@@ -430,7 +430,10 @@ namespace WPCordovaClassLib.Cordova.Commands
         /// </summary>
         private void MediaFailed(object sender, RoutedEventArgs arg)
         {
-            player.Stop();
+            if (player != null)
+            {
+                player.Stop();
+            }
             InvokeCallback(MediaError, MediaErrorStartingPlayback, false);
             //this.handler.InvokeCustomScript(new ScriptCallback(CallbackFunction, this.id, MediaError.ToString(), "Media failed"),false);
         }
