@@ -109,3 +109,27 @@
 * CB-8351 ios: Use argumentForIndex rather than NSArray extension
 * CB-8252 android: Fire audio events from native via message channel
 * CB-8152 ios: Remove deprecated methods in Media plugin (deprecated since 2.5)
+
+### 1.0.0 (Apr 15, 2015)
+* CB-8793 Fixed tests to pass on wp8 and windows
+* CB-8746 bumped version of file dependency
+* CB-8746 gave plugin major version bump
+* CB-8779 Fixed media status reporting on wp8
+* CB-8747 added missing comma
+* CB-8747 updated dependency, added peer dependency
+* CB-8683 changed plugin-id to pacakge-name
+* CB-8653 properly updated translated docs to use new id
+* CB-8653 updated translated docs to use new id
+* CB-8541 Adds information about available recording formats on Windows
+* Use TRAVIS_BUILD_DIR, install paramedic by npm
+* CB-8686 - remove musicLibrary capability
+* CB-7962 Adds browser platform support
+* CB-8653 Updated Readme
+* CB-8659: ios: 4.0.x Compatibility: Remove use of deprecated headers
+* CB-8572 Integrate TravisCI
+* CB-8438 cordova-plugin-media documentation translation: cordova-plugin-media
+* CB-8538 Added package.json file
+* CB-8428 Fix tests on Windows if no audio playback hardware is available
+* CB-8428 Fix multiple `done()` calls in media plugin test on devices where audio is not configured
+* CB-8426 Add Windows platform section to Media plugin
+* CB-8425 Media plugin .ctr: make src param required as per spec
