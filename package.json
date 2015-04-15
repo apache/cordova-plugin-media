@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-media",
-  "version": "1.0.0-dev",
+  "version": "1.0.0",
   "description": "Cordova Media Plugin",
   "cordova": {
     "id": "cordova-plugin-media",
