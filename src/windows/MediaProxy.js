@@ -21,9 +21,7 @@
 
 /*global Windows:true */
 
-var cordova = require('cordova'),
-    Media = require('cordova-plugin-media.Media');
-
+var Media = require('cordova-plugin-media.Media');
 var MediaError = require('cordova-plugin-media.MediaError');
 
 var recordedFile;
@@ -36,7 +34,6 @@ module.exports = {
         var id = args[0];
         var src = args[1];
         var thisM = Media.get(id);
-        Media.onStatus(id, Media.MEDIA_STATE, Media.MEDIA_STARTING);
 
         Media.prototype.node = null;
 
@@ -46,20 +43,37 @@ module.exports = {
                 fn === 'cda' || fn === 'adx' || fn === 'wm' ||
                 fn === 'm3u' || fn === 'wmx' || fn === 'm4a') {
                 thisM.node = new Audio(src);
-                thisM.node.load();
 
-                var getDuration = function () {
-                    var dur = thisM.node.duration;
-                    if (isNaN(dur)) {
-                        dur = -1;
-                    }
-                    Media.onStatus(id, Media.MEDIA_DURATION, dur);
+                thisM.node.onloadstart = function () {
+                    Media.onStatus(id, Media.MEDIA_STATE, Media.MEDIA_STARTING);
                 };
 
-                thisM.node.onloadedmetadata = getDuration;
-                getDuration();
-            }
-            else {
+                thisM.node.ontimeupdate = function (e) {
+                    Media.onStatus(id, Media.MEDIA_POSITION, e.target.currentTime);
+                };
+
+                thisM.node.onplaying = function () {
+                    Media.onStatus(id, Media.MEDIA_STATE, Media.MEDIA_RUNNING);
+                };
+
+                thisM.node.ondurationchange = function (e) {
+                    Media.onStatus(id, Media.MEDIA_DURATION, e.target.duration || -1);
+                };
+
+                thisM.node.onerror = function(e) {
+                    // Due to media.spec.15 It should return MediaError for bad filename
+                    var err = e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED ?
+                        { code: MediaError.MEDIA_ERR_ABORTED } :
+                        e.target.error;
+
+                    Media.onStatus(id, Media.MEDIA_ERROR, err);
+                };
+
+                thisM.node.onended = function () {
+                    Media.onStatus(id, Media.MEDIA_STATE, Media.MEDIA_STOPPED);
+                };
+
+            } else {
                 lose && lose({ code: MediaError.MEDIA_ERR_ABORTED });
                 return false; // unable to create
             }
@@ -86,7 +100,6 @@ module.exports = {
 
         try {
             thisM.node.play();
-            Media.onStatus(id, Media.MEDIA_STATE, Media.MEDIA_RUNNING);
         } catch (err) {
             lose && lose({code:MediaError.MEDIA_ERR_ABORTED});
         }
@@ -98,12 +111,8 @@ module.exports = {
         try {
             var thisM = Media.get(id);
             thisM.node.pause();
-            if (thisM.node.currentTime != 0) {
-                // prevents failing w/ InvalidStateError if playback has not started
-                thisM.node.currentTime = 0;
-            }
+            thisM.node.currentTime = 0;
             Media.onStatus(id, Media.MEDIA_STATE, Media.MEDIA_STOPPED);
-            win();
         } catch (err) {
             lose("Failed to stop: "+err);
         }
@@ -113,9 +122,10 @@ module.exports = {
     seekToAudio:function(win, lose, args) {
         var id = args[0];
         var milliseconds = args[1];
+        var thisM = Media.get(id);
         try {
-            (Media.get(id)).node.currentTime = milliseconds / 1000;
-            win();
+            thisM.node.currentTime = milliseconds / 1000;
+            win(thisM.node.currentTime);
         } catch (err) {
             lose("Failed to seek: "+err);
         }
@@ -138,7 +148,6 @@ module.exports = {
         var id = args[0];
         try {
             var p = (Media.get(id)).node.currentTime;
-            Media.onStatus(id, Media.MEDIA_POSITION, p);
             win(p);
         } catch (err) {
             lose(err);
