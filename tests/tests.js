@@ -19,7 +19,7 @@
  *
  */
 // increased timeout for actual playback to give device chance to download and play mp3 file
-var ACTUAL_PLAYBACK_TEST_TIMEOUT = 10000;
+var ACTUAL_PLAYBACK_TEST_TIMEOUT = 30000;
  
 var isWindows = cordova.platformId == 'windows8' || cordova.platformId == 'windows';
 // detect whether audio hardware is available and enabled
