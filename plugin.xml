@@ -21,7 +21,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
 xmlns:android="http://schemas.android.com/apk/res/android"
 id="com.alphasoftware.plugins.media"
-version="1.0.17">
+version="1.0.18">
 
     <name>Media</name>
     <description>Cordova Media Plugin with MPEG 4 audio compression for iOS</description>

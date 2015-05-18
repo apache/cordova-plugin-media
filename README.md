@@ -111,7 +111,7 @@ The following constants are reported as the only parameter to the
 
 - `media.startRecord`: Start recording an audio file, uses MPEG4 compression on iOS.
 
-- 'media.startRecordWithCompression': Start recording an audio file, with SampleRate and NumberOfChannels specified. Uses MPEG4 compression. iOS only. 
+- `media.startRecordWithCompression`: Start recording an audio file, with SampleRate and NumberOfChannels specified. Uses MPEG4 compression. iOS only. 
 
 - `media.stopRecord`: Stop recording an audio file.
 
