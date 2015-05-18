@@ -132,6 +132,15 @@ Media.prototype.startRecord = function() {
 };
 
 /**
+ * Start recording audio file, with compression, for iOS only.
+ */
+
+Media.prototype.startRecordWithCompression = function(options) {
+    exec(null, this.errorCallback, "Media", "startRecordingAudioWithCompression", [this.id, this.src,options]);
+};
+
+
+/**
  * Stop recording audio file.
  */
 Media.prototype.stopRecord = function() {

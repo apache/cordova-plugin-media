@@ -21,7 +21,15 @@
 
 [![Build Status](https://travis-ci.org/apache/cordova-plugin-media.svg)](https://travis-ci.org/apache/cordova-plugin-media)
 
-This plugin provides the ability to record and play back audio files on a device.
+This plugin is a modified version of cordova-plugin-media  that provides the ability to record and play back audio files on a device.
+
+This modified media plugin uses MPEG4 compression for iOS audio recording, resulting in a significant reduction in the resultant audio file,
+which now uses (and requires) a .m4a extension.
+
+Also included is a new method:
+
+recordAudioWithCompression (options) where the options object includes the SampleRate and the NumberOfChannels.
+See the recordAudioWithCompression method description below for further details.
 
 __NOTE__: The current implementation does not adhere to a W3C
 specification for media capture, and is provided for convenience only.
@@ -39,7 +47,7 @@ Although in the global scope, it is not available until after the `deviceready` 
 
 ## Installation
 
-    cordova plugin add cordova-plugin-media
+    cordova plugin add com.alphasoftware.plugins.media
 
 ## Supported Platforms
 
@@ -101,7 +109,9 @@ The following constants are reported as the only parameter to the
 
 - `media.setVolume`: Set the volume for audio playback.
 
-- `media.startRecord`: Start recording an audio file.
+- `media.startRecord`: Start recording an audio file, uses MPEG4 compression on iOS.
+
+- 'media.startRecordWithCompression': Start recording an audio file, with SampleRate and NumberOfChannels specified. Uses MPEG4 compression. iOS only. 
 
 - `media.stopRecord`: Stop recording an audio file.
 
@@ -372,7 +382,7 @@ Starts recording an audio file.
     // Record audio
     //
     function recordAudio() {
-        var src = "myrecording.mp3";
+        var src = "myrecording.m4a";
         var mediaRec = new Media(src,
             // success callback
             function() {
@@ -396,13 +406,13 @@ Starts recording an audio file.
 
 ### iOS Quirks
 
-- iOS only records to files of type _.wav_ and returns an error if the file name extension is not correct.
+- iOS only records to files of type _.m4a_ and returns an error if the file name extension is not correct.
 
 - If a full path is not provided, the recording is placed in the application's `documents/tmp` directory. This can be accessed via the `File` API using `LocalFileSystem.TEMPORARY`. Any subdirectory specified at record time must already exist.
 
 - Files can be recorded and played back using the documents URI:
 
-        var myMedia = new Media("documents://beer.mp3")
+        var myMedia = new Media("documents://beer.m4a")
 
 ### Windows Quirks
 
@@ -415,6 +425,52 @@ Starts recording an audio file.
 ### Tizen Quirks
 
 - Not supported on Tizen devices.
+
+## media.startRecordWithCompression (options) - iOS Only
+
+Starts recording an audio file at the specified sample rate and number of audio channels.
+
+Options object may include:
+
+SampleRate: 44100, 32000, 16000, 12000, 8000
+This is the sample rate in hz.
+
+NumberOfChannels: 1 or 2
+
+All iOS devices currently support 1 input channel. This option is provided in anticipation of future device enhancements.
+A single channel recording is half the size of a stereo recording and unless the device supports a pair of microphones,
+use a single channel.
+
+   media.startRecordWithCompression(options);
+
+### Supported Platforms
+- iOS
+
+### Quick Example
+
+    // Record audio with compression
+    //
+    function recordCompressedAudio() {
+        var src = "myrecording.m4a";
+        var mediaRec = new Media(src,
+            // success callback
+            function() {
+                console.log("recordCompressedAudio():Audio Success");
+            },
+
+            // error callback
+            function(err) {
+                console.log("recordCompressedAudio():Audio Error: "+ err.code);
+            });
+
+        // Record compressed audio
+        var options = {
+             "SampleRate": 16000,
+            "NumberOfXhannels": 1
+	    }
+
+        mediaRec.startRecordWithCompression(options);
+    }
 
 ## media.stop
 
