@@ -468,8 +468,8 @@ use a single channel.
 
         // Record MPEG compressed audio, single channel at 16kHz
         var options = {
-            "SampleRate": 16000,
-            "NumberOfChannels": 1
+            SampleRate: 16000,
+            NumberOfChannels: 1
 	    }
 
         mediaRec.startRecordWithCompression(options);
