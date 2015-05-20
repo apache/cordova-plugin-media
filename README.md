@@ -17,9 +17,7 @@
          under the License.
 -->
 
-# cordova-plugin-media
-
-[![Build Status](https://travis-ci.org/apache/cordova-plugin-media.svg)](https://travis-ci.org/apache/cordova-plugin-media)
+# cordova-plugin-media-with-compression
 
 This plugin is a modified version of cordova-plugin-media  that provides the ability to record and play back audio files on a device.
 
@@ -463,10 +461,10 @@ use a single channel.
                 console.log("recordCompressedAudio():Audio Error: "+ err.code);
             });
 
-        // Record compressed audio
+        // Record MPEG compressed audio, single channel at 16kHz
         var options = {
-             "SampleRate": 16000,
-            "NumberOfXhannels": 1
+             SampleRate: 16000,
+            NumberOfChannels: 1
 	    }
 
         mediaRec.startRecordWithCompression(options);
