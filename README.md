@@ -45,7 +45,7 @@ Although in the global scope, it is not available until after the `deviceready` 
 
 ## Installation
 
-    cordova plugin add com.alphasoftware.plugins.media
+    cordova plugin add com.alphasoftware.plugins.media.withcompression
 
 ## Supported Platforms
 
