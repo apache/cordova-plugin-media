@@ -21,12 +21,17 @@
 
 This plugin is a modified version of cordova-plugin-media  that provides the ability to record and play back audio files on a device.
 
-This modified media plugin uses MPEG4 compression for iOS audio recording, resulting in a significant reduction in the resultant audio file,
-which now uses (and requires) a .m4a extension.
+This modified media plugin uses MPEG4 compression for iOS audio recording, resulting in a significant reduction in the recorded audio file
+size. A .m4a file extension is now required.  
 
-Also included is a new method:
+The reduction in file size was required for offline storage of the audio file within the native file system.
+This allows playback when the device is disconneted, a feature supported by Alpha Anywhere from [Alpha Software] [url].
 
-recordAudioWithCompression (options) where the options object includes the SampleRate and the NumberOfChannels.
+[url]: http://www.alphasoftware.com
+
+Also included is a new method (iOS only):
+
+__recordAudioWithCompression(options)__: The options object includes the SampleRate and the NumberOfChannels.
 See the recordAudioWithCompression method description below for further details.
 
 __NOTE__: The current implementation does not adhere to a W3C
