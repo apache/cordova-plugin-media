@@ -25,9 +25,9 @@ This modified media plugin uses MPEG4 compression for iOS audio recording, resul
 size. A .m4a file extension is now required.  
 
 The reduction in file size was required for offline storage of the audio file within the native file system.
-This allows playback when the device is disconneted, a feature supported by Alpha Anywhere from [Alpha Software] [url].
+This allows playback when the device is disconneted, a feature supported by Alpha Anywhere from [Alpha Software] [alphaurl].
 
-[url]: http://www.alphasoftware.com
+[alphaurl]: http://www.alphasoftware.com
 
 Also included is a new method (iOS only):
 
