@@ -371,7 +371,7 @@
         NSLog(@"Failed to initialize AVAudioPlayer: %@\n", [playerError localizedDescription]);
         audioFile.player = nil;
         if (self.avSession) {
-            [self.avSession setActive:NO error:nil];
+//            [self.avSession setActive:NO error:nil];
         }
         bError = YES;
     } else {
@@ -462,7 +462,7 @@
                 [audioFile.recorder stop];
             }
             if (self.avSession) {
-                [self.avSession setActive:NO error:nil];
+//                [self.avSession setActive:NO error:nil];
                 self.avSession = nil;
             }
             [[self soundCache] removeObjectForKey:mediaId];
@@ -548,7 +548,7 @@
                 }
                 audioFile.recorder = nil;
                 if (self.avSession) {
-                    [self.avSession setActive:NO error:nil];
+//                    [self.avSession setActive:NO error:nil];
                 }
                 jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_ABORTED message:errorMsg]];
                 [self.commandDelegate evalJs:jsString];
@@ -568,7 +568,7 @@
                     NSLog(@"%@", msg);
                     audioFile.recorder = nil;
                     if (self.avSession) {
-                        [self.avSession setActive:NO error:nil];
+//                        [self.avSession setActive:NO error:nil];
                     }
                     jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_ABORTED message:msg]];
                     [self.commandDelegate evalJs:jsString];
@@ -622,7 +622,7 @@
         jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_DECODE message:nil]];
     }
     if (self.avSession) {
-        [self.avSession setActive:NO error:nil];
+//        [self.avSession setActive:NO error:nil];
     }
     [self.commandDelegate evalJs:jsString];
 }
@@ -645,7 +645,7 @@
         jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_DECODE message:nil]];
     }
     if (self.avSession) {
-        [self.avSession setActive:NO error:nil];
+//        [self.avSession setActive:NO error:nil];
     }
     [self.commandDelegate evalJs:jsString];
 }
