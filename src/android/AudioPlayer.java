@@ -177,7 +177,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * @param file              The name of the file
      * @param options           SampleRate, NumberOfChannels
      */
-    public void startRecording(String file, JSONObject options) {
+    public void startRecordingWithCompression(String file, JSONObject options) {
         switch (this.mode) {
         case PLAY:
             Log.d(LOG_TAG, "AudioPlayer Error: Can't record in play mode.");
@@ -188,8 +188,6 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
 
             int sampleRate = options.getInt("SampleRate");
             int numberOfChannels = options.getInt("NumberOfChannels");
-
-            Log.d(sampleRate,"Sample rate.");
 
             this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             //this.recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT); // THREE_GPP);
