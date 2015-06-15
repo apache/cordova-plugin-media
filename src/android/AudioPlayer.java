@@ -177,7 +177,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * @param file              The name of the file
      * @param options           SampleRate, NumberOfChannels
      */
-    public void startRecordingWithCompression(String file, JSONObject options) {
+    public void startRecordingWithCompression(String file, Integer channels, Integer sampleRate) {
         switch (this.mode) {
         case PLAY:
             Log.d(LOG_TAG, "AudioPlayer Error: Can't record in play mode.");
@@ -186,18 +186,13 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         case NONE:
             this.audioFile = file;
 
-            Integer sampleRate = options.getInt("SampleRate");
-            Integer numberOfChannels = options.getInt("NumberOfChannels");
-
             this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            //this.recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT); // THREE_GPP);
-            //this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT); //AMR_NB);
             
             //Modified by REM 06/15/2015 to generate MPEG_4 output
             this.recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
             this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-            this.recorder.setAudioChannels(numberOfChannels); // single channel
-            this.recorder.setAudioSamplingRate(sampleRate); // 16 khz is fine for voice
+            this.recorder.setAudioChannels(channels); 
+            this.recorder.setAudioSamplingRate(sampleRate);
             this.recorder.setAudioEncodingBitRate(32000);
 
             this.recorder.setOutputFile(this.tempFile);

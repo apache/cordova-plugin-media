@@ -97,8 +97,18 @@ public class AudioHandler extends CordovaPlugin {
             } catch (IllegalArgumentException e) {
                 fileUriStr = target;
             }
+            
             JSONObject options = args.getJSONObject(2);
-            this.startRecordingAudioWithCompression(args.getString(0), FileHelper.stripFileProtocol(fileUriStr), options);
+
+            try {
+                Integer sampleRate = options.get("SampleRate");
+                Integer channels = options.get("NumberOfChannels");
+            } catch (JSONException e) {
+                Integer sampleRate = 8000;
+                Integer channels = 1;
+            }
+
+            this.startRecordingAudioWithCompression(args.getString(0), FileHelper.stripFileProtocol(fileUriStr), channels, sampleRate);
         }
         // ----------
 
@@ -268,9 +278,9 @@ public class AudioHandler extends CordovaPlugin {
      * @param file              The name of the file
      * @param options           JSONObject with sampleRate and number of channels
      */
-    public void startRecordingAudioWithCompression(String id, String file, JSONObject options) {
+    public void startRecordingAudioWithCompression(String id, String file, Integer channels, Integer sampleRate) {
         AudioPlayer audio = getOrCreatePlayer(id, file);
-        audio.startRecordingWithCompression(file, options);
+        audio.startRecordingWithCompression(file, channels, sampleRate);
     }
 
 
