@@ -186,8 +186,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         case NONE:
             this.audioFile = file;
 
-            int sampleRate = options.getInt("SampleRate");
-            int numberOfChannels = options.getInt("NumberOfChannels");
+            Integer sampleRate = options.getInt("SampleRate");
+            Integer numberOfChannels = options.getInt("NumberOfChannels");
 
             this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             //this.recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT); // THREE_GPP);
