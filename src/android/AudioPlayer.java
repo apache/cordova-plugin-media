@@ -100,9 +100,9 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         this.recorder = new MediaRecorder();
 
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            this.tempFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmprecording.3gp";
+            this.tempFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmprecording.m4a";
         } else {
-            this.tempFile = "/data/data/" + handler.cordova.getActivity().getPackageName() + "/cache/tmprecording.3gp";
+            this.tempFile = "/data/data/" + handler.cordova.getActivity().getPackageName() + "/cache/tmprecording.m4a";
         }
 
     }
@@ -141,14 +141,12 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         case NONE:
             this.audioFile = file;
             this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            //this.recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT); // THREE_GPP);
-            //this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT); //AMR_NB);
             
             //Modified by REM 06/15/2015 to generate MPEG_4 output
             this.recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
             this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
             this.recorder.setAudioChannels(1); // single channel
-            this.recorder.setAudioSamplingRate(8000); // 8 khz for small file size
+            this.recorder.setAudioSamplingRate(8000); // 8 khz is default, ok for voice recordings
             this.recorder.setAudioEncodingBitRate(32000);
 
             this.recorder.setOutputFile(this.tempFile);
@@ -175,7 +173,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * Start recording the specified file with compression.
      *
      * @param file              The name of the file
-     * @param options           SampleRate, NumberOfChannels
+     * @param channels          audio channels, 1 or 2
+     * @param sampleRate        sample rate in hz
      */
     public void startRecordingWithCompression(String file, Integer channels, Integer sampleRate) {
         switch (this.mode) {
@@ -194,6 +193,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             this.recorder.setAudioChannels(channels); 
             this.recorder.setAudioSamplingRate(sampleRate);
             this.recorder.setAudioEncodingBitRate(32000);
+
+            Log.d(LOG_TAG, "Recording started with SampleRate: " + sampleRate + "Channels: " + channels);
 
             this.recorder.setOutputFile(this.tempFile);
             try {
