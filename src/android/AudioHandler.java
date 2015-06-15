@@ -98,14 +98,18 @@ public class AudioHandler extends CordovaPlugin {
                 fileUriStr = target;
             }
             
+            // set defaults
+            Integer sampleRate = 8000;
+            Integer channels = 1;
+
             JSONObject options = args.getJSONObject(2);
 
             try {
-                Integer sampleRate = options.getInt("SampleRate");
-                Integer channels = options.getInt("NumberOfChannels");
+                sampleRate = options.getInt("SampleRate");
+                channels = options.getInt("NumberOfChannels");
             } catch (JSONException e) {
-                Integer sampleRate = 8000;
-                Integer channels = 1;
+                sampleRate = 8000;
+                channels = 1;
             }
 
             this.startRecordingAudioWithCompression(args.getString(0), FileHelper.stripFileProtocol(fileUriStr), channels, sampleRate);
