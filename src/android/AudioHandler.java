@@ -101,8 +101,8 @@ public class AudioHandler extends CordovaPlugin {
             JSONObject options = args.getJSONObject(2);
 
             try {
-                Integer sampleRate = options.get("SampleRate");
-                Integer channels = options.get("NumberOfChannels");
+                Integer sampleRate = options.getInt("SampleRate");
+                Integer channels = options.getInt("NumberOfChannels");
             } catch (JSONException e) {
                 Integer sampleRate = 8000;
                 Integer channels = 1;
