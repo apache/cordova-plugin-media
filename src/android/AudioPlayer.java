@@ -148,7 +148,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             this.recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
             this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
             this.recorder.setAudioChannels(1); // single channel
-            this.recorder.setAudioSamplingRate(16000); // 16 khz is fine for voice
+            this.recorder.setAudioSamplingRate(8000); // 8 khz for small file size
             this.recorder.setAudioEncodingBitRate(32000);
 
             this.recorder.setOutputFile(this.tempFile);
@@ -170,6 +170,59 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             sendErrorStatus(MEDIA_ERR_ABORTED);
         }
     }
+
+    /**
+     * Start recording the specified file with compression.
+     *
+     * @param file              The name of the file
+     * @param options           SampleRate, NumberOfChannels
+     */
+    public void startRecording(String file, JSONObject options) {
+        switch (this.mode) {
+        case PLAY:
+            Log.d(LOG_TAG, "AudioPlayer Error: Can't record in play mode.");
+            sendErrorStatus(MEDIA_ERR_ABORTED);
+            break;
+        case NONE:
+            this.audioFile = file;
+
+            int sampleRate = options.getInt("SampleRate");
+            int numberOfChannels = options.getInt("NumberOfChannels");
+
+            Log.d(sampleRate,"Sample rate.");
+
+            this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            //this.recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT); // THREE_GPP);
+            //this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT); //AMR_NB);
+            
+            //Modified by REM 06/15/2015 to generate MPEG_4 output
+            this.recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+            this.recorder.setAudioChannels(numberOfChannels); // single channel
+            this.recorder.setAudioSamplingRate(sampleRate); // 16 khz is fine for voice
+            this.recorder.setAudioEncodingBitRate(32000);
+
+            this.recorder.setOutputFile(this.tempFile);
+            try {
+                this.recorder.prepare();
+                this.recorder.start();
+                this.setState(STATE.MEDIA_RUNNING);
+                return;
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            sendErrorStatus(MEDIA_ERR_ABORTED);
+            break;
+        case RECORD:
+            Log.d(LOG_TAG, "AudioPlayer Error: Already recording.");
+            sendErrorStatus(MEDIA_ERR_ABORTED);
+        }
+    }
+
+
 
     /**
      * Save temporary recorded file to specified name

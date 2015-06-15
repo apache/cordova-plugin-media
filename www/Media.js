@@ -136,7 +136,7 @@ Media.prototype.startRecord = function() {
  */
 
 Media.prototype.startRecordWithCompression = function(options) {
-    exec(null, this.errorCallback, "Media", "startRecordingAudioWithCompression", [this.id, this.src,options]);
+    exec(null, this.errorCallback, "Media", "startRecordingAudioWithCompression", [this.id, this.src, options]);
 };
 
 

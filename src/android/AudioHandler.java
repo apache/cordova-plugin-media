@@ -86,6 +86,22 @@ public class AudioHandler extends CordovaPlugin {
             }
             this.startRecordingAudio(args.getString(0), FileHelper.stripFileProtocol(fileUriStr));
         }
+        
+        // REM mod
+        else if (action.equals("startRecordingAudioWithCompression")) {
+            String target = args.getString(1);
+            String fileUriStr;
+            try {
+                Uri targetUri = resourceApi.remapUri(Uri.parse(target));
+                fileUriStr = targetUri.toString();
+            } catch (IllegalArgumentException e) {
+                fileUriStr = target;
+            }
+            JSONObject options = args.getJSONObject(2);
+            this.startRecordingAudioWithCompression(args.getString(0), FileHelper.stripFileProtocol(fileUriStr), options);
+        }
+        // ----------
+
         else if (action.equals("stopRecordingAudio")) {
             this.stopRecordingAudio(args.getString(0));
         }
@@ -245,6 +261,18 @@ public class AudioHandler extends CordovaPlugin {
         AudioPlayer audio = getOrCreatePlayer(id, file);
         audio.startRecording(file);
     }
+
+    /**
+     * Start recording with compression and save the specified file.
+     * @param id                The id of the audio player
+     * @param file              The name of the file
+     * @param options           JSONObject with sampleRate and number of channels
+     */
+    public void startRecordingAudioWithCompression(String id, String file, JSONObject options) {
+        AudioPlayer audio = getOrCreatePlayer(id, file);
+        audio.startRecordingWithCompression(file, options);
+    }
+
 
     /**
      * Stop recording and save to the file specified when recording started.
