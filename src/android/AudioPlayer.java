@@ -148,8 +148,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             this.recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
             this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
             this.recorder.setAudioChannels(1); // single channel
+            this.recorder.setAudioSampleRate(16000); // 16 khz is fine for voice
             
-            //this.recorder.setAudioSampleRate(16000); // 16 khz is fine for voice
             //this.recorder.setAudioEncodingBitRate(32000);
 
             this.recorder.setOutputFile(this.tempFile);
