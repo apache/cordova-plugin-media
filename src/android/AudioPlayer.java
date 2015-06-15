@@ -141,8 +141,16 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         case NONE:
             this.audioFile = file;
             this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            this.recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT); // THREE_GPP);
-            this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT); //AMR_NB);
+            //this.recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT); // THREE_GPP);
+            //this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT); //AMR_NB);
+            
+            //Modified by REM 06/15/2015 to generate MPEG_4 output
+            this.recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+            this.recorder.setAudioSampleRate(16000); // 16 khz is fine for voice
+            this.recorder.setAudioChannels(1); // single channel
+            this.recorder.setAudioEncodingBitRate(32000);
+
             this.recorder.setOutputFile(this.tempFile);
             try {
                 this.recorder.prepare();
