@@ -432,7 +432,7 @@ Starts recording an audio file.
 
 - Not supported on Tizen devices.
 
-## media.startRecordWithCompression (options) - Android and iOS Only
+## media.startRecordWithCompression (options)
 
 Starts recording an audio file at the specified sample rate and number of audio channels.
 
@@ -450,6 +450,7 @@ use a single channel.
    media.startRecordWithCompression(options);
 
 ### Supported Platforms
+- Android
 - iOS
 
 ### Quick Example
