@@ -147,7 +147,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
             this.recorder.setAudioChannels(1); // single channel
             this.recorder.setAudioSamplingRate(8000); // 8 khz is default, ok for voice recordings
-            this.recorder.setAudioEncodingBitRate(32000);
+            this.recorder.setAudioEncodingBitRate(8192); // low, keep file size small
 
             this.recorder.setOutputFile(this.tempFile);
             try {
@@ -191,9 +191,13 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
             this.recorder.setAudioChannels(channels); 
             this.recorder.setAudioSamplingRate(sampleRate);
-            this.recorder.setAudioEncodingBitRate(32000);
+            Integer bitRate = 32000; // default
+            if sampleRate < 16000 {
+                bitRate = 8192
+            }
+            this.recorder.setAudioEncodingBitRate(bitRate);
 
-            Log.d(LOG_TAG, "MPEG-4 recording started with sample rate of " + sampleRate + "hz, " + channels + "audio channel(s)");
+            Log.d(LOG_TAG, "MPEG-4 recording started with bit rate of " + bitRate + ", sample rate of " + sampleRate + "hz, " + channels + " audio channel(s)");
 
             this.recorder.setOutputFile(this.tempFile);
             try {
