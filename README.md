@@ -19,16 +19,20 @@
 
 # cordova-plugin-media-with-compression
 
-This plugin is a modified version of cordova-plugin-media  that provides the ability to record and play back audio files on a device.
+This plugin is a modified version of cordova-plugin-media that provides the ability to record and play back audio files on a device.
 
-This plugin uses MPEG4 compression for iOS audio recording, resulting in a significant reduction in the recorded audio file
-size. A .m4a file extension is now required.  
+This plugin uses MPEG4 compression for iOS and (as of version 1.0.20) Android audio recording. On iOS, this results in a significant reduction in the recorded audio file
+size when compared to the stock Media plugin.
+
+Since Android and iOS will record MPEG4 encoded audio with this plugin, the files generated are now compatible for playback across both platforms.
+
+A .m4a file extension is now required.  
 
 The reduction in file size is required for efficient online/offline storage and retrieval of the audio files. The smaller file size allows the audio file to be efficiently (smaller payload) uploaded to a server for storage and retrieved (while the device is online) for storage within the device file system for offline (disconnected) playback. This is a feature supported by Alpha Anywhere from [Alpha Software] [alphaurl].
 
 [alphaurl]: http://www.alphasoftware.com
 
-Also included is a new method (iOS only):
+Also included is a new method (iOS and Android only):
 
 __recordAudioWithCompression(options)__: The options object includes the SampleRate and the NumberOfChannels.
 See the recordAudioWithCompression method description below for further details.
@@ -403,12 +407,12 @@ Starts recording an audio file.
 
 ### Android Quirks
 
-- Android devices record audio in Adaptive Multi-Rate format. The specified file should end with a _.amr_ extension.
+- Android devices record audio in MPEG4 format with this plugin. The specified file should end with a _.m4a_ extension.
 - The hardware volume controls are wired up to the media volume while any Media objects are alive. Once the last created Media object has `release()` called on it, the volume controls revert to their default behaviour. The controls are also reset on page navigation, as this releases all Media objects.
 
 ### iOS Quirks
 
-- iOS only records to files of type _.m4a_ and returns an error if the file name extension is not correct.
+- iOS devices will record in MPEG4 format with this plugin. The specified file should end with a  _.m4a_ and an error is returned if the file name extension is not correct.
 
 - If a full path is not provided, the recording is placed in the application's `documents/tmp` directory. This can be accessed via the `File` API using `LocalFileSystem.TEMPORARY`. Any subdirectory specified at record time must already exist.
 
@@ -428,7 +432,7 @@ Starts recording an audio file.
 
 - Not supported on Tizen devices.
 
-## media.startRecordWithCompression (options) - iOS Only
+## media.startRecordWithCompression (options) - Android and iOS Only
 
 Starts recording an audio file at the specified sample rate and number of audio channels.
 
@@ -439,7 +443,7 @@ This is the sample rate in hz.
 
 NumberOfChannels: 1 or 2
 
-All iOS devices currently support 1 input channel. This option is provided in anticipation of future device enhancements.
+All iOS and Android devices currently support 1 input channel. This option is provided in anticipation of future device enhancements.
 A single channel recording is half the size of a stereo recording and unless the device supports a pair of microphones,
 use a single channel.
 

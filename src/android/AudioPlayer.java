@@ -130,7 +130,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     /**
      * Start recording the specified file.
      *
-     * @param file              The name of the file
+     * @param file              The name of the file, should use .m4a extension
      */
     public void startRecording(String file) {
         switch (this.mode) {
@@ -172,9 +172,9 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     /**
      * Start recording the specified file with compression.
      *
-     * @param file              The name of the file
+     * @param file              The name of the file, should use .m4a extension
      * @param channels          audio channels, 1 or 2
-     * @param sampleRate        sample rate in hz
+     * @param sampleRate        sample rate in hz, 8000 to 48000
      */
     public void startRecordingWithCompression(String file, Integer channels, Integer sampleRate) {
         switch (this.mode) {
@@ -187,14 +187,13 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
 
             this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             
-            //Modified by REM 06/15/2015 to generate MPEG_4 output
             this.recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
             this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
             this.recorder.setAudioChannels(channels); 
             this.recorder.setAudioSamplingRate(sampleRate);
             this.recorder.setAudioEncodingBitRate(32000);
 
-            Log.d(LOG_TAG, "Recording started with SampleRate: " + sampleRate + "Channels: " + channels);
+            Log.d(LOG_TAG, "MPEG-4 recording started with sample rate of " + sampleRate + "hz, " channels + "audio channel(s)");
 
             this.recorder.setOutputFile(this.tempFile);
             try {

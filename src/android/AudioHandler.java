@@ -40,8 +40,10 @@ import java.util.HashMap;
  * This class called by CordovaActivity to play and record audio.
  * The file can be local or over a network using http.
  *
- * Audio formats supported (tested):
+ * Audio formats supported for player(tested):
  * 	.mp3, .wav
+ * 
+ * Audio recording uses MPEG-4 encoding, in a m4a wrapper.
  *
  * Local audio files must reside in one of two places:
  * 		android_asset: 		file name must start with /android_asset/sound.mp3
@@ -50,8 +52,8 @@ import java.util.HashMap;
 public class AudioHandler extends CordovaPlugin {
 
     public static String TAG = "AudioHandler";
-    HashMap<String, AudioPlayer> players;	// Audio player object
-    ArrayList<AudioPlayer> pausedForPhone;     // Audio players that were paused when phone call came in
+    HashMap<String, AudioPlayer> players;       // Audio player object
+    ArrayList<AudioPlayer> pausedForPhone;      // Audio players that were paused when phone call came in
     private int origVolumeStream = -1;
     private CallbackContext messageChannel;
 
