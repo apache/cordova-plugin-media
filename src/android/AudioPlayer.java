@@ -192,8 +192,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             this.recorder.setAudioChannels(channels); 
             this.recorder.setAudioSamplingRate(sampleRate);
             Integer bitRate = 32000; // default
-            if sampleRate < 16000 {
-                bitRate = 8192
+            if (sampleRate < 16000) {
+                bitRate = 8192;
             }
             this.recorder.setAudioEncodingBitRate(bitRate);
 
