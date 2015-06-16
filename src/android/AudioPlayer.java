@@ -146,8 +146,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             this.recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
             this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
             this.recorder.setAudioChannels(1); // single channel
-            this.recorder.setAudioSamplingRate(8000); // 8 khz is default, ok for voice recordings
-            this.recorder.setAudioEncodingBitRate(8192); // low, keep file size small
+            this.recorder.setAudioSamplingRate(44100); // 44.1 kHz for decent sound, similar to stock iOS media plugin
+            this.recorder.setAudioEncodingBitRate(32000); // low bit rate
 
             this.recorder.setOutputFile(this.tempFile);
             try {
@@ -191,7 +191,13 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
             this.recorder.setAudioChannels(channels); 
             this.recorder.setAudioSamplingRate(sampleRate);
-            Integer bitRate = 32000; // default
+
+            // On Android with MPEG4/AAC, bitRate affects file size, surprisingly, sample rate does not.
+            // So we adjust the bit rate for better compression, based on requested sample rate.
+            Integer bitRate = 32000; // default bit rate
+            if (sampleRate < 30000) {
+                bitrate = 16384;
+            }
             if (sampleRate < 16000) {
                 bitRate = 8192;
             }
