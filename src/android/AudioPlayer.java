@@ -196,7 +196,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             // So we adjust the bit rate for better compression, based on requested sample rate.
             Integer bitRate = 32000; // default bit rate
             if (sampleRate < 30000) {
-                bitrate = 16384;
+                bitRate = 16384;
             }
             if (sampleRate < 16000) {
                 bitRate = 8192;
