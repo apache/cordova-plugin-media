@@ -193,7 +193,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             this.recorder.setAudioSamplingRate(sampleRate);
             this.recorder.setAudioEncodingBitRate(32000);
 
-            Log.d(LOG_TAG, "MPEG-4 recording started with sample rate of " + sampleRate + "hz, " channels + "audio channel(s)");
+            Log.d(LOG_TAG, "MPEG-4 recording started with sample rate of " + sampleRate + "hz, " + channels + "audio channel(s)");
 
             this.recorder.setOutputFile(this.tempFile);
             try {

@@ -21,7 +21,7 @@
 
 This plugin is a modified version of cordova-plugin-media that provides the ability to record and play back audio files on a device.
 
-This plugin uses MPEG4 compression for iOS and (as of version 1.0.20) Android audio recording. On iOS, this results in a significant reduction in the recorded audio file
+This plugin uses MPEG4 compression for iOS and (as of version 1.0.21) Android audio recording. On iOS, this results in a significant reduction in the recorded audio file
 size when compared to the stock Media plugin.
 
 Since Android and iOS will record MPEG4 encoded audio with this plugin, the files generated are now compatible for playback across both platforms.
