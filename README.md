@@ -115,9 +115,9 @@ The following constants are reported as the only parameter to the
 
 - `media.setVolume`: Set the volume for audio playback.
 
-- `media.startRecord`: Start recording an audio file, uses MPEG4 compression on iOS.
+- `media.startRecord`: Start recording an audio file, uses MPEG4 compression on iOS and Android.
 
-- `media.startRecordWithCompression`: Start recording an audio file, with SampleRate and NumberOfChannels specified. Uses MPEG4 compression. iOS only. 
+- `media.startRecordWithCompression`: Start recording an audio file, with SampleRate and NumberOfChannels specified. Uses MPEG4 compression. iOS and Android only. 
 
 - `media.stopRecord`: Stop recording an audio file.
 
