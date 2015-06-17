@@ -21,118 +21,116 @@
 
 [![Build Status](https://travis-ci.org/apache/cordova-plugin-media.svg)](https://travis-ci.org/apache/cordova-plugin-media)
 
-This plugin provides the ability to record and play back audio files on a device.
+這個外掛程式提供錄製和播放設備上的音訊檔的能力。
 
-__NOTE__: The current implementation does not adhere to a W3C
-specification for media capture, and is provided for convenience only.
-A future implementation will adhere to the latest W3C specification
-and may deprecate the current APIs.
+**注**： 當前的實現並不遵循 W3C 規範的媒體捕獲和僅用於提供方便。 將來的實現將堅持以最新的 W3C 規範和可能棄用當前 Api。
 
-This plugin defines a global `Media` Constructor.
+這個外掛程式定義的全球 `Media` 建構函式。
 
-Although in the global scope, it is not available until after the `deviceready` event.
+雖然在全球範圍內，它不可用直到 `deviceready` 事件之後。
 
     document.addEventListener("deviceready", onDeviceReady, false);
     function onDeviceReady() {
         console.log(Media);
     }
+    
 
-## Installation
+## 安裝
 
     cordova plugin add cordova-plugin-media
+    
 
-## Supported Platforms
+## 支援的平臺
 
-- Android
-- BlackBerry 10
-- iOS
-- Windows Phone 7 and 8
-- Tizen
-- Windows 8
-- Windows
-- Browser
+  * Android 系統
+  * 黑莓 10
+  * iOS
+  * Windows Phone 7 和 8
+  * Tizen
+  * Windows 8
+  * Windows
+  * 瀏覽器
 
-## Windows Phone Quirks
+## Windows Phone 怪癖
 
-- Only one media file can be played back at a time.
+  * 只有一個媒體檔案，可以播放一次。
 
-- There are strict restrictions on how your application interacts with other media. See the [Microsoft documentation for details][url].
+  * 沒有嚴格限制對您的應用程式與其他媒體的對話模式。 請參見[Microsoft 文檔的詳細資訊](http://msdn.microsoft.com/en-us/library/windowsphone/develop/hh184838(v=vs.92).aspx).
 
-[url]: http://msdn.microsoft.com/en-us/library/windowsphone/develop/hh184838(v=vs.92).aspx
-
-## Media
+## 媒體
 
     var media = new Media(src, mediaSuccess, [mediaError], [mediaStatus]);
+    
 
-### Parameters
+### 參數
 
-- __src__: A URI containing the audio content. _(DOMString)_
+  * **src**： 包含音訊內容的 URI。*() DOMString*
 
-- __mediaSuccess__: (Optional) The callback that executes after a `Media` object has completed the current play, record, or stop action. _(Function)_
+  * **mediaSuccess**： （可選） 後執行的回檔 `Media` 物件已完成當前戲劇、 記錄或停止行動。*（函數）*
 
-- __mediaError__: (Optional) The callback that executes if an error occurs. _(Function)_
+  * **mediaError**： （可選） 如果錯誤發生時執行的回檔。*（函數）*
 
-- __mediaStatus__: (Optional) The callback that executes to indicate status changes. _(Function)_
+  * **mediaStatus**： （可選） 執行以指示狀態的更改的回檔。*（函數）*
 
-### Constants
+### 常量
 
-The following constants are reported as the only parameter to the
-`mediaStatus` callback:
+下列常量 `mediaStatus` 回檔報告作為唯一的參數：
 
-- `Media.MEDIA_NONE`     = 0;
-- `Media.MEDIA_STARTING` = 1;
-- `Media.MEDIA_RUNNING`  = 2;
-- `Media.MEDIA_PAUSED`   = 3;
-- `Media.MEDIA_STOPPED`  = 4;
+  * `Media.MEDIA_NONE` = 0;
+  * `Media.MEDIA_STARTING` = 1;
+  * `Media.MEDIA_RUNNING` = 2;
+  * `Media.MEDIA_PAUSED`= 3 ；
+  * `Media.MEDIA_STOPPED`= 4 ；
 
-### Methods
+### 方法
 
-- `media.getCurrentPosition`: Returns the current position within an audio file.
+  * `media.getCurrentPosition`： 返回一個音訊檔內的當前位置。
 
-- `media.getDuration`: Returns the duration of an audio file.
+  * `media.getDuration`： 返回一個音訊檔的持續時間。
 
-- `media.play`: Start or resume playing an audio file.
+  * `media.play`： 啟動或繼續播放音訊檔。
 
-- `media.pause`: Pause playback of an audio file.
+  * `media.pause`： 暫停播放的音訊檔。
 
-- `media.release`: Releases the underlying operating system's audio resources.
+  * `media.release`： 釋放底層作業系統的音訊資源。
 
-- `media.seekTo`: Moves the position within the audio file.
+  * `media.seekTo`： 在音訊檔內移動的位置。
 
-- `media.setVolume`: Set the volume for audio playback.
+  * `media.setVolume`： 設置音訊播放的音量。
 
-- `media.startRecord`: Start recording an audio file.
+  * `media.startRecord`： 開始錄製的音訊檔。
 
-- `media.stopRecord`: Stop recording an audio file.
+  * `media.stopRecord`： 停止錄製的音訊檔。
 
-- `media.stop`: Stop playing an audio file.
+  * `media.stop`： 停止播放音訊檔。
 
-### Additional ReadOnly Parameters
+### 附加唯讀參數
 
-- __position__: The position within the audio playback, in seconds.
-    - Not automatically updated during play; call `getCurrentPosition` to update.
+  * **position**： 內音訊播放，以秒為單位的位置。
+    
+      * 不會自動更新期間播放 ；調用 `getCurrentPosition` 來更新。
 
-- __duration__: The duration of the media, in seconds.
-
+  * **duration**: 媒體的持續時間以秒為單位。
 
 ## media.getCurrentPosition
 
-Returns the current position within an audio file.  Also updates the `Media` object's `position` parameter.
+返回一個音訊檔內的當前位置。此外可以更新 `Media` 物件 `Position` 參數。
 
     media.getCurrentPosition(mediaSuccess, [mediaError]);
+    
 
-### Parameters
+### 參數
 
-- __mediaSuccess__: The callback that is passed the current position in seconds.
+  * **mediaSuccess**： 傳遞的當前的位置，以秒為單位的回檔。
 
-- __mediaError__: (Optional) The callback to execute if an error occurs.
+  * **mediaError**： （可選） 回檔執行如果發生錯誤。
 
-### Quick Example
+### 快速的示例
 
     // Audio player
     //
     var my_media = new Media(src, onSuccess, onError);
-
+    
     // Update media position every second
     var mediaTimer = setInterval(function () {
         // get media position
@@ -149,21 +147,21 @@ Returns the current position within an audio file.  Also updates the `Media` obj
             }
         );
     }, 1000);
-
+    
 
 ## media.getDuration
 
-Returns the duration of an audio file in seconds. If the duration is unknown, it returns a value of -1.
-
+返回一個音訊檔的持續時間以秒為單位。如果持續時間是未知的則傳回值為-1。
 
     media.getDuration();
+    
 
-### Quick Example
+### 快速的示例
 
     // Audio player
     //
     var my_media = new Media(src, onSuccess, onError);
-
+    
     // Get duration
     var counter = 0;
     var timerDur = setInterval(function() {
@@ -177,16 +175,16 @@ Returns the duration of an audio file in seconds. If the duration is unknown, it
             document.getElementById('audio_duration').innerHTML = (dur) + " sec";
         }
     }, 100);
-
+    
 
 ## media.pause
 
-Pauses playing an audio file.
+暫停播放音訊檔。
 
     media.pause();
+    
 
-
-### Quick Example
+### 快速的示例
 
     // Play audio
     //
@@ -198,25 +196,25 @@ Pauses playing an audio file.
             // error callback
             function (err) { console.log("playAudio():Audio Error: " + err); }
         );
-
+    
         // Play audio
         my_media.play();
-
+    
         // Pause after 10 seconds
         setTimeout(function () {
             media.pause();
         }, 10000);
     }
-
+    
 
 ## media.play
 
-Starts or resumes playing an audio file.
+開始或繼續播放音訊檔。
 
     media.play();
+    
 
-
-### Quick Example
+### 快速的示例
 
     // Play audio
     //
@@ -235,64 +233,58 @@ Starts or resumes playing an audio file.
         // Play audio
         my_media.play();
     }
+    
 
+### iOS 的怪癖
 
-### iOS Quirks
-
-- __numberOfLoops__: Pass this option to the `play` method to specify
-  the number of times you want the media file to play, e.g.:
-
+  * **numberOfLoops**： 傳遞到此選項 `play` 方法，以指定的次數，你想讓媒體檔案以播放，例如：
+    
         var myMedia = new Media("http://audio.ibeat.org/content/p1rj1s/p1rj1s_-_rockGuitar.mp3")
         myMedia.play({ numberOfLoops: 2 })
+        
 
-- __playAudioWhenScreenIsLocked__: Pass in this option to the `play`
-  method to specify whether you want to allow playback when the screen
-  is locked.  If set to `true` (the default value), the state of the
-  hardware mute button is ignored, e.g.:
-
+  * **playAudioWhenScreenIsLocked**： 通過此選項可在 `play` 方法，以指定您是否要允許播放時螢幕鎖定。 如果設置為 `true` （預設值），將忽略硬體靜音按鈕的狀態，例如：
+    
         var myMedia = new Media("http://audio.ibeat.org/content/p1rj1s/p1rj1s_-_rockGuitar.mp3")
         myMedia.play({ playAudioWhenScreenIsLocked : false })
+        
 
-- __order of file search__: When only a file name or simple path is
-  provided, iOS searches in the `www` directory for the file, then in
-  the application's `documents/tmp` directory:
-
+  * **檔搜索順序**： 當只有一個檔的名稱或簡單路徑提供時，搜索中的 iOS `www` 目錄為該檔，然後在應用程式中的 `documents/tmp` 目錄：
+    
         var myMedia = new Media("audio/beer.mp3")
         myMedia.play()  // first looks for file in www/audio/beer.mp3 then in <application>/documents/tmp/audio/beer.mp3
+        
 
 ## media.release
 
-Releases the underlying operating system's audio resources.
-This is particularly important for Android, since there are a finite amount of
-OpenCore instances for media playback. Applications should call the `release`
-function for any `Media` resource that is no longer needed.
+釋放底層作業系統的音訊資源。 這是安卓系統，特別是重要的因為有一個有限的 OpenCore 實例進行媒體重播。 應用程式應調用 `release` 功能不再需要任何 `Media` 資源。
 
     media.release();
+    
 
-
-### Quick Example
+### 快速的示例
 
     // Audio player
     //
     var my_media = new Media(src, onSuccess, onError);
-
+    
     my_media.play();
     my_media.stop();
     my_media.release();
-
+    
 
 ## media.seekTo
 
-Sets the current position within an audio file.
+在音訊檔中設置的當前的位置。
 
     media.seekTo(milliseconds);
+    
 
-### Parameters
+### 參數
 
-- __milliseconds__: The position to set the playback position within the audio, in milliseconds.
+  * **miliseconds）**： 要以毫秒為單位設置中，音訊的播放位置的位置。
 
-
-### Quick Example
+### 快速的示例
 
     // Audio player
     //
@@ -302,28 +294,29 @@ Sets the current position within an audio file.
     setTimeout(function() {
         my_media.seekTo(10000);
     }, 5000);
+    
 
+### 黑莓 10 怪癖
 
-### BlackBerry 10 Quirks
-
-- Not supported on BlackBerry OS 5 devices.
+  * 黑莓 OS 5 設備上不支援。
 
 ## media.setVolume
 
-Set the volume for an audio file.
+設置音訊檔的音量。
 
     media.setVolume(volume);
+    
 
-### Parameters
+### 參數
 
-- __volume__: The volume to set for playback.  The value must be within the range of 0.0 to 1.0.
+  * **volume**： 要為播放設置的卷。值必須在 0.0 到 1.0 的範圍內。
 
-### Supported Platforms
+### 支援的平臺
 
-- Android
-- iOS
+  * Android 系統
+  * iOS
 
-### Quick Example
+### 快速的示例
 
     // Play audio
     //
@@ -338,36 +331,37 @@ Set the volume for an audio file.
             function(err) {
                 console.log("playAudio():Audio Error: "+err);
         });
-
+    
         // Play audio
         my_media.play();
-
+    
         // Mute volume after 2 seconds
         setTimeout(function() {
             my_media.setVolume('0.0');
         }, 2000);
-
+    
         // Set volume to 1.0 after 5 seconds
         setTimeout(function() {
             my_media.setVolume('1.0');
         }, 5000);
     }
-
+    
 
 ## media.startRecord
 
-Starts recording an audio file.
+開始錄製音訊檔。
 
     media.startRecord();
+    
 
-### Supported Platforms
+### 支援的平臺
 
-- Android
-- iOS
-- Windows Phone 7 and 8
-- Windows
+  * Android 系統
+  * iOS
+  * Windows Phone 7 和 8
+  * Windows
 
-### Quick Example
+### 快速的示例
 
     // Record audio
     //
@@ -378,51 +372,53 @@ Starts recording an audio file.
             function() {
                 console.log("recordAudio():Audio Success");
             },
-
+    
             // error callback
             function(err) {
                 console.log("recordAudio():Audio Error: "+ err.code);
             });
-
+    
         // Record audio
         mediaRec.startRecord();
     }
+    
 
+### Android 的怪癖
 
-### Android Quirks
+  * Android 設備音訊格式記錄的自我調整多速率。指定的檔應以*.amr*副檔名結尾。
+  * 硬體音量控制有線到媒體卷中，而任何媒體物件是還活著。 一旦最後創建的媒體物件具有 `release()` 在它上面調用，音量控制還原為其預設行為。 因為這會釋放所有媒體物件，控制項也上頁面導航，重置。
 
-- Android devices record audio in Adaptive Multi-Rate format. The specified file should end with a _.amr_ extension.
-- The hardware volume controls are wired up to the media volume while any Media objects are alive. Once the last created Media object has `release()` called on it, the volume controls revert to their default behaviour. The controls are also reset on page navigation, as this releases all Media objects.
+### iOS 的怪癖
 
-### iOS Quirks
+  * iOS 只記錄到檔的類型*.wav*和返回一個錯誤如果檔副檔名不正確。
 
-- iOS only records to files of type _.wav_ and returns an error if the file name extension is not correct.
+  * 如果未提供的完整路徑，錄音放在應用程式的 `documents/tmp` 目錄。 這可以通過訪問 `File` API 使用 `LocalFileSystem.TEMPORARY` 。 在記錄時指定的任何子目錄中必須已經存在。
 
-- If a full path is not provided, the recording is placed in the application's `documents/tmp` directory. This can be accessed via the `File` API using `LocalFileSystem.TEMPORARY`. Any subdirectory specified at record time must already exist.
-
-- Files can be recorded and played back using the documents URI:
-
+  * 檔可以記錄和演奏的後面使用的檔的 URI：
+    
         var myMedia = new Media("documents://beer.mp3")
+        
 
-### Windows Quirks
+### Windows 的怪癖
 
-- Windows devices can use MP3, M4A and WMA formats for recorded audio. However in most cases it is not possible to use MP3 for audio recording on _Windows Phone 8.1_ devices, because an MP3 encoder is [not shipped with Windows Phone](https://msdn.microsoft.com/en-us/library/windows/apps/windows.media.mediaproperties.mediaencodingprofile.createmp3.aspx).
+  * Windows 設備可以使用 MP3、 M4A、 WMA 格式錄製音訊。 然而在大多數情況下它是不可能用於 MP3 音訊記錄在*Windows Phone 8.1*設備上，因為 MP3 編碼器是[不附帶 Windows Phone](https://msdn.microsoft.com/en-us/library/windows/apps/windows.media.mediaproperties.mediaencodingprofile.createmp3.aspx).
 
-- If a full path is not provided, the recording is placed in the AppData/temp directory. This can be accessed via the `File` API using `LocalFileSystem.TEMPORARY` or 'ms-appdata:///temp/<filename>' URI.
+  * 如果沒有提供完整的路徑，錄音被放在應用程式/temp 目錄。這可以通過訪問 `檔` API 使用 `LocalFileSystem.TEMPORARY` 或 ' ms appdata： temp / / /<filename>' URI。
 
-- Any subdirectory specified at record time must already exist.
+  * 在記錄時指定的任何子目錄中必須已經存在。
 
-### Tizen Quirks
+### Tizen 怪癖
 
-- Not supported on Tizen devices.
+  * 不支援在 Tizen 設備上。
 
 ## media.stop
 
-Stops playing an audio file.
+停止播放音訊檔。
 
     media.stop();
+    
 
-### Quick Example
+### 快速的示例
 
     // Play audio
     //
@@ -438,31 +434,32 @@ Stops playing an audio file.
                 console.log("playAudio():Audio Error: "+err);
             }
         );
-
+    
         // Play audio
         my_media.play();
-
+    
         // Pause after 10 seconds
         setTimeout(function() {
             my_media.stop();
         }, 10000);
     }
-
+    
 
 ## media.stopRecord
 
-Stops recording an audio file.
+停止錄製的音訊檔。
 
     media.stopRecord();
+    
 
-### Supported Platforms
+### 支援的平臺
 
-- Android
-- iOS
-- Windows Phone 7 and 8
-- Windows
+  * Android 系統
+  * iOS
+  * Windows Phone 7 和 8
+  * Windows
 
-### Quick Example
+### 快速的示例
 
     // Record audio
     //
@@ -473,42 +470,40 @@ Stops recording an audio file.
             function() {
                 console.log("recordAudio():Audio Success");
             },
-
+    
             // error callback
             function(err) {
                 console.log("recordAudio():Audio Error: "+ err.code);
             }
         );
-
+    
         // Record audio
         mediaRec.startRecord();
-
+    
         // Stop recording after 10 seconds
         setTimeout(function() {
             mediaRec.stopRecord();
         }, 10000);
     }
+    
 
+### Tizen 怪癖
 
-### Tizen Quirks
-
-- Not supported on Tizen devices.
+  * 不支援在 Tizen 設備上。
 
 ## MediaError
 
-A `MediaError` object is returned to the `mediaError` callback
-function when an error occurs.
+當發生錯誤時，`mediaError` 回呼函數情況下會返回一個 `MediaError` 物件。
 
-### Properties
+### 屬性
 
-- __code__: One of the predefined error codes listed below.
+  * **code**： 下面列出的預定義的錯誤代碼之一。
 
-- __message__: An error message describing the details of the error.
+  * **message**： 錯誤訊息，描述該錯誤的詳細資訊。
 
-### Constants
+### 常量
 
-- `MediaError.MEDIA_ERR_ABORTED`        = 1
-- `MediaError.MEDIA_ERR_NETWORK`        = 2
-- `MediaError.MEDIA_ERR_DECODE`         = 3
-- `MediaError.MEDIA_ERR_NONE_SUPPORTED` = 4
-
+  * `MediaError.MEDIA_ERR_ABORTED`= 1
+  * `MediaError.MEDIA_ERR_NETWORK`= 2
+  * `MediaError.MEDIA_ERR_DECODE`= 3
+  * `MediaError.MEDIA_ERR_NONE_SUPPORTED`= 4
