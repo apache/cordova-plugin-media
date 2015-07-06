@@ -19,7 +19,6 @@
 
 # cordova-plugin-media
 
-[![Build Status](https://travis-ci.org/apache/cordova-plugin-media.svg)](https://travis-ci.org/apache/cordova-plugin-media)
 
 This plugin provides the ability to record and play back audio files on a device.
 
