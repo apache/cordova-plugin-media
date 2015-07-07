@@ -387,6 +387,7 @@
 
 - (void)stopPlayingAudio:(CDVInvokedUrlCommand*)command
 {
+    [self.commandDelegate runInBackground:^{
     NSString* mediaId = [command argumentAtIndex:0];
     CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
     NSString* jsString = nil;
@@ -400,10 +401,12 @@
     if (jsString) {
         [self.commandDelegate evalJs:jsString];
     }
+    }];
 }
 
 - (void)pausePlayingAudio:(CDVInvokedUrlCommand*)command
 {
+    [self.commandDelegate runInBackground:^{
     NSString* mediaId = [command argumentAtIndex:0];
     NSString* jsString = nil;
     CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
@@ -418,6 +421,7 @@
     if (jsString) {
         [self.commandDelegate evalJs:jsString];
     }
+    }];
 }
 
 - (void)seekToAudio:(CDVInvokedUrlCommand*)command
@@ -426,6 +430,7 @@
     // 0 = Media id
     // 1 = path to resource
     // 2 = seek to location in milliseconds
+    [self.commandDelegate runInBackground:^{
 
     NSString* mediaId = [command argumentAtIndex:0];
 
@@ -449,6 +454,7 @@
 
         [self.commandDelegate evalJs:jsString];
     }
+    }];
 }
 
 - (void)release:(CDVInvokedUrlCommand*)command
@@ -476,6 +482,7 @@
 
 - (void)getCurrentPositionAudio:(CDVInvokedUrlCommand*)command
 {
+    [self.commandDelegate runInBackground:^{
     NSString* callbackId = command.callbackId;
     NSString* mediaId = [command argumentAtIndex:0];
 
@@ -491,6 +498,7 @@
     NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_POSITION, position];
     [self.commandDelegate evalJs:jsString];
     [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+    }];
 }
 
 - (void)startRecordingAudio:(CDVInvokedUrlCommand*)command
@@ -632,6 +640,7 @@
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer*)player successfully:(BOOL)flag
 {
+    [self.commandDelegate runInBackground:^{
     CDVAudioPlayer* aPlayer = (CDVAudioPlayer*)player;
     NSString* mediaId = aPlayer.mediaId;
     CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
@@ -651,6 +660,7 @@
         [self.avSession setActive:NO error:nil];
     }
     [self.commandDelegate evalJs:jsString];
+    }];
 }
 
 - (void)onMemoryWarning
