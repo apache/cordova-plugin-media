@@ -214,6 +214,7 @@
 
 - (void)create:(CDVInvokedUrlCommand*)command
 {
+    [self.commandDelegate runInBackground:^{
     NSString* mediaId = [command argumentAtIndex:0];
     NSString* resourcePath = [command argumentAtIndex:1];
 
@@ -227,10 +228,12 @@
         CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }
+    }];
 }
 
 - (void)setVolume:(CDVInvokedUrlCommand*)command
 {
+    [self.commandDelegate runInBackground:^{
     NSString* callbackId = command.callbackId;
 
 #pragma unused(callbackId)
@@ -247,7 +250,7 @@
             [[self soundCache] setObject:audioFile forKey:mediaId];
         }
     }
-
+    }];
     // don't care for any callbacks
 }
 
@@ -459,6 +462,7 @@
 
 - (void)release:(CDVInvokedUrlCommand*)command
 {
+    [self.commandDelegate runInBackground:^{
     NSString* mediaId = [command argumentAtIndex:0];
 
     if (mediaId != nil) {
@@ -478,6 +482,7 @@
             NSLog(@"Media with id %@ released", mediaId);
         }
     }
+    }];
 }
 
 - (void)getCurrentPositionAudio:(CDVInvokedUrlCommand*)command
