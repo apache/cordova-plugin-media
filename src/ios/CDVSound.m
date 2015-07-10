@@ -256,8 +256,8 @@
     NSString* callbackId = command.callbackId;
 
 #pragma unused(callbackId)
-    NSString* mediaId = [command.arguments objectAtIndex:0];
-    NSNumber* rate = [command.arguments objectAtIndex:1 withDefault:[NSNumber numberWithFloat:1.0]];
+    NSString* mediaId = [command argumentAtIndex:0];
+    NSNumber* rate = [command argumentAtIndex:1 withDefault:[NSNumber numberWithFloat:1.0]];
 
     if ([self soundCache] != nil) {
         CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
@@ -326,8 +326,8 @@
                     audioFile.player.volume = [audioFile.volume floatValue];
                 }
 
+                audioFile.player.enableRate = YES;
                 if (audioFile.rate != nil) {
-                    audioFile.player.enableRate = YES
                     audioFile.player.rate = [audioFile.rate floatValue];
                 }
 
