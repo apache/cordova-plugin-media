@@ -153,6 +153,18 @@ Media.prototype.setVolume = function(volume) {
 };
 
 /**
+ * Adjust the playback rate.
+ */
+Media.prototype.setRate = function(rate) {
+    if (cordova.platformId === 'ios'){
+        exec(null, null, "Media", "setRate", [this.id, rate]);
+    } else {
+        console.warn('media.setRate method is currently not supported for', cordova.platformId, 'platform.')
+    }
+};
+
+
+/**
  * Audio has status update.
  * PRIVATE
  *
