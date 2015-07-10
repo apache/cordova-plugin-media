@@ -199,35 +199,10 @@ exports.defineAutoTests = function () {
                 }
             });
 
-<<<<<<< HEAD
             it("media.spec.16 position should be set properly", function (done) {
                 // no audio hardware available
                 if (!isAudioSupported) {
                     pending();
-=======
-        it("media.spec.17 duration should be set properly", function (done) {
-            if (cordova.platformId === 'blackberry10') {
-                expect(true).toFailWithMessage('Platform does not supported this feature');
-                done();
-                return
-            }
-            var mediaFile = 'http://cordova.apache.org/downloads/BlueZedEx.mp3',
-            mediaState = Media.MEDIA_STOPPED,
-            successCallback,
-            flag = true,
-            statusChange = function (statusCode) {
-                if (statusCode == Media.MEDIA_RUNNING && flag) {
-                    //flag variable used to ensure an extra security statement to ensure that the callback is processed only once,
-                    //in case for some reason the statusChange callback is reached more than one time with the same status code.
-                    //Some information about this kind of behavior it can be found at JIRA: CB-7099.
-                    flag = false;
-                    setTimeout(function () {
-                        expect(media1.getDuration()).toBeGreaterThan(0.0);
-                        media1.stop();
-                        media1.release();
-                        done();
-                    }, 1000);
->>>>>>> 062221e90883db49da05ad75f322ccea33433468
                 }
 
                 //context variable used as an extra security statement to ensure that the callback is processed only once,
@@ -294,8 +269,8 @@ exports.defineAutoTests = function () {
         it("media.spec.19 playback rate should be set properly using setRate", function (done) {
             if (cordova.platformId !== 'ios') {
                 expect(true).toFailWithMessage('Platform does not supported this feature');
-                done();
-                return
+                pending();
+                return;
             }
             var mediaFile = 'http://cordova.apache.org/downloads/BlueZedEx.mp3',
                 mediaState = Media.MEDIA_STOPPED,
@@ -545,7 +520,7 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     function recordAudio() {
         console.log("recordAudio()");
         console.log(" -- media=" + mediaRec);
-        if (mediaRec == null) {
+        if (!mediaRec) {
             var src = recordSrc;
             mediaRec = new Media(src,
                     function () {
@@ -776,6 +751,14 @@ exports.defineManualTests = function (contentEl, createActionButton) {
                 row : 2,
                 cell : 2
             }
+        }, {
+            id: "halfSpeedBtn",
+            content:"",
+            tag:"div",
+            position:{
+                row:0,
+                cell:2
+            }
         }
     ],
     elementsRecord =
@@ -835,6 +818,21 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     createActionButton('Pause', function () {
         pauseAudio();
     }, 'pauseBtn');
+    createActionButton('HalfSpeed', function() {
+    
+        if(halfSpeedBtn.firstChild.firstChild.innerText == 'HalfSpeed') {
+            halfSpeedBtn.firstChild.firstChild.innerText = 'FullSpeed';
+            media1.setRate(0.5);
+        }
+        else if(halfSpeedBtn.firstChild.firstChild.innerText == 'FullSpeed') {
+            halfSpeedBtn.firstChild.firstChild.innerText = 'DoubleSpeed';
+            media1.setRate(1.0);
+        }
+        else {
+            halfSpeedBtn.firstChild.firstChild.innerText = 'HalfSpeed';
+            media1.setRate(2.0);
+        }
+    }, 'halfSpeedBtn');
     createActionButton('Stop', function () {
         stopAudio();
     }, 'stopBtn');
