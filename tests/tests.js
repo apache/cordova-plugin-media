@@ -260,7 +260,7 @@ exports.defineAutoTests = function () {
         });
 
         it("media.spec.18 should contain a setRate function", function () {
-            var media1 = new Media();
+            var media1 = new Media("dummy");
             expect(media1.setRate).toBeDefined();
             expect(typeof media1.setRate).toBe('function');
             media1.release();
