@@ -276,6 +276,8 @@
 
 - (void)startPlayingAudio:(CDVInvokedUrlCommand*)command
 {
+    [self.commandDelegate runInBackground:^{
+
     NSString* callbackId = command.callbackId;
 
 #pragma unused(callbackId)
@@ -358,6 +360,7 @@
     }
     // else audioFile was nil - error already returned from audioFile for resource
     return;
+    }];
 }
 
 - (BOOL)prepareToPlay:(CDVAudioFile*)audioFile withId:(NSString*)mediaId
