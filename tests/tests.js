@@ -520,6 +520,9 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     function recordAudio() {
         console.log("recordAudio()");
         console.log(" -- media=" + mediaRec);
+
+        releaseAudio();
+
         if (!mediaRec) {
             var src = recordSrc;
             mediaRec = new Media(src,
@@ -601,7 +604,7 @@ exports.defineManualTests = function (contentEl, createActionButton) {
             console.log("error creating file for Win recording");
         };
         var gotFile = function (file) {
-            recordSrc = file.fullPath.replace(/\//g, '\\');
+            recordSrc = file.name;
         };
         var gotFS = function (fileSystem) {
             fileSystem.root.getFile("WinRecording.m4a", {
