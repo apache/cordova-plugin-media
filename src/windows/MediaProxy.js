@@ -326,6 +326,28 @@ function fullPathToAppData(uri) {
 }
 
 /**
+ * Converts cdvfile paths to ms-appdata path
+ * @param  {Object} uri Input cdvfile scheme Windows.Foundation.Uri
+ * @return {Object}     Windows.Foundation.Uri based on App data path
+ */
+function cdvfileToAppData(uri) {
+    var cdvFsRoot;
+
+    if (uri.schemeName === 'cdvfile') {
+        cdvFsRoot = uri.path.split('/')[1];
+        if (cdvFsRoot === 'temporary') {
+            return new Windows.Foundation.Uri(tempFolderAppDataBasePath, uri.path.split('/').slice(2).join('/'));
+        } else if (cdvFsRoot === 'persistent') {
+            return new Windows.Foundation.Uri(localFolderAppDataBasePath, uri.path.split('/').slice(2).join('/'));
+        } else {
+            throw new Error(cdvFsRoot + ' cdvfile root is not supported on Windows');
+        }
+    }
+
+    return uri;
+}
+
+/**
  * Prepares media src for internal usage
  * @param  {String} src Input media path
  * @return {Object}     Windows.Foundation.Uri
@@ -340,6 +362,7 @@ function processUri(src) {
     var uri = setTemporaryFsByDefault(src);
 
     uri = fullPathToAppData(uri);
+    uri = cdvfileToAppData(uri);
 
     return uri;
 }
