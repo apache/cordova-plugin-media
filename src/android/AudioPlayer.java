@@ -303,7 +303,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * @return                  T=streaming, F=local
      */
     public boolean isStreaming(String file) {
-        if (file.contains("http://") || file.contains("https://")) {
+        if (file.contains("http://") || file.contains("https://") || file.contains("rtsp://")) {
             return true;
         }
         else {
