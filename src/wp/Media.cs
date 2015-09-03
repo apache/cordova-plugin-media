@@ -460,11 +460,11 @@ namespace WPCordovaClassLib.Cordova.Commands
                     mediaOptions = new MediaOptions();
                     mediaOptions.Id = optionsString[0];
                     int msec = 0;
-                    if (int.TryParse(optionsString[2], out msec))
+                    if (int.TryParse(optionsString[1], out msec))
                     {
                         mediaOptions.Milliseconds = msec;
                     }
-                    callbackId = mediaOptions.CallbackId = optionsString[3];
+                    callbackId = mediaOptions.CallbackId = optionsString[2];
 
                 }
                 catch (Exception)
