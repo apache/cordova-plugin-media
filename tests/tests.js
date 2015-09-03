@@ -295,6 +295,34 @@ exports.defineAutoTests = function () {
                 media = new Media(mediaFile, successCallback, failed.bind(self, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
                 media.play();
             }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
+
+            it("media.spec.21 should be able to seek through file", function (done) {
+                if (!isAudioSupported || cordova.platformId === 'blackberry10') {
+                    pending();
+                }
+
+                //context variable used as an extra security statement to ensure that the callback is processed only once,
+                //in case the statusChange callback is reached more than one time with the same status code.
+                //Some information about this kind of behaviour can be found at JIRA: CB-7099.
+                var context = this;
+                var mediaFile = 'http://cordova.apache.org/downloads/BlueZedEx.mp3';
+                var successCallback = function () { };
+                var statusChange = function (statusCode) {
+                    if (!context.done && statusCode == Media.MEDIA_RUNNING) {
+                        checkInterval = setInterval(function () {
+                            if (context.done) return;
+                            media.seekTo(5000);
+                            media.getCurrentPosition(function (position) {
+                                expect(position).toBe(5);
+                                context.done = true;
+                                done();
+                            }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position', context));
+                        }, 1000);
+                    }
+                };
+                media = new Media(mediaFile, successCallback, failed.bind(self, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
+                media.play();
+            }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
         });
 
         it("media.spec.18 should contain a setRate function", function () {
