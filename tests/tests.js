@@ -281,7 +281,7 @@ exports.defineAutoTests = function () {
                         }
 
                         media.getCurrentPosition(function (position) {
-                            expect(position).toBe(20);
+                            expect(position).toBeCloseTo(20, 0);
                             context.done = true;
                             done();
                         }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position', context))
@@ -313,7 +313,7 @@ exports.defineAutoTests = function () {
                             if (context.done) return;
                             media.seekTo(5000);
                             media.getCurrentPosition(function (position) {
-                                expect(position).toBe(5);
+                                expect(position).toBeCloseTo(5, 0);
                                 context.done = true;
                                 done();
                             }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position', context));
