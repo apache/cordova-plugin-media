@@ -60,6 +60,10 @@ public class AudioHandler extends CordovaPlugin {
     private CallbackContext messageChannel;
 
 
+    public static String [] permissions = { Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    public static int RECORD_AUDIO = 0;
+    public static int WRITE_EXTERNAL_STORAGE = 1;
+
     public static final int PERMISSION_DENIED_ERROR = 20;
 
     private String recordId;
@@ -73,38 +77,16 @@ public class AudioHandler extends CordovaPlugin {
         this.pausedForPhone = new ArrayList<AudioPlayer>();
     }
 
-    protected int checkWritePermission()
-    {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        {
-            return cordova.getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        }
-        else
-        {
-            return PackageManager.PERMISSION_GRANTED;
-        }
-    }
 
     protected void getWritePermission(int requestCode)
     {
-        cordova.requestPermission(this, requestCode, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        cordova.requestPermission(this, requestCode, permissions[WRITE_EXTERNAL_STORAGE]);
     }
 
-    protected int checkMicrophone()
-    {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        {
-            return cordova.getActivity().checkSelfPermission(Manifest.permission.RECORD_AUDIO);
-        }
-        else
-        {
-            return PackageManager.PERMISSION_GRANTED;
-        }
-    }
 
     protected void getMicPermission(int requestCode)
     {
-        cordova.requestPermission(this, requestCode, Manifest.permission.RECORD_AUDIO);
+        cordova.requestPermission(this, requestCode, permissions[RECORD_AUDIO]);
     }
 
 
@@ -475,17 +457,17 @@ public class AudioHandler extends CordovaPlugin {
 
     private void promptForRecord()
     {
-        if(checkWritePermission() == PackageManager.PERMISSION_GRANTED  &&
-                checkMicrophone() == PackageManager.PERMISSION_GRANTED) {
+        if(cordova.hasPermission(permissions[WRITE_EXTERNAL_STORAGE])  &&
+                cordova.hasPermission(permissions[RECORD_AUDIO])) {
             this.startRecordingAudio(recordId, FileHelper.stripFileProtocol(fileUriStr));
         }
-        else if(checkMicrophone() == PackageManager.PERMISSION_GRANTED)
+        else if(cordova.hasPermission(permissions[RECORD_AUDIO]))
         {
-            getWritePermission(0);
+            getWritePermission(WRITE_EXTERNAL_STORAGE);
         }
         else
         {
-            getMicPermission(0);
+            getMicPermission(RECORD_AUDIO);
         }
 
     }
