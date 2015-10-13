@@ -458,7 +458,17 @@
         [audioFile.player stop];
         audioFile.player.currentTime = 0;
         jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_STOPPED];
-    }  // ignore if no media playing
+    }
+    if (avPlayer.currentItem && avPlayer.currentItem.asset) {
+        NSLog(@"Stopped playing audio sample '%@'", audioFile.resourcePath);
+        [avPlayer pause];
+        [avPlayer seekToTime: kCMTimeZero
+                     toleranceBefore: kCMTimeZero
+                      toleranceAfter: kCMTimeZero
+                   completionHandler: ^(BOOL finished)];
+        jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_STOPPED];
+    }
+    // ignore if no media playing
     if (jsString) {
         [self.commandDelegate evalJs:jsString];
     }
