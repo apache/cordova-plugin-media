@@ -337,8 +337,8 @@
             if (!bError) {
                 NSLog(@"Playing audio sample '%@'", audioFile.resourcePath);
                 double position = 0;
-                if (avPlayer) {
-                    CMTime time = [avPlayer currentTime];
+                if (avPlayer.currentItem && avPlayer.currentItem.asset) {
+                    CMTime time = avPlayer.currentItem.asset.duration;
                     position = CMTimeGetSeconds(time);
                     NSLog(@"Playing stream with AVPlayer");
                     [avPlayer play];
@@ -364,7 +364,7 @@
                     }
 
                     [audioFile.player play];
-                    //double position = round(audioFile.player.duration * 1000) / 1000;
+                    position = round(audioFile.player.duration * 1000) / 1000;
                 }
 
                 jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);\n%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_DURATION, position, @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_RUNNING];
