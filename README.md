@@ -208,7 +208,7 @@ Pauses playing an audio file.
 
         // Pause after 10 seconds
         setTimeout(function () {
-            media.pause();
+            my_media.pause();
         }, 10000);
     }
 
