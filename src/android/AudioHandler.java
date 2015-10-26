@@ -52,6 +52,8 @@ public class AudioHandler extends CordovaPlugin {
     public static String TAG = "AudioHandler";
     HashMap<String, AudioPlayer> players;	// Audio player object
     ArrayList<AudioPlayer> pausedForPhone;     // Audio players that were paused when phone call came in
+    ArrayList<AudioPlayer> pausedForScreenLock;     // Audio players that were paused when phone locked the screen
+    
     private int origVolumeStream = -1;
     private CallbackContext messageChannel;
 
@@ -92,13 +94,20 @@ public class AudioHandler extends CordovaPlugin {
         else if (action.equals("startPlayingAudio")) {
             String target = args.getString(1);
             String fileUriStr;
+            boolean playAudioWhenScreenIsLocked=true;
             try {
                 Uri targetUri = resourceApi.remapUri(Uri.parse(target));
                 fileUriStr = targetUri.toString();
             } catch (IllegalArgumentException e) {
                 fileUriStr = target;
             }
-            this.startPlayingAudio(args.getString(0), FileHelper.stripFileProtocol(fileUriStr));
+            try {
+	            JSONObject playArgs = new JSONObject(args.getString(2));
+	            playAudioWhenScreenIsLocked = playArgs.getBoolean("playAudioWhenScreenIsLocked");                
+            } catch (JSONException e) {
+            	playAudioWhenScreenIsLocked = true;
+            }
+            this.startPlayingAudio(args.getString(0), FileHelper.stripFileProtocol(fileUriStr),playAudioWhenScreenIsLocked);
         }
         else if (action.equals("seekToAudio")) {
             this.seekToAudio(args.getString(0), args.getInt(1));
@@ -209,14 +218,19 @@ public class AudioHandler extends CordovaPlugin {
     //--------------------------------------------------------------------------
 
     private AudioPlayer getOrCreatePlayer(String id, String file) {
+		return getOrCreatePlayer(id,file,true);
+	}
+    
+    private AudioPlayer getOrCreatePlayer(String id, String file, boolean playAudioWhenScreenIsLocked) {
         AudioPlayer ret = players.get(id);
         if (ret == null) {
             if (players.isEmpty()) {
                 onFirstPlayerCreated();
             }
-            ret = new AudioPlayer(this, id, file);
+            ret = new AudioPlayer(this, id, file, playAudioWhenScreenIsLocked);
             players.put(id, ret);
         }
+        ret.setPlayAudioWhenScreenIsLocked(playAudioWhenScreenIsLocked);
         return ret;
     }
 
@@ -262,8 +276,8 @@ public class AudioHandler extends CordovaPlugin {
      * @param id				The id of the audio player
      * @param file				The name of the audio file.
      */
-    public void startPlayingAudio(String id, String file) {
-        AudioPlayer audio = getOrCreatePlayer(id, file);
+    public void startPlayingAudio(String id, String file, boolean playAudioWhenScreenIsLocked) {
+        AudioPlayer audio = getOrCreatePlayer(id, file, playAudioWhenScreenIsLocked);
         audio.startPlaying(file);
     }
 
@@ -406,5 +420,27 @@ public class AudioHandler extends CordovaPlugin {
         if (messageChannel != null) {
             messageChannel.sendPluginResult(pluginResult);
         }
+    }
+    
+    @Override
+    public void onResume(boolean multitasking) {
+    	super.onResume(multitasking);
+    	for (AudioPlayer audioPlayer : pausedForScreenLock) {
+    		// if we need to resume playing the function readyPlayer dosen't needs paramenters
+    		audioPlayer.startPlaying(null); 
+		}
+    	pausedForScreenLock = null;
+    }
+    
+    @Override
+    public void onPause(boolean multitasking) {
+    	pausedForScreenLock = new ArrayList<AudioPlayer>();
+    	for (AudioPlayer audioPlayer : players.values()) {
+			if (audioPlayer.getState()==AudioPlayer.STATE.MEDIA_RUNNING.ordinal()&&!audioPlayer.isPlayAudioWhenScreenIsLocked()){
+				audioPlayer.pausePlaying();
+				pausedForScreenLock.add(audioPlayer);
+			}
+		}
+    	super.onPause(multitasking);    	
     }
 }

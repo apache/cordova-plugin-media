@@ -86,18 +86,29 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     private MediaPlayer player = null;      // Audio player object
     private boolean prepareOnly = true;     // playback after file prepare flag
     private int seekOnPrepared = 0;     // seek to this location once media is prepared
+    
+    private boolean playAudioWhenScreenIsLocked = true; // If set to false the playback will be paused when app is paused
+    
+    public boolean isPlayAudioWhenScreenIsLocked() {
+		return playAudioWhenScreenIsLocked;
+	}
 
-    /**
+	public void setPlayAudioWhenScreenIsLocked(boolean playAudioWhenScreenIsLocked) {
+		this.playAudioWhenScreenIsLocked = playAudioWhenScreenIsLocked;
+	}
+
+	/**
      * Constructor.
      *
      * @param handler           The audio handler object
      * @param id                The id of this audio player
      */
-    public AudioPlayer(AudioHandler handler, String id, String file) {
+    public AudioPlayer(AudioHandler handler, String id, String file, boolean playAudioWhenScreenIsLocked) {
         this.handler = handler;
         this.id = id;
         this.audioFile = file;
         this.recorder = new MediaRecorder();
+        this.playAudioWhenScreenIsLocked = playAudioWhenScreenIsLocked;
 
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             this.tempFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmprecording.3gp";
