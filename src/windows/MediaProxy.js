@@ -32,6 +32,7 @@ var tempFolderAppDataBasePath = 'ms-appdata:///temp/',
 
 var PARAMETER_IS_INCORRECT = -2147024809;
 var SUPPORTED_EXTENSIONS = ['.mp3', '.wma', '.wav', '.cda', '.adx', '.wm', '.m3u', '.wmx', '.m4a'];
+var SUPPORTED_PREFIXES = ['http', 'https', 'rstp'];
 
 module.exports = {
     mediaCaptureMrg:null,
@@ -47,16 +48,19 @@ module.exports = {
 
         Media.prototype.node = null;
 
+        var prefix = args[1].split(':').shift();
         var extension = srcUri.extension;
         if (thisM.node === null) {
-            if (SUPPORTED_EXTENSIONS.indexOf(extension) === -1) {
+            if (SUPPORTED_EXTENSIONS.indexOf(extension) === -1 && SUPPORTED_PREFIXES.indexOf(prefix) === -1) {
                 lose && lose({ code: MediaError.MEDIA_ERR_ABORTED });
                 return false; // unable to create
             }
 
             // Don't create Audio object in case of record mode
             if (createAudioNode === true) {
-                thisM.node = new Audio(srcUri.absoluteCanonicalUri);
+                thisM.node = new Audio();
+                thisM.node.msAudioCategory = "BackgroundCapableMedia";
+                thisM.node.src = srcUri.absoluteCanonicalUri;
 
                 thisM.node.onloadstart = function () {
                     Media.onStatus(id, Media.MEDIA_STATE, Media.MEDIA_STARTING);
