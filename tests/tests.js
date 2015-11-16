@@ -257,6 +257,112 @@ exports.defineAutoTests = function () {
                 media = new Media(mediaFile, successCallback, failed.bind(self, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
                 media.play();
             }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
+
+            it("media.spec.20 should be able to resume playback after pause", function (done) {
+                if (!isAudioSupported || cordova.platformId === 'blackberry10') {
+                    pending();
+                }
+
+                //context variable used as an extra security statement to ensure that the callback is processed only once,
+                //in case the statusChange callback is reached more than one time with the same status code.
+                //Some information about this kind of behaviour can be found at JIRA: CB-7099.
+                var context = this;
+                var resumed = false;
+                var mediaFile = 'http://cordova.apache.org/downloads/BlueZedEx.mp3';
+                var successCallback = function () { };
+                var statusChange = function (statusCode) {
+                    if (context.done) return;
+
+                    if (statusCode == Media.MEDIA_RUNNING) {
+                        if (!resumed) {
+                            media.seekTo(20000);
+                            media.pause();
+                            return;
+                        }
+
+                        media.getCurrentPosition(function (position) {
+                            expect(position).toBeCloseTo(20, 0);
+                            context.done = true;
+                            done();
+                        }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position', context))
+                    }
+
+                    if (statusCode == Media.MEDIA_PAUSED) {
+                        resumed = true;
+                        media.play();
+                    }
+                };
+                media = new Media(mediaFile, successCallback, failed.bind(self, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
+                media.play();
+            }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
+
+            it("media.spec.21 should be able to seek through file", function (done) {
+                if (!isAudioSupported || cordova.platformId === 'blackberry10') {
+                    pending();
+                }
+
+                //context variable used as an extra security statement to ensure that the callback is processed only once,
+                //in case the statusChange callback is reached more than one time with the same status code.
+                //Some information about this kind of behaviour can be found at JIRA: CB-7099.
+                var context = this;
+                var mediaFile = 'http://cordova.apache.org/downloads/BlueZedEx.mp3';
+                var successCallback = function () { };
+                var statusChange = function (statusCode) {
+                    if (!context.done && statusCode == Media.MEDIA_RUNNING) {
+                        checkInterval = setInterval(function () {
+                            if (context.done) return;
+                            media.seekTo(5000);
+                            media.getCurrentPosition(function (position) {
+                                expect(position).toBeCloseTo(5, 0);
+                                context.done = true;
+                                done();
+                            }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position', context));
+                        }, 1000);
+                    }
+                };
+                media = new Media(mediaFile, successCallback, failed.bind(self, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
+                media.play();
+            }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
+        });
+
+        it("media.spec.18 should contain a setRate function", function () {
+            var media1 = new Media("dummy");
+            expect(media1.setRate).toBeDefined();
+            expect(typeof media1.setRate).toBe('function');
+            media1.release();
+        });
+
+        it("media.spec.19 playback rate should be set properly using setRate", function (done) {
+            if (cordova.platformId !== 'ios') {
+                expect(true).toFailWithMessage('Platform does not supported this feature');
+                pending();
+                return;
+            }
+            var mediaFile = 'http://cordova.apache.org/downloads/BlueZedEx.mp3',
+                mediaState = Media.MEDIA_STOPPED,
+                successCallback,
+                flag = true,
+                statusChange = function (statusCode) {
+                    if (statusCode == Media.MEDIA_RUNNING && flag) {
+                        //flag variable used to ensure an extra security statement to ensure that the callback is processed only once,
+                        //in case for some reason the statusChange callback is reached more than one time with the same status code.
+                        //Some information about this kind of behavior it can be found at JIRA: CB-7099
+                        flag = false;
+                        setTimeout(function () {
+                            media1.getCurrentPosition(function (position) {
+                                //in four seconds expect position to be two times greater with some degree (1 sec) of accuracy
+                                expect(position).toBeGreaterThan(7);
+                                media1.stop();
+                                media1.release();
+                                done();
+                            }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position'));
+                        }, 4000);
+                    }
+                },
+                media1 = new Media(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile), statusChange);
+            //make audio playback two times faster
+            media1.setRate(2);
+            media1.play();
         });
     });
 };
@@ -480,7 +586,10 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     function recordAudio() {
         console.log("recordAudio()");
         console.log(" -- media=" + mediaRec);
-        if (mediaRec == null) {
+
+        releaseAudio();
+
+        if (!mediaRec) {
             var src = recordSrc;
             mediaRec = new Media(src,
                     function () {
@@ -561,7 +670,7 @@ exports.defineManualTests = function (contentEl, createActionButton) {
             console.log("error creating file for Win recording");
         };
         var gotFile = function (file) {
-            recordSrc = file.fullPath.replace(/\//g, '\\');
+            recordSrc = file.name;
         };
         var gotFS = function (fileSystem) {
             fileSystem.root.getFile("WinRecording.m4a", {
@@ -711,6 +820,14 @@ exports.defineManualTests = function (contentEl, createActionButton) {
                 row : 2,
                 cell : 2
             }
+        }, {
+            id: "halfSpeedBtn",
+            content:"",
+            tag:"div",
+            position:{
+                row:0,
+                cell:2
+            }
         }
     ],
     elementsRecord =
@@ -770,6 +887,21 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     createActionButton('Pause', function () {
         pauseAudio();
     }, 'pauseBtn');
+    createActionButton('HalfSpeed', function() {
+    
+        if(halfSpeedBtn.firstChild.firstChild.innerText == 'HalfSpeed') {
+            halfSpeedBtn.firstChild.firstChild.innerText = 'FullSpeed';
+            media1.setRate(0.5);
+        }
+        else if(halfSpeedBtn.firstChild.firstChild.innerText == 'FullSpeed') {
+            halfSpeedBtn.firstChild.firstChild.innerText = 'DoubleSpeed';
+            media1.setRate(1.0);
+        }
+        else {
+            halfSpeedBtn.firstChild.firstChild.innerText = 'HalfSpeed';
+            media1.setRate(2.0);
+        }
+    }, 'halfSpeedBtn');
     createActionButton('Stop', function () {
         stopAudio();
     }, 'stopBtn');

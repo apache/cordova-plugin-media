@@ -19,7 +19,6 @@
 
 # cordova-plugin-media
 
-[![Build Status](https://travis-ci.org/apache/cordova-plugin-media.svg)](https://travis-ci.org/apache/cordova-plugin-media)
 
 This plugin provides the ability to record and play back audio files on a device.
 
@@ -73,6 +72,11 @@ Although in the global scope, it is not available until after the `deviceready` 
 - __mediaError__: (Optional) The callback that executes if an error occurs. _(Function)_
 
 - __mediaStatus__: (Optional) The callback that executes to indicate status changes. _(Function)_
+
+__NOTE__: `cdvfile` path is supported as `src` parameter:
+```javascript
+var my_media = new Media('cdvfile://localhost/temporary/recording.mp3', ...);
+```
 
 ### Constants
 

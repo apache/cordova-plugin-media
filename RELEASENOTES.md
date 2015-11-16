@@ -20,6 +20,7 @@
 -->
 # Release Notes
 
+
 ### 0.2.1 (Sept 5, 2013)
 * CB-4432 copyright notice change
 
@@ -133,3 +134,10 @@
 * CB-8428 Fix multiple `done()` calls in media plugin test on devices where audio is not configured
 * CB-8426 Add Windows platform section to Media plugin
 * CB-8425 Media plugin .ctr: make src param required as per spec
+
+### 1.0.1 (Jun 17, 2015)
+* CB-9128 cordova-plugin-media documentation translation: cordova-plugin-media
+* fix npm md issue
+* CB-9079 Increased timeout for playback tests
+* CB-8888 Makes media status reporting on windows more precise
+* CB-8793 Increased playback timeout in tests
