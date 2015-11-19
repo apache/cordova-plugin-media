@@ -20,6 +20,20 @@
 -->
 # Release Notes
 
+### 2.0.0 (Nov 18, 2015)
+* CB-10035 Updated `RELEASENOTES` to be newest to oldest
+* Media now supports new permissions for **Android 6.0** aka **Marshmallow**
+* Fixing contribute link.
+* CB-9619 Fixed tests waiting for precise position
+* CB-9606 Fixes arguments parsing in `seekAudio`
+* CB-9605 Fixes issue with playback resume after pause on **WP8**
+* fix record and play `NullPointerException`
+* CB-9237 Add `cdvfile://` support to media plugin on **Windows** platform
+* CB-9238 Media plugin cannot record audio on **Windows**
+* Added **iOS** platform `media.setRate` auto test
+* Add **iOS** platform check in `Media.prototype.setRate`
+* Add `Media.prototype.setRate` method (only for **iOS**)
+
 ### 1.0.1 (Jun 17, 2015)
 * CB-9128 cordova-plugin-media documentation translation: cordova-plugin-media
 * fix npm md issue
