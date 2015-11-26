@@ -257,6 +257,72 @@ exports.defineAutoTests = function () {
                 media = new Media(mediaFile, successCallback, failed.bind(self, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
                 media.play();
             }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
+
+            it("media.spec.20 should be able to resume playback after pause", function (done) {
+                if (!isAudioSupported || cordova.platformId === 'blackberry10') {
+                    pending();
+                }
+
+                //context variable used as an extra security statement to ensure that the callback is processed only once,
+                //in case the statusChange callback is reached more than one time with the same status code.
+                //Some information about this kind of behaviour can be found at JIRA: CB-7099.
+                var context = this;
+                var resumed = false;
+                var mediaFile = 'http://cordova.apache.org/downloads/BlueZedEx.mp3';
+                var successCallback = function () { };
+                var statusChange = function (statusCode) {
+                    if (context.done) return;
+
+                    if (statusCode == Media.MEDIA_RUNNING) {
+                        if (!resumed) {
+                            media.seekTo(20000);
+                            media.pause();
+                            return;
+                        }
+
+                        media.getCurrentPosition(function (position) {
+                            expect(position).toBeCloseTo(20, 0);
+                            context.done = true;
+                            done();
+                        }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position', context))
+                    }
+
+                    if (statusCode == Media.MEDIA_PAUSED) {
+                        resumed = true;
+                        media.play();
+                    }
+                };
+                media = new Media(mediaFile, successCallback, failed.bind(self, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
+                media.play();
+            }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
+
+            it("media.spec.21 should be able to seek through file", function (done) {
+                if (!isAudioSupported || cordova.platformId === 'blackberry10') {
+                    pending();
+                }
+
+                //context variable used as an extra security statement to ensure that the callback is processed only once,
+                //in case the statusChange callback is reached more than one time with the same status code.
+                //Some information about this kind of behaviour can be found at JIRA: CB-7099.
+                var context = this;
+                var mediaFile = 'http://cordova.apache.org/downloads/BlueZedEx.mp3';
+                var successCallback = function () { };
+                var statusChange = function (statusCode) {
+                    if (!context.done && statusCode == Media.MEDIA_RUNNING) {
+                        checkInterval = setInterval(function () {
+                            if (context.done) return;
+                            media.seekTo(5000);
+                            media.getCurrentPosition(function (position) {
+                                expect(position).toBeCloseTo(5, 0);
+                                context.done = true;
+                                done();
+                            }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position', context));
+                        }, 1000);
+                    }
+                };
+                media = new Media(mediaFile, successCallback, failed.bind(self, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
+                media.play();
+            }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
         });
 
         it("media.spec.18 should contain a setRate function", function () {
@@ -520,6 +586,9 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     function recordAudio() {
         console.log("recordAudio()");
         console.log(" -- media=" + mediaRec);
+
+        releaseAudio();
+
         if (!mediaRec) {
             var src = recordSrc;
             mediaRec = new Media(src,
@@ -601,7 +670,7 @@ exports.defineManualTests = function (contentEl, createActionButton) {
             console.log("error creating file for Win recording");
         };
         var gotFile = function (file) {
-            recordSrc = file.fullPath.replace(/\//g, '\\');
+            recordSrc = file.name;
         };
         var gotFS = function (fileSystem) {
             fileSystem.root.getFile("WinRecording.m4a", {

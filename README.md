@@ -73,6 +73,11 @@ Although in the global scope, it is not available until after the `deviceready` 
 
 - __mediaStatus__: (Optional) The callback that executes to indicate status changes. _(Function)_
 
+__NOTE__: `cdvfile` path is supported as `src` parameter:
+```javascript
+var my_media = new Media('cdvfile://localhost/temporary/recording.mp3', ...);
+```
+
 ### Constants
 
 The following constants are reported as the only parameter to the

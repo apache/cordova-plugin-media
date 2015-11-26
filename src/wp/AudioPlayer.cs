@@ -277,7 +277,7 @@ namespace WPCordovaClassLib.Cordova.Commands
             }
 
 
-            if (this.player == null || this.player.Source.AbsolutePath.LastIndexOf(filePath) < 0)
+            if (this.player == null || this.player.Source.AbsoluteUri.LastIndexOf(filePath) < 0)
             {
                 try
                 {
