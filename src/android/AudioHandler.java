@@ -100,7 +100,8 @@ public class AudioHandler extends CordovaPlugin {
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         CordovaResourceApi resourceApi = webView.getResourceApi();
         PluginResult.Status status = PluginResult.Status.OK;
-        messageChannel = callbackContext;
+        /*I commented this line cuz' statusCallback was not working*/
+        //messageChannel = callbackContext;
         String result = "";
 
         if (action.equals("startRecordingAudio")) {
