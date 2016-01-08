@@ -31,8 +31,13 @@ for significantly better compression.
 
  */
 
+/*
+01/08/2016: Added methods to pause audio recording and to get 
+*/
+
 #import "CDVSound.h"
 #import "CDVFile.h"
+#import <Cordova/NSArray+Comparisons.h>
 
 #define DOCUMENTS_SCHEME_PREFIX @"documents://"
 #define HTTP_SCHEME_PREFIX @"http://"
@@ -766,6 +771,76 @@ for significantly better compression.
         [self.commandDelegate evalJs:jsString];
     }
 }
+
+
+
+- (void)pauseRecordingAudio:(CDVInvokedUrlCommand*)command
+{
+    NSString* mediaId = [command argumentAtIndex:0];
+
+    CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
+    NSString* jsString = nil;
+
+    if ((audioFile != nil) && (audioFile.recorder != nil)) {
+        NSLog(@"Paused recording audio sample '%@'", audioFile.resourcePath);
+        [audioFile.recorder pause];
+        // no callback - that will happen in audioRecorderDidFinishRecording
+    }
+    // ignore if no media recording
+    if (jsString) {
+        [self.commandDelegate evalJs:jsString];
+    }
+}
+
+- (void)resumeRecordingAudio:(CDVInvokedUrlCommand*)command
+{
+    NSString* mediaId = [command argumentAtIndex:0];
+
+    CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
+    NSString* jsString = nil;
+
+    if ((audioFile != nil) && (audioFile.recorder != nil)) {
+        NSLog(@"Resumed recording audio sample '%@'", audioFile.resourcePath);
+        [audioFile.recorder record];
+        // no callback - that will happen in audioRecorderDidFinishRecording
+    }
+    // ignore if no media recording
+    if (jsString) {
+        [self.commandDelegate evalJs:jsString];
+    }
+}
+
+- (void)getAudioRecordingLevels:(CDVInvokedUrlCommand*)command
+{
+    NSString* mediaId = [command argumentAtIndex:0];
+
+    CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
+    NSString* jsString = nil;
+
+    if ((audioFile != nil) && (audioFile.recorder != nil)) {
+        // NSLog(@"Resumed recording audio sample '%@'", audioFile.resourcePath);
+        [audioFile.recorder updateMeters];
+        float averagePower = [audioFile.recorder averagePowerForChannel:0];
+        float peakPower = [audioFile.recorder peakPowerForChannel:0];
+        
+        NSLog(@"averagePower: '%f' peakPower: '%f'",averagePower,peakPower);
+        
+        NSMutableDictionary* powerLevels = [NSMutableDictionary dictionaryWithCapacity:2];
+        
+        [powerLevels setObject:[NSNumber numberWithFloat:averagePower] forKey:@"averagePower"];
+        [powerLevels setObject:[NSNumber numberWithFloat:peakPower] forKey:@"peakPower"];
+        
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:powerLevels];
+        
+        [self.commandDelegate sendPluginResult: pluginResult callbackId:command.callbackId];
+        
+    }
+    // ignore if no media recording
+    if (jsString) {
+        [self.commandDelegate evalJs:jsString];
+    }
+}
+
 
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder*)recorder successfully:(BOOL)flag
 {
