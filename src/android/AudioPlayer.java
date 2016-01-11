@@ -18,6 +18,10 @@
 */
 package org.apache.cordova.media;
 
+
+import android.app.Activity;
+import android.app.Application;
+import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -224,6 +228,45 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             sendErrorStatus(MEDIA_ERR_ABORTED);
         }
     }
+	
+	
+	 /**
+     * Resume recording the specified file.
+     *
+     * @param file              The name of the file
+     */
+    public void resumeRecording(String file) {
+        switch (this.mode) {
+            case PLAY:
+                Log.d(LOG_TAG, "AudioPlayer Error: Can't record in play mode.");
+                sendErrorStatus(MEDIA_ERR_ABORTED);
+                break;
+
+            case NONE:
+                this.audioFile = file;
+                this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                this.recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+                this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+                this.recorder.setOutputFile(this.tempFile);
+                try {
+                    this.recorder.prepare();
+                    this.recorder.start();
+                    this.setState(STATE.MEDIA_RUNNING);
+                    return;
+                } catch (IllegalStateException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                sendErrorStatus(MEDIA_ERR_ABORTED);
+                break;
+
+            case RECORD:
+                Log.d(LOG_TAG, "AudioPlayer Error: Already recording.");
+                sendErrorStatus(MEDIA_ERR_ABORTED);
+        }
+    }
 
 
 
@@ -246,8 +289,34 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
 
         String logMsg = "renaming " + this.tempFile + " to " + file;
         Log.d(LOG_TAG, logMsg);
-        if (!f.renameTo(new File(file))) Log.e(LOG_TAG, "FAILED " + logMsg);
+		
+		if (f.exists()) {
+			if (!f.renameTo(new File(file))) Log.e(LOG_TAG, "FAILED " + logMsg);
+		}
     }
+	
+	
+    /**
+     * Append temporary recorded file to specified filename
+     *
+     * @param file
+     */
+    public void appendFile(String file) {
+
+        if (!file.startsWith("/")) {
+            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                file = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + file;
+            } else {
+                file = "/data/data/" + handler.cordova.getActivity().getPackageName() + "/cache/" + file;
+            }
+        }
+
+        String logMsg = "appending" + this.tempFile + " to " + file;
+        Log.d(LOG_TAG, logMsg);
+        mp4ParserWrapper.append(file, this.tempFile);
+
+    }
+	
 
     /**
      * Stop recording and save to the file specified when recording started.
@@ -261,6 +330,27 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                 }
                 this.recorder.reset();
                 this.moveFile(this.audioFile);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+	
+	
+	 /**
+     * Pause recording (simulated), stop recording and append to the file specified when recording started.
+     */
+    public void pauseRecording() {
+        if (this.recorder != null) {
+            try{
+                if (this.state == STATE.MEDIA_RUNNING) {
+                    this.recorder.stop();
+                    Log.d(LOG_TAG, "pauseRecording is calling stopped.");
+                    this.setState(STATE.MEDIA_STOPPED);
+                }
+                this.recorder.reset();
+                this.appendFile(this.audioFile);
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -332,7 +422,36 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             sendErrorStatus(MEDIA_ERR_NONE_ACTIVE);
         }
     }
+	
+	 /**
+     * Get db Recording Level.
+     *
+     * @return    double dbLevel
+     */
 
+    public float getRecordDbLevel() {
+
+        double reference = 0.00002; // Pa reference minimum
+
+        if (this.state == STATE.MEDIA_RUNNING) {
+            int maxAmplitude = this.recorder.getMaxAmplitude();
+
+            // Calculate the pascal pressure based on the idea that the max amplitude (being a value between 0 and 32767)
+            // is relative to the pressure
+
+            // The value 51805.5336 used below is derived from the assumption that when x = 32767, pressure = 0.6325 Pa and that
+            // when x = 1, pressure = 0.0002 Pa (the reference value)
+
+            double pressure = maxAmplitude / 51805.5336;
+            double dB = 20 * Math.log10(pressure/reference);
+            return (float)dB;
+        }
+        else {
+            return -1;
+        }
+    }
+	
+	
     /**
      * Callback to be invoked when playback of a media source has completed.
      *

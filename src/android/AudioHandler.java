@@ -88,7 +88,7 @@ public class AudioHandler extends CordovaPlugin {
             }
             this.startRecordingAudio(args.getString(0), FileHelper.stripFileProtocol(fileUriStr));
         }
-        
+		
         // REM mod
         else if (action.equals("startRecordingAudioWithCompression")) {
             String target = args.getString(1);
@@ -116,6 +116,18 @@ public class AudioHandler extends CordovaPlugin {
 
             this.startRecordingAudioWithCompression(args.getString(0), FileHelper.stripFileProtocol(fileUriStr), channels, sampleRate);
         }
+		else  if (action.equals("resumeRecordingAudio")) {
+            String target = args.getString(1);
+            String fileUriStr;
+            try {
+                Uri targetUri = resourceApi.remapUri(Uri.parse(target));
+                fileUriStr = targetUri.toString();
+            } catch (IllegalArgumentException e) {
+                fileUriStr = target;
+            }
+            this.resumeRecordingAudio(args.getString(0), FileHelper.stripFileProtocol(fileUriStr));
+        }
+		
         // ----------
 
         else if (action.equals("stopRecordingAudio")) {
@@ -156,6 +168,15 @@ public class AudioHandler extends CordovaPlugin {
             callbackContext.sendPluginResult(new PluginResult(status, f));
             return true;
         }
+		
+		//REM mods
+		else if (action.equals("getRecordDbLevel")) {
+            float f = this.getAudioRecordDbLevel(args.getString(0));
+            callbackContext.sendPluginResult(new PluginResult(status, f));
+            return true;
+        }
+		//---
+		
         else if (action.equals("create")) {
             String id = args.getString(0);
             String src = FileHelper.stripFileProtocol(args.getString(1));
@@ -288,7 +309,18 @@ public class AudioHandler extends CordovaPlugin {
         AudioPlayer audio = getOrCreatePlayer(id, file);
         audio.startRecordingWithCompression(file, channels, sampleRate);
     }
-
+	
+	/**
+     * Pause recording (stop recording) and append to the file specified when recording started.
+     * @param id				The id of the audio player
+     */
+    public void pauseRecordingAudio(String id) {
+        AudioPlayer audio = this.players.get(id);
+        if (audio != null) {
+            audio.pauseRecording();
+        }
+    }
+	
 
     /**
      * Stop recording and save to the file specified when recording started.
@@ -344,6 +376,21 @@ public class AudioHandler extends CordovaPlugin {
             audio.stopPlaying();
         }
     }
+	
+	 /**
+     * Get dB level of recording microphone power
+     * @param id
+     * @return dB power level
+     */
+
+    public float getAudioRecordDbLevel(String id) {
+        AudioPlayer audio = this.players.get(id);
+        if (audio != null) {
+            return audio.getRecordDbLevel();
+        }
+        return -1;
+    }
+
 
     /**
      * Get current position of playback.

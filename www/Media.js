@@ -162,11 +162,24 @@ Media.prototype.resumeRecord = function() {
 };
 
 /**
- * Get recording levels, peakPowerForChannel and averagePowerForChannel (in dB, -160 ->0 ).
+ * Get recording levels, 
+ * Android returns avgMaxPower in dB
+ iOS returns peakPowerForChannel and averagePowerForChannel (in dB, -160 to 0 ).
  */
-Media.prototype.getRecordLevels = function(success, fail) {
-    exec(success,fail, "Media", "getAudioRecordingLevels", [this.id]);
-};
+
+if (cordova.platformId === 'android' ) {
+    Media.prototype.getRecordLevels = function(success, fail) {
+        var me = this;
+        exec(function(p) {
+            me._db = p;
+            success(p);
+        }, fail, "Media", "getRecordDbLevel", [this.id]);
+    };
+} else if (cordova.platformId === 'iOS') {
+    Media.prototype.getRecordLevels = function(success, fail) {
+        exec(success,fail, "Media", "getAudioRecordingLevels", [this.id]);
+    };
+}
 
 
 /**
