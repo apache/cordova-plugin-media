@@ -20,22 +20,33 @@
 # cordova-plugin-media-with-compression
 
 This plugin is a modified version of cordova-plugin-media that provides the ability to record and play back audio files on a device.
+Included are new methods (iOS and Android only) to pause recording, resume recording and to query the audio input power levels. 
 
-This plugin uses MPEG4 compression for iOS and (as of version 1.0.21) Android audio recording. On iOS, this results in a significant reduction in the recorded audio file
-size when compared to the stock Media plugin.
+This plugin uses MPEG4 compression for iOS and (as of version 1.0.21) Android audio recording. On iOS, this results in a significant reduction in the recorded audio file size when compared to the stock Media plugin.
 
 Since Android and iOS will record MPEG4 encoded audio with this plugin, the files generated are now compatible for playback across both platforms.
 
-A .m4a file extension is now required.  
+A .m4a file extension is required.  
 
 The reduction in file size is required for efficient online/offline storage and retrieval of the audio files. The smaller file size allows the audio file to be efficiently (smaller payload) uploaded to a server for storage and retrieved (while the device is online) for storage within the device file system for offline (disconnected) playback. This is a feature supported by Alpha Anywhere from [Alpha Software] [alphaurl].
 
 [alphaurl]: http://www.alphasoftware.com
 
-Also included is a new method (iOS and Android only):
+New methods include (iOS and Android only):
 
 __recordAudioWithCompression(options)__: The options object includes the SampleRate and the NumberOfChannels.
 See the recordAudioWithCompression method description below for further details.
+
+__pauseRecord()__: Pause the existing recording session.
+See the pauseRecord method description below for further details.
+
+__resumeRecord()__: Resume the existing recording session.
+See the resumeRecord method description below for further details.
+
+__getRecordLevels()__: On iOS devices, returns dB of the averagePower and the peakPower from the recorder input. On Android devices, returns an approximation of dB (SPL), derived from the maximum absolute amplitude that was sampled since the last call to this method.  
+See the resumeRecord method description below for further details.
+
+
 
 __NOTE__: The current implementation does not adhere to a W3C
 specification for media capture, and is provided for convenience only.
@@ -53,7 +64,7 @@ Although in the global scope, it is not available until after the `deviceready` 
 
 ## Installation
 
-    cordova plugin add com.alphasoftware.plugins.media.withcompression
+    cordova plugin add cordova-media-with-compression
 
 ## Supported Platforms
 
@@ -117,11 +128,17 @@ The following constants are reported as the only parameter to the
 
 - `media.startRecord`: Start recording an audio file, uses MPEG4 compression on iOS and Android.
 
+ `media.pauseRecord`: Pause the recording session in progresss.
+
+  `media.resumeRecord`: Resume the recording session in progress.
+
 - `media.startRecordWithCompression`: Start recording an audio file, with SampleRate and NumberOfChannels specified. Uses MPEG4 compression. iOS and Android only. 
 
 - `media.stopRecord`: Stop recording an audio file.
 
 - `media.stop`: Stop playing an audio file.
+
+ `media.getRecordLevels`: On iOS devices, returns dB of the averagePower and the peakPower from the recorder input. On Android devices, returns an approximation of dB (SPL), derived from the maximum absolute amplitude that was sampled since the last call to this method.  
 
 ### Additional ReadOnly Parameters
 
@@ -511,6 +528,86 @@ Stops playing an audio file.
         }, 10000);
     }
 
+## media.pauseRecord
+
+Stops recording an audio file.
+
+    media.pauseRecord();
+
+### Supported Platforms
+
+- Android
+- iOS
+
+### Quick Example
+
+    // Record audio and pause recording
+    //
+    function recordAudio() {
+        var src = "myrecording.mp3";
+        var mediaRec = new Media(src,
+            // success callback
+            function() {
+                console.log("recordAudio():Audio Success");
+            },
+
+            // error callback
+            function(err) {
+                console.log("recordAudio():Audio Error: "+ err.code);
+            }
+        );
+
+        // Record audio
+        mediaRec.startRecord();
+
+        // Pause recording after 10 seconds
+        setTimeout(function() {
+            mediaRec.pauseRecord();
+        }, 10000);
+    }
+
+## media.resumeRecord
+
+Stops recording an audio file.
+
+    media.resumeRecord();
+
+### Supported Platforms
+
+- Android
+- iOS
+
+### Quick Example
+
+    // Record audio
+    //
+    function recordAudio() {
+        var src = "myrecording.mp3";
+        var mediaRec = new Media(src,
+            // success callback
+            function() {
+                console.log("recordAudio():Audio Success");
+            },
+
+            // error callback
+            function(err) {
+                console.log("recordAudio():Audio Error: "+ err.code);
+            }
+        );
+
+        // Record audio
+        mediaRec.startRecord();
+
+        // Pause recording after 10 seconds
+        setTimeout(function() {
+            mediaRec.pauseRecord();
+        }, 10000);
+
+        // Resume recording after 20 seconds
+        setTimeout(function() {
+            mediaRec.resumeRecord();
+        }, 20000);
+    }
 
 ## media.stopRecord
 
@@ -553,10 +650,64 @@ Stops recording an audio file.
     }
 
 
+
 ### Tizen Quirks
 
 - Not supported on Tizen devices.
 
+## media.getRecordLevels
+
+On iOS devices, returns dB of the averagePower and the peakPower from the recorder input. On Android devices, returns an approximation of the dB level (SPL), derived from the maximum absolute amplitude that was sampled since the last call to this method.  
+
+    media.getRecordLevels();
+
+### Supported Platforms
+
+- Android
+- iOS
+
+### Quick Example
+
+    // Record audio and get record levels every 250ms
+    //
+
+    var _media = {};
+    _media.intervalTime = 250;
+    _media.intervalTimer = null;
+    
+    function recordAudio() {
+        var src = "myrecording.mp3";
+        var mediaRecorder = new Media(src,
+            // success callback
+            function() {
+                clearInterval(_media.intervalTimer);
+                console.log("recordAudio():Audio Success");
+            },
+
+            // error callback
+            function(err) {
+                console.log("recordAudio():Audio Error: "+ err.code);
+            }
+        );
+
+        _media.intervalTimer = setInterval(function(){
+            getRecordingLevels(mediaRecorder);
+        },_media.intervalTime);
+
+        // Record audio
+        mediaRecorder.startRecord();
+    }
+
+    function getRecordingLevels(mediaRec) {
+        mediaRec.getRecordLevels(function(result){
+            console.log(JSON.stringify(result));
+        }, function() {
+            console.log("Error -> getRecordLevels.")
+
+        }
+    }
+
+    
 ## MediaError
 
 A `MediaError` object is returned to the `mediaError` callback
