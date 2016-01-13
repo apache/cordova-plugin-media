@@ -128,9 +128,9 @@ The following constants are reported as the only parameter to the
 
 - `media.startRecord`: Start recording an audio file, uses MPEG4 compression on iOS and Android.
 
- `media.pauseRecord`: Pause the recording session in progresss.
+- `media.pauseRecord`: Pause the recording session in progresss.
 
-  `media.resumeRecord`: Resume the recording session in progress.
+- `media.resumeRecord`: Resume the recording session in progress.
 
 - `media.startRecordWithCompression`: Start recording an audio file, with SampleRate and NumberOfChannels specified. Uses MPEG4 compression. iOS and Android only. 
 
@@ -138,7 +138,7 @@ The following constants are reported as the only parameter to the
 
 - `media.stop`: Stop playing an audio file.
 
- `media.getRecordLevels`: On iOS devices, returns dB of the averagePower and the peakPower from the recorder input. On Android devices, returns an approximation of dB (SPL), derived from the maximum absolute amplitude that was sampled since the last call to this method.  
+- `media.getRecordLevels`: On iOS devices, returns dB of the averagePower and the peakPower from the recorder input. On Android devices, returns an approximation of dB (SPL), derived from the maximum absolute amplitude that was sampled since the last call to this method.  
 
 ### Additional ReadOnly Parameters
 
@@ -530,7 +530,7 @@ Stops playing an audio file.
 
 ## media.pauseRecord
 
-Stops recording an audio file.
+Pause the recording of an audio file. Recording may be resumed with the resumeRecord method.
 
     media.pauseRecord();
 
@@ -568,7 +568,7 @@ Stops recording an audio file.
 
 ## media.resumeRecord
 
-Stops recording an audio file.
+Resumes recording an audio file after the pauseRecord method has been called.
 
     media.resumeRecord();
 
