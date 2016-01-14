@@ -21,7 +21,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
 xmlns:android="http://schemas.android.com/apk/res/android"
 id="cordova-media-with-compression"
-version="2.0.3">
+version="2.0.4">
 
     <name>Media With Compression: Alpha Software Edition</name>
     <description>Cordova Media Plugin with MPEG 4 audio compression for iOS and Android</description>
@@ -63,6 +63,9 @@ version="2.0.3">
         <source-file src="src/android/AudioPlayer.java" target-dir="src/org/apache/cordova/media" />
         <source-file src="src/android/FileHelper.java" target-dir="src/org/apache/cordova/media" />
         <source-file src="src/android/mp4ParserWrapper.java" target-dir="src/org/apache/cordova/media" />
+        <source-file src="src/android/isoparser-1.1.17.jar" target-dir="libs" />
+        <source-file src="src/android/aspectjrt-1.8.8.jar" target-dir="libs" />
+
      </platform>
      
      <!-- amazon-fireos -->

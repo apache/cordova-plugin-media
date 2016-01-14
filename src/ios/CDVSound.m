@@ -32,7 +32,7 @@ for significantly better compression.
  */
 
 /*
-01/08/2016: Added methods to pause audio recording and to get 
+01/08/2016: Added methods to pause  and resume audio recording, get audio levels. 
 */
 
 #import "CDVSound.h"
