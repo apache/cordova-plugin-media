@@ -320,7 +320,16 @@ public class AudioHandler extends CordovaPlugin {
             audio.pauseRecording();
         }
     }
-	
+
+	/**
+     * Resume recording and save the specified file.
+     * @param id				The id of the audio player
+     * @param file				The name of the file
+     */
+     public void resumeRecordingAudio(String id, String file) {
+       AudioPlayer audio = getOrCreatePlayer(id, file);
+             audio.resumeRecording(file);
+     }
 
     /**
      * Stop recording and save to the file specified when recording started.
