@@ -20,6 +20,14 @@
 -->
 # Release Notes
 
+### 2.1.0 (Jan 15, 2016)
+* Fixed example referencing non-existent variable
+* CB-9452: Treat `RTSP streams` as `remote URLs`
+* add JIRA issue tracker link
+* fix CB-9884 & CB-9885
+* CB-10100 updated file dependency to not grab new majors
+* Fix block usage of self
+
 ### 2.0.0 (Nov 18, 2015)
 * [CB-10035](https://issues.apache.org/jira/browse/CB-10035) Updated `RELEASENOTES` to be newest to oldest
 * Media now supports new permissions for **Android 6.0** aka **Marshmallow**
