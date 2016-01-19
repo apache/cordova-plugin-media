@@ -332,13 +332,16 @@ public class AudioHandler extends CordovaPlugin {
      }
 
     /**
-     * Stop recording and save to the file specified when recording started.
+     * Stop recording.
+     * Note: This plugin never calls audio.stopRecording. 
+     * Instead it calls the pauseRecording method.
+     * stopRecording is not required since it does not append.
      * @param id				The id of the audio player
      */
     public void stopRecordingAudio(String id) {
         AudioPlayer audio = this.players.get(id);
         if (audio != null) {
-            audio.stopRecording();
+            audio.pauseRecording();
         }
     }
 
