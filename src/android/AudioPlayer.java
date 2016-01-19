@@ -143,6 +143,12 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             sendErrorStatus(MEDIA_ERR_ABORTED);
             break;
         case NONE:
+            // if file exists, delete it
+            // Only new file are created with startRecording
+
+            File f = new File(file);
+            f.delete();
+
             this.audioFile = file;
             this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             
@@ -187,6 +193,11 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             sendErrorStatus(MEDIA_ERR_ABORTED);
             break;
         case NONE:
+            // if file exists, delete it
+            // Only new file are created with startRecording
+
+            File f = new File(file);
+            f.delete();
             this.audioFile = file;
 
             this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
