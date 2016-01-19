@@ -116,6 +116,9 @@ public class AudioHandler extends CordovaPlugin {
 
             this.startRecordingAudioWithCompression(args.getString(0), FileHelper.stripFileProtocol(fileUriStr), channels, sampleRate);
         }
+        else if (action.equals("pauseRecordingAudio")) {
+            this.pauseRecordingAudio(args.getString(0));
+        }
 		else  if (action.equals("resumeRecordingAudio")) {
             String target = args.getString(1);
             String fileUriStr;
@@ -127,9 +130,6 @@ public class AudioHandler extends CordovaPlugin {
             }
             this.resumeRecordingAudio(args.getString(0), FileHelper.stripFileProtocol(fileUriStr));
         }
-		
-        // ----------
-
         else if (action.equals("stopRecordingAudio")) {
             this.stopRecordingAudio(args.getString(0));
         }
