@@ -183,10 +183,10 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * Start recording the specified file with compression.
      *
      * @param file              The name of the file, should use .m4a extension
-     * @param channels          audio channels, 1 or 2
-     * @param sampleRate        sample rate in hz, 8000 to 48000
+     * @param channels          audio channels, 1 or 2, optional, default value is 1
+     * @param sampleRate        sample rate in hz, 8000 to 48000, optional, default value is 44100
      */
-    public void startRecordingWithCompression(String file, Integer channels, Integer sampleRate) {
+    public void startRecordingWithCompression(String file, Integer options) {
         switch (this.mode) {
         case PLAY:
             Log.d(LOG_TAG, "AudioPlayer Error: Can't record in play mode.");
@@ -201,9 +201,12 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             this.audioFile = file;
 
             this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            
             this.recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
             this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+
+            // if channels and sample rate are not set, use defaults
+            Integer channels = options.length > 0 ? options[0] : 1;
+            Integer sampleRate = options.length > 1 ? options[1] : 44100; 
             this.recorder.setAudioChannels(channels); 
             this.recorder.setAudioSamplingRate(sampleRate);
 
@@ -245,8 +248,10 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * Resume recording the specified file.
      *
      * @param file              The name of the file
+     * @param channels          audio channels, 1 or 2, optional, default value is 1
+     * @param sampleRate        sample rate in hz, 8000 to 48000, optional, default value is 44100
      */
-    public void resumeRecording(String file) {
+    public void resumeRecording(String file, Integer... options) {
         switch (this.mode) {
             case PLAY:
                 Log.d(LOG_TAG, "AudioPlayer Error: Can't record in play mode.");
@@ -258,6 +263,26 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                 this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
                 this.recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
                 this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+                
+                // if channels and sample rate are not set, use defaults
+                Integer channels = options.length > 0 ? options[0] : 1;
+                Integer sampleRate = options.length > 1 ? options[1] : 44100; 
+
+                this.recorder.setAudioChannels(channels); 
+                this.recorder.setAudioSamplingRate(sampleRate);
+
+                // On Android with MPEG4/AAC, bitRate affects file size, surprisingly, sample rate does not.
+                // So we adjust the bit rate for better compression, based on requested sample rate.
+                 Integer bitRate = 32000; // default bit rate
+                if (sampleRate < 30000) {
+                    bitRate = 16384;
+                }
+                if (sampleRate < 16000) {
+                    bitRate = 8192;
+                }
+                this.recorder.setAudioEncodingBitRate(bitRate);
+                Log.d(LOG_TAG, "MPEG-4 recording started with bit rate of " + bitRate + ", sample rate of " + sampleRate + "hz, " + channels + " audio channel(s)");
+                
                 this.recorder.setOutputFile(this.tempFile);
                 try {
                     this.recorder.prepare();
