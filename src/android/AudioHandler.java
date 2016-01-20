@@ -56,6 +56,8 @@ public class AudioHandler extends CordovaPlugin {
     ArrayList<AudioPlayer> pausedForPhone;      // Audio players that were paused when phone call came in
     private int origVolumeStream = -1;
     private CallbackContext messageChannel;
+    private int audioChannels;
+    private int audioSampleRate;
 
     /**
      * Constructor.
@@ -63,6 +65,8 @@ public class AudioHandler extends CordovaPlugin {
     public AudioHandler() {
         this.players = new HashMap<String, AudioPlayer>();
         this.pausedForPhone = new ArrayList<AudioPlayer>();
+        this.audioChannels = 1;
+        this.audioSampleRate = 41000;
     }
 
     /**
@@ -89,7 +93,6 @@ public class AudioHandler extends CordovaPlugin {
             this.startRecordingAudio(args.getString(0), FileHelper.stripFileProtocol(fileUriStr));
         }
 		
-        // REM mod
         else if (action.equals("startRecordingAudioWithCompression")) {
             String target = args.getString(1);
             String fileUriStr;
@@ -101,18 +104,21 @@ public class AudioHandler extends CordovaPlugin {
             }
             
             // set defaults
-            Integer sampleRate = 8000;
+            Integer sampleRate = 44100;
             Integer channels = 1;
 
             JSONObject options = args.getJSONObject(2);
 
             try {
-                sampleRate = options.getInt("SampleRate");
                 channels = options.getInt("NumberOfChannels");
+                sampleRate = options.getInt("SampleRate");
             } catch (JSONException e) {
-                sampleRate = 8000;
                 channels = 1;
+                sampleRate = 44100;
             }
+            // for use within resumeRecord, these values must be consistent when resume record is called.
+            this.audioChannels = channels;
+            this.audioSampleRate = sampleRate;
 
             this.startRecordingAudioWithCompression(args.getString(0), FileHelper.stripFileProtocol(fileUriStr), channels, sampleRate);
         }
@@ -128,7 +134,8 @@ public class AudioHandler extends CordovaPlugin {
             } catch (IllegalArgumentException e) {
                 fileUriStr = target;
             }
-            this.resumeRecordingAudio(args.getString(0), FileHelper.stripFileProtocol(fileUriStr));
+            
+            this.resumeRecordingAudio(args.getString(0), FileHelper.stripFileProtocol(fileUriStr), this.audioChannels, this.audioSampleRate);
         }
         else if (action.equals("stopRecordingAudio")) {
             this.stopRecordingAudio(args.getString(0));
@@ -303,7 +310,8 @@ public class AudioHandler extends CordovaPlugin {
      * Start recording with compression and save the specified file.
      * @param id                The id of the audio player
      * @param file              The name of the file
-     * @param options           JSONObject with sampleRate and number of channels
+     * @param channels          1 or 2, mono or stereo, default value is 1
+     * @param sampleRate        sample rate in hz, 8000 to 48000, optional, default value is 44100
      */
     public void startRecordingAudioWithCompression(String id, String file, Integer channels, Integer sampleRate) {
         AudioPlayer audio = getOrCreatePlayer(id, file);
@@ -325,10 +333,12 @@ public class AudioHandler extends CordovaPlugin {
      * Resume recording and save the specified file.
      * @param id				The id of the audio player
      * @param file				The name of the file
+     * @param channels          1 or 2, mono or stereo, default value is 1
+     * @param sampleRate        sample rate in hz, 8000 to 48000, optional, default value is 44100
      */
-     public void resumeRecordingAudio(String id, String file) {
+     public void resumeRecordingAudio(String id, String file, Integer channels, Integer sampleRate) {
        AudioPlayer audio = getOrCreatePlayer(id, file);
-             audio.resumeRecording(file);
+             audio.resumeRecording(file, channels, sampleRate);
      }
 
     /**

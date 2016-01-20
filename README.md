@@ -34,7 +34,7 @@ The reduction in file size is required for efficient online/offline storage and 
 
 New methods include (iOS and Android only):
 
-__recordAudioWithCompression(options)__: The options object includes the SampleRate and the NumberOfChannels.
+__recordAudioWithCompression(options)__: The options object includes the NumberOfChannels and the SampleRate.
 See the recordAudioWithCompression method description below for further details.
 
 __pauseRecord()__: Pause the existing recording session.

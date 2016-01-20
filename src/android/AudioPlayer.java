@@ -186,7 +186,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * @param channels          audio channels, 1 or 2, optional, default value is 1
      * @param sampleRate        sample rate in hz, 8000 to 48000, optional, default value is 44100
      */
-    public void startRecordingWithCompression(String file, Integer options) {
+    public void startRecordingWithCompression(String file, Integer channels, Integer sampleRate) {
         switch (this.mode) {
         case PLAY:
             Log.d(LOG_TAG, "AudioPlayer Error: Can't record in play mode.");
@@ -203,10 +203,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             this.recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
             this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-
-            // if channels and sample rate are not set, use defaults
-            Integer channels = options.length > 0 ? options[0] : 1;
-            Integer sampleRate = options.length > 1 ? options[1] : 44100; 
+            
             this.recorder.setAudioChannels(channels); 
             this.recorder.setAudioSamplingRate(sampleRate);
 
@@ -251,7 +248,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * @param channels          audio channels, 1 or 2, optional, default value is 1
      * @param sampleRate        sample rate in hz, 8000 to 48000, optional, default value is 44100
      */
-    public void resumeRecording(String file, Integer... options) {
+    public void resumeRecording(String file, Integer channels, Integer sampleRate) {
         switch (this.mode) {
             case PLAY:
                 Log.d(LOG_TAG, "AudioPlayer Error: Can't record in play mode.");
@@ -263,11 +260,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                 this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
                 this.recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
                 this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-                
-                // if channels and sample rate are not set, use defaults
-                Integer channels = options.length > 0 ? options[0] : 1;
-                Integer sampleRate = options.length > 1 ? options[1] : 44100; 
-
+            
                 this.recorder.setAudioChannels(channels); 
                 this.recorder.setAudioSamplingRate(sampleRate);
 
