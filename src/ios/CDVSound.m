@@ -341,12 +341,14 @@
                     CMTime time = avPlayer.currentItem.asset.duration;
                     position = CMTimeGetSeconds(time);
 
+                    audioFile.player.enableRate = YES;
+
                     if (audioFile.rate != nil){
-                        float customRate = [audioFile.rate floatValue];
+                        audioFile.player.rate = [audioFile.rate floatValue];
                         NSLog(@"Playing stream with AVPlayer & custom rate");
-                        [avPlayer setRate:customRate];
+                        [avPlayer setRate:audioFile.player.rate];
                     } else {
-                        NSLog(@"Playing stream with AVPlayer & custom rate");
+                        NSLog(@"Playing stream with AVPlayer");
                         [avPlayer play];
                     }
 
