@@ -286,6 +286,11 @@
                 audioFile.player.enableRate = YES;
                 audioFile.player.rate = [rate floatValue];
             }
+            if (avPlayer.currentItem && avPlayer.currentItem.asset){
+                float customRate = [rate floatValue];
+                [avPlayer setRate:customRate];
+            }
+            
             [[self soundCache] setObject:audioFile forKey:mediaId];
         }
     }
