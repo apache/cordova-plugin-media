@@ -340,8 +340,16 @@
                 if (avPlayer.currentItem && avPlayer.currentItem.asset) {
                     CMTime time = avPlayer.currentItem.asset.duration;
                     position = CMTimeGetSeconds(time);
-                    NSLog(@"Playing stream with AVPlayer");
-                    [avPlayer play];
+
+                    if (audioFile.rate != nil){
+                        float customRate = [audioFile.rate floatValue];
+                        NSLog(@"Playing stream with AVPlayer & custom rate");
+                        [avPlayer setRate:customRate];
+                    } else {
+                        NSLog(@"Playing stream with AVPlayer & custom rate");
+                        [avPlayer play];
+                    }
+
                 } else {
 
                     NSNumber* loopOption = [options objectForKey:@"numberOfLoops"];
