@@ -568,6 +568,10 @@ for significantly better compression.
                 
                 audioFile.recorder = [[CDVAudioRecorder alloc] initWithURL:audioFile.resourceURL settings:recorderSettingsDict error:&error];
                 
+                //enable metering
+                audioFile.recorder.meteringEnabled = YES;
+
+
                 bool recordingSuccess = NO;
                 if (error == nil) {
                     audioFile.recorder.delegate = self;
@@ -689,6 +693,9 @@ for significantly better compression.
                 ];
                 
                 audioFile.recorder = [[CDVAudioRecorder alloc] initWithURL:audioFile.resourceURL settings:recorderSettingsDict error:&error];
+
+                //enable metering
+                audioFile.recorder.meteringEnabled = YES;
                 
                 bool recordingSuccess = NO;
                 if (error == nil) {
