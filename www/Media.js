@@ -175,7 +175,7 @@ if (cordova.platformId === 'android' ) {
             success(p);
         }, fail, "Media", "getRecordDbLevel", [this.id]);
     };
-} else if (cordova.platformId === 'iOS') {
+} else if (cordova.platformId === 'ios') {
     Media.prototype.getRecordLevels = function(success, fail) {
         exec(success,fail, "Media", "getAudioRecordingLevels", [this.id]);
     };

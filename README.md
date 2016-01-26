@@ -44,7 +44,7 @@ __resumeRecord()__: Resume the existing recording session.
 See the resumeRecord method description below for further details.
 
 __getRecordLevels()__: On iOS devices, returns dB of the averagePower and the peakPower from the recorder input. On Android devices, returns an approximation of dB (SPL), derived from the maximum absolute amplitude that was sampled since the last call to this method.  
-See the resumeRecord method description below for further details.
+See the getRecordLevels method description below for further details.
 
 
 
