@@ -35,6 +35,11 @@ for significantly better compression.
 01/08/2016: Added methods to pause  and resume audio recording, get audio levels. 
 */
 
+/*
+ 02/03/2016: Added AVAudioSessionCategoryOptionMixWithOthers for Play and Record
+ See: http://stackoverflow.com/questions/31881565/cordova-media-plugin-breaks-html5-audio-tag-on-ios
+ */
+
 #import "CDVSound.h"
 #import "CDVFile.h"
 #import <Cordova/NSArray+Comparisons.h>
@@ -538,7 +543,7 @@ for significantly better compression.
                 // get the audioSession and set the category to allow recording when device is locked or ring/silent switch engaged
                 if ([self hasAudioSession]) {
                     if (![self.avSession.category isEqualToString:AVAudioSessionCategoryPlayAndRecord]) {
-                        [self.avSession setCategory:AVAudioSessionCategoryRecord error:nil];
+                        [self.avSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionMixWithOthers error:nil];
                     }
 
                     if (![self.avSession setActive:YES error:&error]) {
@@ -657,7 +662,7 @@ for significantly better compression.
                 // get the audioSession and set the category to allow recording when device is locked or ring/silent switch engaged
                 if ([self hasAudioSession]) {
                     if (![self.avSession.category isEqualToString:AVAudioSessionCategoryPlayAndRecord]) {
-                        [self.avSession setCategory:AVAudioSessionCategoryRecord error:nil];
+                        [self.avSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionMixWithOthers error:nil];
                     }
 
                     if (![self.avSession setActive:YES error:&error]) {
