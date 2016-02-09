@@ -20,6 +20,13 @@
 -->
 # Release Notes
 
+### 2.2.0 (Feb 09, 2016)
+* [CB-10476](https://issues.apache.org/jira/browse/CB-10476) Fix problem where callbacks were not invoked on android due to messageChannel being overridden by callbackContext in every execute() call
+* Edit package.json license to match SPDX id
+* [CB-10455](https://issues.apache.org/jira/browse/CB-10455) android: Adding permission helper to remove cordova-android 5.0.0 constraint
+* [CB-57](https://issues.apache.org/jira/browse/CB-57) Updated to use avplayer when url starts with http:// or https:// for full streaming support
+* [CB-8222](https://issues.apache.org/jira/browse/CB-8222) Background thread on play to prevent locking during initial load of media
+
 ### 2.1.0 (Jan 15, 2016)
 * Fixed example referencing non-existent variable
 * CB-9452: Treat `RTSP streams` as `remote URLs`
