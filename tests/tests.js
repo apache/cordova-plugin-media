@@ -209,7 +209,7 @@ exports.defineAutoTests = function () {
                 //in case the statusChange callback is reached more than one time with the same status code.
                 //Some information about this kind of behaviour can be found at JIRA: CB-7099.
                 var context = this,
-                    mediaFile = 'http://cordova.apache.org/downloads/BlueZedEx.mp3',
+                    mediaFile = 'https://cordova.apache.org/downloads/BlueZedEx.mp3',
                     successCallback = function () { },
                     statusChange = function (statusCode) {
                         if (!context.done && statusCode == Media.MEDIA_RUNNING) {
@@ -238,7 +238,7 @@ exports.defineAutoTests = function () {
                 //in case the statusChange callback is reached more than one time with the same status code.
                 //Some information about this kind of behaviour can be found at JIRA: CB-7099.
                 var context = this,
-                    mediaFile = 'http://cordova.apache.org/downloads/BlueZedEx.mp3',
+                    mediaFile = 'https://cordova.apache.org/downloads/BlueZedEx.mp3',
                     successCallback = function () { },
                     statusChange = function (statusCode) {
                         if (!context.done && statusCode == Media.MEDIA_RUNNING) {
@@ -268,7 +268,7 @@ exports.defineAutoTests = function () {
                 //Some information about this kind of behaviour can be found at JIRA: CB-7099.
                 var context = this;
                 var resumed = false;
-                var mediaFile = 'http://cordova.apache.org/downloads/BlueZedEx.mp3';
+                var mediaFile = 'https://cordova.apache.org/downloads/BlueZedEx.mp3';
                 var successCallback = function () { };
                 var statusChange = function (statusCode) {
                     if (context.done) return;
@@ -305,7 +305,7 @@ exports.defineAutoTests = function () {
                 //in case the statusChange callback is reached more than one time with the same status code.
                 //Some information about this kind of behaviour can be found at JIRA: CB-7099.
                 var context = this;
-                var mediaFile = 'http://cordova.apache.org/downloads/BlueZedEx.mp3';
+                var mediaFile = 'https://cordova.apache.org/downloads/BlueZedEx.mp3';
                 var successCallback = function () { };
                 var statusChange = function (statusCode) {
                     if (!context.done && statusCode == Media.MEDIA_RUNNING) {
@@ -338,7 +338,7 @@ exports.defineAutoTests = function () {
                 pending();
                 return;
             }
-            var mediaFile = 'http://cordova.apache.org/downloads/BlueZedEx.mp3',
+            var mediaFile = 'https://cordova.apache.org/downloads/BlueZedEx.mp3',
                 mediaState = Media.MEDIA_STOPPED,
                 successCallback,
                 context = this,
@@ -381,7 +381,7 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     var media1 = null;
     var media1Timer = null;
     var audioSrc = null;
-    var defaultaudio = "http://cordova.apache.org/downloads/BlueZedEx.mp3";
+    var defaultaudio = "https://cordova.apache.org/downloads/BlueZedEx.mp3";
 
     //Play audio function
     function playAudio(url) {
