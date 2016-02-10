@@ -515,8 +515,7 @@
 {
     // args:
     // 0 = Media id
-    // 1 = path to resource
-    // 2 = seek to location in milliseconds
+    // 1 = seek to location in milliseconds
 
     NSString* mediaId = [command argumentAtIndex:0];
 
@@ -539,22 +538,22 @@
             // NSLog(@"seekJsString=%@",jsString);
         }
 
-        } else if (avPlayer != nil) {
-            int32_t timeScale = avPlayer.currentItem.asset.duration.timescale;
-            CMTime timeToSeek = CMTimeMakeWithSeconds(posInSeconds, timeScale);            
+    } else if (avPlayer != nil) {
+        int32_t timeScale = avPlayer.currentItem.asset.duration.timescale;
+        CMTime timeToSeek = CMTimeMakeWithSeconds(posInSeconds, timeScale);
            
-            BOOL isPlaying = (avPlayer.rate > 0 && !avPlayer.error);
+        BOOL isPlaying = (avPlayer.rate > 0 && !avPlayer.error);
             
-            [avPlayer seekToTime: timeToSeek
-                         toleranceBefore: kCMTimeZero
-                          toleranceAfter: kCMTimeZero
-                       completionHandler: ^(BOOL finished) {
-                           if (isPlaying) [avPlayer play];
-                       }];
-        }
-
-        [self.commandDelegate evalJs:jsString];
+        [avPlayer seekToTime: timeToSeek
+                        toleranceBefore: kCMTimeZero
+                        toleranceAfter: kCMTimeZero
+                    completionHandler: ^(BOOL finished) {
+                        if (isPlaying) [avPlayer play];
+                    }];
     }
+
+    [self.commandDelegate evalJs:jsString];
+}
 
 
 - (void)release:(CDVInvokedUrlCommand*)command
