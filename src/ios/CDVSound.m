@@ -543,13 +543,23 @@
         CMTime timeToSeek = CMTimeMakeWithSeconds(posInSeconds, timeScale);
            
         BOOL isPlaying = (avPlayer.rate > 0 && !avPlayer.error);
-            
-        [avPlayer seekToTime: timeToSeek
-                        toleranceBefore: kCMTimeZero
-                        toleranceAfter: kCMTimeZero
-                    completionHandler: ^(BOOL finished) {
-                        if (isPlaying) [avPlayer play];
-                    }];
+        BOOL isReadyToSeek = (avPlayer.status == AVPlayerStatusReadyToPlay) && (avPlayer.currentItem.status == AVPlayerItemStatusReadyToPlay);
+        
+        // CB-10535:
+        // To avoid apps crashing, we only seek if both the player and the player item are ready to play,
+        // If not ready to seek, we send an error back to JS land
+        if(isReadyToSeek) {
+            [avPlayer seekToTime: timeToSeek
+                 toleranceBefore: kCMTimeZero
+                  toleranceAfter: kCMTimeZero
+               completionHandler: ^(BOOL finished) {
+                   if (isPlaying) [avPlayer play];
+               }];
+        } else {
+            CDVMediaError errcode = MEDIA_ERR_ABORTED;
+            NSString* errMsg = @"AVPlayerItem cannot service a seek request with a completion handler until its status is AVPlayerItemStatusReadyToPlay.";
+            jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:errcode message:errMsg]];
+        }
     }
 
     [self.commandDelegate evalJs:jsString];
