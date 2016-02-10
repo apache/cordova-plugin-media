@@ -293,7 +293,12 @@ exports.defineAutoTests = function () {
                     }
                 };
                 media = new Media(mediaFile, successCallback, failed.bind(self, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
-                media.play();
+                
+                // CB-10535: Play after a few secs, to give allow enough buffering of media file before seeking
+                setTimeout(function() {
+                    media.play();
+                }, 4000);
+                
             }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
 
             it("media.spec.21 should be able to seek through file", function (done) {
@@ -321,7 +326,12 @@ exports.defineAutoTests = function () {
                     }
                 };
                 media = new Media(mediaFile, successCallback, failed.bind(self, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
-                media.play();
+                
+                // CB-10535: Play after a few secs, to give allow enough buffering of media file before seeking
+                setTimeout(function() {
+                    media.play();
+                }, 4000);
+                
             }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
         });
 
