@@ -19,8 +19,9 @@
  *
 */
 
-var cordova = require('cordova'),
-    Media = require('cordova-plugin-media.Media');
+/* global webkitURL */
+
+var Media = require('cordova-plugin-media.Media');
 
 var MediaError = require('cordova-plugin-media.MediaError'),
     audioObjects = {};

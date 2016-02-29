@@ -159,7 +159,7 @@ Media.prototype.setRate = function(rate) {
     if (cordova.platformId === 'ios'){
         exec(null, null, "Media", "setRate", [this.id, rate]);
     } else {
-        console.warn('media.setRate method is currently not supported for', cordova.platformId, 'platform.')
+        console.warn('media.setRate method is currently not supported for', cordova.platformId, 'platform.');
     }
 };
 
@@ -176,30 +176,37 @@ Media.onStatus = function(id, msgType, value) {
 
     var media = mediaObjects[id];
 
-    if(media) {
+    if (media) {
         switch(msgType) {
             case Media.MEDIA_STATE :
-                media.statusCallback && media.statusCallback(value);
-                if(value == Media.MEDIA_STOPPED) {
-                    media.successCallback && media.successCallback();
+                if (media.statusCallback) {
+                    media.statusCallback(value);
+                }
+                if (value == Media.MEDIA_STOPPED) {
+                    if (media.successCallback) {
+                        media.successCallback();
+                    }
                 }
                 break;
             case Media.MEDIA_DURATION :
                 media._duration = value;
                 break;
             case Media.MEDIA_ERROR :
-                media.errorCallback && media.errorCallback(value);
+                if (media.errorCallback) {
+                    media.errorCallback(value);
+                }
                 break;
             case Media.MEDIA_POSITION :
                 media._position = Number(value);
                 break;
             default :
-                console.error && console.error("Unhandled Media.onStatus :: " + msgType);
+                if (console.error) {
+                    console.error("Unhandled Media.onStatus :: " + msgType);
+                }
                 break;
         }
-    }
-    else {
-         console.error && console.error("Received Media.onStatus callback for unknown media :: " + id);
+    } else if (console.error) {
+        console.error("Received Media.onStatus callback for unknown media :: " + id);
     }
 
 };

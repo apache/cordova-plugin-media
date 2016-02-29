@@ -19,6 +19,8 @@
  *
 */
 
+/* global qnx, PluginResult */
+
 var audioObjects = {},
     mediaErrorsHandled = false;
 

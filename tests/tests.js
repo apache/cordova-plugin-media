@@ -18,6 +18,10 @@
  * under the License.
  *
  */
+
+/* jshint jasmine: true */
+/* global Windows, Media, MediaError, LocalFileSystem, halfSpeedBtn */
+
 // increased timeout for actual playback to give device chance to download and play mp3 file
 // some emulators can be REALLY slow at this, so two minutes
 var ACTUAL_PLAYBACK_TEST_TIMEOUT = 2 * 60 * 1000;
@@ -225,7 +229,7 @@ exports.defineAutoTests = function () {
                             }, 1000);
                         }
                     };
-                media = new Media(mediaFile, successCallback, failed.bind(self, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
+                media = new Media(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
                 media.play();
             }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
 
@@ -254,7 +258,7 @@ exports.defineAutoTests = function () {
                             }, 1000);
                         }
                     };
-                media = new Media(mediaFile, successCallback, failed.bind(self, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
+                media = new Media(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
                 media.play();
             }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
 
@@ -284,7 +288,7 @@ exports.defineAutoTests = function () {
                             expect(position).toBeCloseTo(20, 0);
                             context.done = true;
                             done();
-                        }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position', context))
+                        }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position', context));
                     }
 
                     if (statusCode == Media.MEDIA_PAUSED) {
@@ -292,7 +296,7 @@ exports.defineAutoTests = function () {
                         media.play();
                     }
                 };
-                media = new Media(mediaFile, successCallback, failed.bind(self, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
+                media = new Media(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
                 
                 // CB-10535: Play after a few secs, to give allow enough buffering of media file before seeking
                 setTimeout(function() {
@@ -325,7 +329,7 @@ exports.defineAutoTests = function () {
                         }, 1000);
                     }
                 };
-                media = new Media(mediaFile, successCallback, failed.bind(self, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
+                media = new Media(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
                 
                 // CB-10535: Play after a few secs, to give allow enough buffering of media file before seeking
                 setTimeout(function() {
@@ -349,7 +353,6 @@ exports.defineAutoTests = function () {
                 return;
             }
             var mediaFile = 'https://cordova.apache.org/downloads/BlueZedEx.mp3',
-                mediaState = Media.MEDIA_STOPPED,
                 successCallback,
                 context = this,
                 flag = true,
@@ -371,8 +374,8 @@ exports.defineAutoTests = function () {
                         }, 4000);
                     }
                 };
-                
-            var media1 = new Media(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
+
+            var media1 = new Media(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange); // jshint ignore:line
             //make audio playback two times faster
             media1.setRate(2);
             media1.play();
@@ -901,7 +904,6 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         pauseAudio();
     }, 'pauseBtn');
     createActionButton('HalfSpeed', function() {
-    
         if(halfSpeedBtn.firstChild.firstChild.innerText == 'HalfSpeed') {
             halfSpeedBtn.firstChild.firstChild.innerText = 'FullSpeed';
             media1.setRate(0.5);

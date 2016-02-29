@@ -19,12 +19,44 @@
  *
 */
 
-/*global MediaError, module, require*/
+/* global MediaError */
 
 var argscheck = require('cordova/argscheck'),
     utils = require('cordova/utils');
 
 var mediaObjects = {};
+
+/**
+ * This class provides access to the device media, interfaces to both sound and video
+ *
+ * @constructor
+ * @param src                   The file name or url to play
+ * @param successCallback       The callback to be called when the file is done playing or recording.
+ *                                  successCallback()
+ * @param errorCallback         The callback to be called if there is an error.
+ *                                  errorCallback(int errorCode) - OPTIONAL
+ * @param statusCallback        The callback to be called when media status has changed.
+ *                                  statusCallback(int statusCode) - OPTIONAL
+ */
+var Media = function(src, successCallback, errorCallback, statusCallback) {
+    argscheck.checkArgs('SFFF', 'Media', arguments);
+    this.id = utils.createUUID();
+    mediaObjects[this.id] = this;
+    this.src = src;
+    this.successCallback = successCallback;
+    this.errorCallback = errorCallback;
+    this.statusCallback = statusCallback;
+    this._duration = -1;
+    this._position = -1;
+
+    Media.onStatus(this.id, Media.MEDIA_STATE, Media.MEDIA_STARTING);
+    
+    try {
+        this.node = createNode(this);
+    } catch (err) {
+        Media.onStatus(this.id, Media.MEDIA_ERROR, { code: MediaError.MEDIA_ERR_ABORTED });
+    }
+};
 
 /**
  * Creates new Audio node and with necessary event listeners attached
@@ -65,38 +97,6 @@ function createNode (media) {
 
     return node;
 }
-
-/**
- * This class provides access to the device media, interfaces to both sound and video
- *
- * @constructor
- * @param src                   The file name or url to play
- * @param successCallback       The callback to be called when the file is done playing or recording.
- *                                  successCallback()
- * @param errorCallback         The callback to be called if there is an error.
- *                                  errorCallback(int errorCode) - OPTIONAL
- * @param statusCallback        The callback to be called when media status has changed.
- *                                  statusCallback(int statusCode) - OPTIONAL
- */
-var Media = function(src, successCallback, errorCallback, statusCallback) {
-    argscheck.checkArgs('SFFF', 'Media', arguments);
-    this.id = utils.createUUID();
-    mediaObjects[this.id] = this;
-    this.src = src;
-    this.successCallback = successCallback;
-    this.errorCallback = errorCallback;
-    this.statusCallback = statusCallback;
-    this._duration = -1;
-    this._position = -1;
-
-    Media.onStatus(this.id, Media.MEDIA_STATE, Media.MEDIA_STARTING);
-    
-    try {
-        this.node = createNode(this);
-    } catch (err) {
-        Media.onStatus(this.id, Media.MEDIA_ERROR, { code: MediaError.MEDIA_ERR_ABORTED });
-    }
-};
 
 // Media messages
 Media.MEDIA_STATE = 1;
@@ -230,29 +230,37 @@ Media.onStatus = function(id, msgType, value) {
 
     var media = mediaObjects[id];
 
-    if(media) {
+    if (media) {
         switch(msgType) {
             case Media.MEDIA_STATE :
-                media.statusCallback && media.statusCallback(value);
-                if(value === Media.MEDIA_STOPPED) {
-                    media.successCallback && media.successCallback();
+                if (media.statusCallback) {
+                    media.statusCallback(value);
+                }
+                if (value === Media.MEDIA_STOPPED) {
+                    if (media.successCallback) {
+                        media.successCallback();
+                    }
                 }
                 break;
             case Media.MEDIA_DURATION :
                 media._duration = value;
                 break;
             case Media.MEDIA_ERROR :
-                media.errorCallback && media.errorCallback(value);
+                if (media.errorCallback) {
+                    media.errorCallback(value);
+                }
                 break;
             case Media.MEDIA_POSITION :
                 media._position = Number(value);
                 break;
             default :
-                console.error && console.error("Unhandled Media.onStatus :: " + msgType);
+                if (console.error) {
+                    console.error("Unhandled Media.onStatus :: " + msgType);
+                }
                 break;
         }
-    } else {
-         console.error && console.error("Received Media.onStatus callback for unknown media :: " + id);
+    } else if (console.error) {
+        console.error("Received Media.onStatus callback for unknown media :: " + id);
     }
 };
 
