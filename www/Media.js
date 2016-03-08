@@ -36,8 +36,10 @@ var mediaObjects = {};
  *                                  errorCallback(int errorCode) - OPTIONAL
  * @param statusCallback        The callback to be called when media status has changed.
  *                                  statusCallback(int statusCode) - OPTIONAL
+ * @param meteringCallback      The function to be called when audio is being recorded or played back.
+                                    meteringCallback(int audioLevel) - OPTIONAL
  */
-var Media = function(src, successCallback, errorCallback, statusCallback) {
+var Media = function(src, successCallback, errorCallback, statusCallback, meteringCallback) {
     argscheck.checkArgs('sFFF', 'Media', arguments);
     this.id = utils.createUUID();
     mediaObjects[this.id] = this;
@@ -45,15 +47,19 @@ var Media = function(src, successCallback, errorCallback, statusCallback) {
     this.successCallback = successCallback;
     this.errorCallback = errorCallback;
     this.statusCallback = statusCallback;
+    this.meteringCallback = meteringCallback;
+    this.isMeteringEnabled = (this.meteringCallback) ? true : false;
     this._duration = -1;
     this._position = -1;
-    exec(null, this.errorCallback, "Media", "create", [this.id, this.src]);
+    
+    exec(null, this.errorCallback, "Media", "create", [this.id, this.src, this.isMeteringEnabled]);
 };
 
 // Media messages
 Media.MEDIA_STATE = 1;
 Media.MEDIA_DURATION = 2;
 Media.MEDIA_POSITION = 3;
+Media.MEDIA_AUDIO_LEVEL = 4;
 Media.MEDIA_ERROR = 9;
 
 // Media states
@@ -188,6 +194,11 @@ Media.onStatus = function(id, msgType, value) {
                     }
                 }
                 break;
+            case Media.MEDIA_AUDIO_LEVEL :
+            	if (isMeteringEnabled) {
+            		media.meteringCallback(value);
+            	}
+            	break;
             case Media.MEDIA_DURATION :
                 media._duration = value;
                 break;

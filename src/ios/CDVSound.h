@@ -42,6 +42,7 @@ enum CDVMediaMsg {
     MEDIA_STATE = 1,
     MEDIA_DURATION = 2,
     MEDIA_POSITION = 3,
+    MEDIA_AUDIO_LEVEL = 4,
     MEDIA_ERROR = 9
 };
 typedef NSUInteger CDVMediaMsg;
@@ -90,6 +91,9 @@ typedef NSUInteger CDVMediaMsg;
 @property (nonatomic, strong) NSMutableDictionary* soundCache;
 @property (nonatomic, strong) AVAudioSession* avSession;
 @property (nonatomic, strong) NSString* currMediaId;
+@property (nonatomic, strong) NSTimer* meterTimer;
+@property (nonatomic, assign) BOOL isMeteringEnabled;
+
 
 - (void)startPlayingAudio:(CDVInvokedUrlCommand*)command;
 - (void)pausePlayingAudio:(CDVInvokedUrlCommand*)command;
@@ -107,6 +111,7 @@ typedef NSUInteger CDVMediaMsg;
 - (CDVAudioFile*)audioFileForResource:(NSString*)resourcePath withId:(NSString*)mediaId doValidation:(BOOL)bValidate forRecording:(BOOL)bRecord;
 - (BOOL)prepareToPlay:(CDVAudioFile*)audioFile withId:(NSString*)mediaId;
 - (NSString*)createMediaErrorWithCode:(CDVMediaError)code message:(NSString*)message;
+- (void)reportAudioLevel: (NSNumber*)audioLevel;
 
 - (void)startRecordingAudio:(CDVInvokedUrlCommand*)command;
 - (void)stopRecordingAudio:(CDVInvokedUrlCommand*)command;

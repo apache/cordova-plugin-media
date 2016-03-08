@@ -15,6 +15,7 @@
  under the License.
  */
 
+#import "Foundation";
 #import "CDVSound.h"
 #import "CDVFile.h"
 #import <AVFoundation/AVFoundation.h>
@@ -27,7 +28,7 @@
 
 @implementation CDVSound
 
-@synthesize soundCache, avSession, currMediaId;
+@synthesize soundCache, avSession, currMediaId, meterTimer, isMeteringEnabled;
 
 // Maps a url for a resource path for recording
 - (NSURL*)urlForRecording:(NSString*)resourcePath
@@ -215,6 +216,7 @@
 {
     NSString* mediaId = [command argumentAtIndex:0];
     NSString* resourcePath = [command argumentAtIndex:1];
+    BOOL meteringEnabled = [command argumentAtIndex: 2];
 
     CDVAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:NO forRecording:NO];
 
@@ -242,6 +244,7 @@
         }
 
         self.currMediaId = mediaId;
+        self.isMeteringEnabled = meteringEnabled;
 
         CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
@@ -659,16 +662,26 @@
             
             // create a new recorder for each start record
             audioFile.recorder = [[CDVAudioRecorder alloc] initWithURL:audioFile.resourceURL settings:nil error:&error];
+            audioFile.recorder.meteringEnabled = self.isMeteringEnabled;
             
             bool recordingSuccess = NO;
             if (error == nil) {
                 audioFile.recorder.delegate = weakSelf;
                 audioFile.recorder.mediaId = mediaId;
                 recordingSuccess = [audioFile.recorder record];
+                
                 if (recordingSuccess) {
                     NSLog(@"Started recording audio sample '%@'", audioFile.resourcePath);
                     jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_RUNNING];
                     [weakSelf.commandDelegate evalJs:jsString];
+                    
+                    if (self.isMeteringEnabled) {
+                        meterTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f
+                                                                      target:self
+                                                                    selector:@selector(reportAudioLevel)
+                                                                    userInfo:[self generateAudioLevel: audioFile.recorder]
+                                                                     repeats:YES];
+                    }
                 }
             }
             
@@ -729,6 +742,11 @@
     if ((audioFile != nil) && (audioFile.recorder != nil)) {
         NSLog(@"Stopped recording audio sample '%@'", audioFile.resourcePath);
         [audioFile.recorder stop];
+        
+        if (isMeteringEnabled) {
+            [meterTimer invalidate];
+            meterTimer = nil;
+        }
         // no callback - that will happen in audioRecorderDidFinishRecording
     }
     // ignore if no media recording
@@ -792,6 +810,23 @@
     if (self.avSession) {
         [self.avSession setActive:NO error:nil];
     }
+    [self.commandDelegate evalJs:jsString];
+}
+
+-(NSNumber*)generateAudioLevel:(CDVAudioRecorder *) recorder {
+    recorder.updateMeters()
+    NSNumber* level = [NSNumber numberWithFloat: recorder.averagePowerForChannel(0)];
+    
+    return level;
+}
+
+/*
+ Sends audio level back up to Javascript layer
+*/
+-(void)reportAudioLevel:(NSTimer *) timer {
+    NSNumber* audioLevel = timer.userInfo;
+    NSString* mediaId = self.currMediaId;
+    NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_AUDIO_LEVEL, audioLevel];
     [self.commandDelegate evalJs:jsString];
 }
 
