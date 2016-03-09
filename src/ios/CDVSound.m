@@ -15,7 +15,6 @@
  under the License.
  */
 
-#import "Foundation";
 #import "CDVSound.h"
 #import "CDVFile.h"
 #import <AVFoundation/AVFoundation.h>
