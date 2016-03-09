@@ -215,7 +215,7 @@
 {
     NSString* mediaId = [command argumentAtIndex:0];
     NSString* resourcePath = [command argumentAtIndex:1];
-    BOOL meteringEnabled = [command argumentAtIndex: 2];
+    BOOL meteringEnabled = [[command argumentAtIndex: 2] boolValue];
 
     CDVAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:NO forRecording:NO];
 
@@ -677,7 +677,7 @@
                     if (self.isMeteringEnabled) {
                         meterTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f
                                                                       target:self
-                                                                    selector:@selector(reportAudioLevel)
+                                                                    selector:@selector(reportAudioLevel:)
                                                                     userInfo:[self generateAudioLevel: audioFile.recorder]
                                                                      repeats:YES];
                     }
@@ -813,7 +813,7 @@
 }
 
 -(NSNumber*)generateAudioLevel:(CDVAudioRecorder *) recorder {
-    recorder.updateMeters()
+    [recorder updateMeters];
     NSNumber* level = [NSNumber numberWithFloat: recorder.averagePowerForChannel(0)];
     
     return level;
@@ -825,7 +825,7 @@
 -(void)reportAudioLevel:(NSTimer *) timer {
     NSNumber* audioLevel = timer.userInfo;
     NSString* mediaId = self.currMediaId;
-    NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_AUDIO_LEVEL, audioLevel];
+    NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_AUDIO_LEVEL, audioLevel];
     [self.commandDelegate evalJs:jsString];
 }
 
