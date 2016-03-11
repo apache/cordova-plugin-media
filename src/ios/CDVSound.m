@@ -557,7 +557,7 @@ for significantly better compression.
                     if (![weakSelf.avSession.category isEqualToString:AVAudioSessionCategoryPlayAndRecord]) {
                         [weakSelf.avSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionMixWithOthers error:nil];
 						// force output to speaker, resolves issues with HTML5 audio playback within the app
-						[weakSelf.avSession overrideOutputAudioPort:AVAudioSessionPortOverideSpeaker error:nil];
+						[weakSelf.avSession overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
                     }
 
                     if (![weakSelf.avSession setActive:YES error:&error]) {
@@ -681,7 +681,7 @@ for significantly better compression.
                     if (![weakSelf.avSession.category isEqualToString:AVAudioSessionCategoryPlayAndRecord]) {
                         [weakSelf.avSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionMixWithOthers error:nil];
 						// force output to speaker, resolves issues with HTML5 audio playback within the app
-						[weakSelf.avSession overrideOutputAudioPort:AVAudioSessionPortOverideSpeaker error:nil];
+						[weakSelf.avSession overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
                     }
 
                     if (![weakSelf.avSession setActive:YES error:&error]) {
