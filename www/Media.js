@@ -41,6 +41,7 @@ var mediaObjects = {};
  */
 var Media = function(src, successCallback, errorCallback, statusCallback, meteringCallback) {
     argscheck.checkArgs('sFFF', 'Media', arguments);
+    console.log('Media plugin (JS interface): Creating Media object');
     this.id = utils.createUUID();
     mediaObjects[this.id] = this;
     this.src = src;
