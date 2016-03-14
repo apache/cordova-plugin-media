@@ -197,9 +197,9 @@ Media.onStatus = function(id, msgType, value) {
                 }
                 break;
             case Media.MEDIA_AUDIO_LEVEL :
-            	if (isMeteringEnabled) {
+            	//if (isMeteringEnabled) {
             		media.meteringCallback(value);
-            	}
+            	//}
             	break;
             case Media.MEDIA_DURATION :
                 media._duration = value;
