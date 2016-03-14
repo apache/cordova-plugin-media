@@ -27,7 +27,7 @@
 
 @implementation CDVSound
 
-@synthesize soundCache, avSession, currMediaId, meterTimer, isMeteringEnabled;
+@synthesize soundCache, avSession, currMediaId, meterTimer;//, isMeteringEnabled;
 
 // Maps a url for a resource path for recording
 - (NSURL*)urlForRecording:(NSString*)resourcePath
