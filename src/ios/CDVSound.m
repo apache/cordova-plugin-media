@@ -245,7 +245,7 @@
         }
 
         self.currMediaId = mediaId;
-        self.isMeteringEnabled = meteringEnabled;
+        //self.isMeteringEnabled = meteringEnabled;
 
         CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
@@ -663,7 +663,7 @@
             
             // create a new recorder for each start record
             audioFile.recorder = [[CDVAudioRecorder alloc] initWithURL:audioFile.resourceURL settings:nil error:&error];
-            audioFile.recorder.meteringEnabled = self.isMeteringEnabled;
+            //audioFile.recorder.meteringEnabled = self.isMeteringEnabled;
             
             bool recordingSuccess = NO;
             if (error == nil) {
@@ -676,13 +676,13 @@
                     jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_RUNNING];
                     [weakSelf.commandDelegate evalJs:jsString];
                     
-                    if (self.isMeteringEnabled) {
+                    //if (self.isMeteringEnabled) {
                         meterTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f
                                                                       target:self
                                                                     selector:@selector(reportAudioLevel:)
                                                                     userInfo:[self generateAudioLevel: audioFile.recorder]
                                                                      repeats:YES];
-                    }
+                    //}
                 }
             }
             
@@ -744,10 +744,10 @@
         NSLog(@"Stopped recording audio sample '%@'", audioFile.resourcePath);
         [audioFile.recorder stop];
         
-        if (isMeteringEnabled) {
+        //if (isMeteringEnabled) {
             [meterTimer invalidate];
             meterTimer = nil;
-        }
+        //}
         // no callback - that will happen in audioRecorderDidFinishRecording
     }
     // ignore if no media recording
