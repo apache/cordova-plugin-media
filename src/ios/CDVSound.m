@@ -219,7 +219,7 @@
 
     CDVAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:NO forRecording:NO];
 
-    NSLog(@"IOS: CREATING MEDIA OBJ");
+    NSLog(@"iOS: Creating Media Object with ID: %@", mediaId);
     
     if (audioFile == nil) {
         NSString* errorMessage = [NSString stringWithFormat:@"Failed to initialize Media file with path %@", resourcePath];
@@ -630,6 +630,7 @@
 #pragma unused(callbackId)
 
     NSString* mediaId = [command argumentAtIndex:0];
+    NSLog(@"iOS: STartRecordingAudio with ID: %@", mediaId);
     CDVAudioFile* audioFile = [self audioFileForResource:[command argumentAtIndex:1] withId:mediaId doValidation:YES forRecording:YES];
     __block NSString* jsString = nil;
     __block NSString* errorMsg = @"";
@@ -736,7 +737,7 @@
 - (void)stopRecordingAudio:(CDVInvokedUrlCommand*)command
 {
     NSString* mediaId = [command argumentAtIndex:0];
-
+    NSLog(@"iOS: StopRecordingAudio with ID: %@", mediaId);
     CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
     NSString* jsString = nil;
 
