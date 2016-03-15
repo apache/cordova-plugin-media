@@ -555,9 +555,9 @@ for significantly better compression.
                 // get the audioSession and set the category to allow recording when device is locked or ring/silent switch engaged
                 if ([weakSelf hasAudioSession]) {
                     if (![weakSelf.avSession.category isEqualToString:AVAudioSessionCategoryPlayAndRecord]) {
-                        [weakSelf.avSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionMixWithOthers error:nil];
+                        [weakSelf.avSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionMixWithOthers|AVAudioSessionCategoryOptionDefaultToSpeaker error:nil];
 						// force output to speaker, resolves issues with HTML5 audio playback within the app
-						[weakSelf.avSession overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
+						// [weakSelf.avSession overrideOutputAudioPort:AVAudioSessionCategoryOptionDefaultToSpeaker  error:nil];
                     }
 
                     if (![weakSelf.avSession setActive:YES error:&error]) {
@@ -679,9 +679,9 @@ for significantly better compression.
                 // get the audioSession and set the category to allow recording when device is locked or ring/silent switch engaged
                 if ([weakSelf hasAudioSession]) {
                     if (![weakSelf.avSession.category isEqualToString:AVAudioSessionCategoryPlayAndRecord]) {
-                        [weakSelf.avSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionMixWithOthers error:nil];
+                        [weakSelf.avSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionMixWithOthers|AVAudioSessionCategoryOptionDefaultToSpeaker error:nil];
 						// force output to speaker, resolves issues with HTML5 audio playback within the app
-						[weakSelf.avSession overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
+						// [weakSelf.avSession overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
                     }
 
                     if (![weakSelf.avSession setActive:YES error:&error]) {
