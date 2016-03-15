@@ -677,11 +677,11 @@
                     [weakSelf.commandDelegate evalJs:jsString];
                     
                     //if (self.isMeteringEnabled) {
-                        meterTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f
-                                                                      target:self
-                                                                    selector:@selector(reportAudioLevel:)
-                                                                    userInfo:[self generateAudioLevel: audioFile.recorder]
-                                                                     repeats:YES];
+//                        self.meterTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f
+//                                                                           target:self
+//                                                                         selector:@selector(reportAudioLevel:)
+//                                                                         userInfo:[self generateAudioLevel: audioFile.recorder]
+//                                                                          repeats:YES];
                     //}
                 }
             }
@@ -745,8 +745,8 @@
         [audioFile.recorder stop];
         
         //if (isMeteringEnabled) {
-            [meterTimer invalidate];
-            meterTimer = nil;
+//            [self.meterTimer invalidate];
+//            self.meterTimer = nil;
         //}
         // no callback - that will happen in audioRecorderDidFinishRecording
     }
