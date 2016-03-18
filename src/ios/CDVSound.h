@@ -31,10 +31,12 @@ typedef NSUInteger CDVMediaError;
 
 enum CDVMediaStates {
     MEDIA_NONE = 0,
-    MEDIA_STARTING = 1,
-    MEDIA_RUNNING = 2,
-    MEDIA_PAUSED = 3,
-    MEDIA_STOPPED = 4
+    MEDIA_RECORD_START = 1,
+    MEDIA_RECORD_STOP = 2,
+    MEDIA_PLAY_START = 3,
+    MEDIA_PLAY_PAUSE = 4,
+    MEDIA_PLAY_STOP = 5,
+    MEDIA_PLAY_COMPLETE = 6
 };
 typedef NSUInteger CDVMediaStates;
 
@@ -98,25 +100,21 @@ typedef NSUInteger CDVMediaMsg;
 - (void)startPlayingAudio:(CDVInvokedUrlCommand*)command;
 - (void)pausePlayingAudio:(CDVInvokedUrlCommand*)command;
 - (void)stopPlayingAudio:(CDVInvokedUrlCommand*)command;
+- (void)startRecordingAudio:(CDVInvokedUrlCommand*)command;
+- (void)stopRecordingAudio:(CDVInvokedUrlCommand*)command;
 - (void)seekToAudio:(CDVInvokedUrlCommand*)command;
 - (void)release:(CDVInvokedUrlCommand*)command;
 - (void)getCurrentPositionAudio:(CDVInvokedUrlCommand*)command;
-
-- (BOOL)hasAudioSession;
+- (void)setVolume:(CDVInvokedUrlCommand*)command;
+- (void)setRate:(CDVInvokedUrlCommand*)command;
 
 // helper methods
+- (BOOL)hasAudioSession;
 - (NSURL*)urlForRecording:(NSString*)resourcePath;
 - (NSURL*)urlForPlaying:(NSString*)resourcePath;
-
 - (CDVAudioFile*)audioFileForResource:(NSString*)resourcePath withId:(NSString*)mediaId doValidation:(BOOL)bValidate forRecording:(BOOL)bRecord;
 - (BOOL)prepareToPlay:(CDVAudioFile*)audioFile withId:(NSString*)mediaId;
 - (NSString*)createMediaErrorWithCode:(CDVMediaError)code message:(NSString*)message;
 - (void)reportAudioLevel: (NSNumber*)audioLevel;
-
-- (void)startRecordingAudio:(CDVInvokedUrlCommand*)command;
-- (void)stopRecordingAudio:(CDVInvokedUrlCommand*)command;
-
-- (void)setVolume:(CDVInvokedUrlCommand*)command;
-- (void)setRate:(CDVInvokedUrlCommand*)command;
 
 @end
