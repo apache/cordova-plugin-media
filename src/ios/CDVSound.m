@@ -639,6 +639,7 @@
 
         __weak CDVSound* weakSelf = self;
 
+        // START: Recording block
         void (^startRecording)(void) = ^{
             NSError* __autoreleasing error = nil;
             
@@ -701,6 +702,7 @@
                 [weakSelf.commandDelegate evalJs:jsString];
             }
         };
+        // END: Recording block
         
         SEL rrpSel = NSSelectorFromString(@"requestRecordPermission:");
         if ([self hasAudioSession] && [self.avSession respondsToSelector:rrpSel])
