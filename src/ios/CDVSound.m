@@ -29,6 +29,49 @@
 
 @synthesize soundCache, avSession, currMediaId, meterTimer;//, isMeteringEnabled;
 
+
+- (void)create:(CDVInvokedUrlCommand*)command
+{
+    NSString* mediaId = [command argumentAtIndex:0];
+    NSString* resourcePath = [command argumentAtIndex:1];
+    BOOL meteringEnabled = [[command argumentAtIndex: 2] boolValue];
+    
+    CDVAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:NO forRecording:NO];
+    
+    NSLog(@"iOS: Creating Media Object with ID: %@", mediaId);
+    
+    if (audioFile == nil) {
+        NSString* errorMessage = [NSString stringWithFormat:@"Failed to initialize Media file with path %@", resourcePath];
+        NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_ABORTED message:errorMessage]];
+        [self.commandDelegate evalJs:jsString];
+    } else {
+        NSURL* resourceUrl = [[NSURL alloc] initWithString:resourcePath];
+        
+        if (![resourceUrl isFileURL] && ![resourcePath hasPrefix:CDVFILE_PREFIX]) {
+            // First create an AVPlayerItem
+            AVPlayerItem* playerItem = [AVPlayerItem playerItemWithURL:resourceUrl];
+            
+            // Subscribe to the AVPlayerItem's DidPlayToEndTime notification.
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:playerItem];
+            
+            // Subscribe to the AVPlayerItem's PlaybackStalledNotification notification.
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemStalledPlaying:) name:AVPlayerItemPlaybackStalledNotification object:playerItem];
+            
+            // Pass the AVPlayerItem to a new player
+            avPlayer = [[AVPlayer alloc] initWithPlayerItem:playerItem];
+            
+            //avPlayer = [[AVPlayer alloc] initWithURL:resourceUrl];
+        }
+        
+        self.currMediaId = mediaId;
+        //self.isMeteringEnabled = meteringEnabled;
+        
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+    }
+}
+
+
 // Maps a url for a resource path for recording
 - (NSURL*)urlForRecording:(NSString*)resourcePath
 {
@@ -211,46 +254,6 @@
     return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 }
 
-- (void)create:(CDVInvokedUrlCommand*)command
-{
-    NSString* mediaId = [command argumentAtIndex:0];
-    NSString* resourcePath = [command argumentAtIndex:1];
-    BOOL meteringEnabled = [[command argumentAtIndex: 2] boolValue];
-
-    CDVAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:NO forRecording:NO];
-
-    NSLog(@"iOS: Creating Media Object with ID: %@", mediaId);
-    
-    if (audioFile == nil) {
-        NSString* errorMessage = [NSString stringWithFormat:@"Failed to initialize Media file with path %@", resourcePath];
-        NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_ABORTED message:errorMessage]];
-        [self.commandDelegate evalJs:jsString];
-    } else {
-        NSURL* resourceUrl = [[NSURL alloc] initWithString:resourcePath];
-
-        if (![resourceUrl isFileURL] && ![resourcePath hasPrefix:CDVFILE_PREFIX]) {
-            // First create an AVPlayerItem
-            AVPlayerItem* playerItem = [AVPlayerItem playerItemWithURL:resourceUrl];
-
-            // Subscribe to the AVPlayerItem's DidPlayToEndTime notification.
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:playerItem];
-
-            // Subscribe to the AVPlayerItem's PlaybackStalledNotification notification.
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemStalledPlaying:) name:AVPlayerItemPlaybackStalledNotification object:playerItem];
-
-            // Pass the AVPlayerItem to a new player
-            avPlayer = [[AVPlayer alloc] initWithPlayerItem:playerItem];
-
-            //avPlayer = [[AVPlayer alloc] initWithURL:resourceUrl];
-        }
-
-        self.currMediaId = mediaId;
-        //self.isMeteringEnabled = meteringEnabled;
-
-        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
-    }
-}
 
 - (void)setVolume:(CDVInvokedUrlCommand*)command
 {
