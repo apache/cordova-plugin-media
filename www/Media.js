@@ -192,7 +192,9 @@ Media.onStatus = function(id, msgType, value) {
                 if (media.statusCallback) {
                     media.statusCallback(value);
                 }
-                if (value == Media.MEDIA_STOPPED) {
+                if (value === Media.MEDIA_PLAY_COMPLETE ||
+                    value === Media.MEDIA_PLAY_STOP ||
+                    value === Media.MEDIA_RECORD_STOP) {
                     if (media.successCallback) {
                         media.successCallback();
                     }
