@@ -72,7 +72,7 @@ Media.MEDIA_PLAY_START = 3;
 Media.MEDIA_PLAY_PAUSE = 4;
 Media.MEDIA_PLAY_STOP = 5;
 Media.MEDIA_PLAY_COMPLETE = 6;
-Media.MEDIA_MSG = ["None", "Record Start", "Record Stop", "Play Start", "Play Pause", "Play Stop", "Play Complete"];
+//Media.MEDIA_MSG = ["None", "Record Start", "Record Stop", "Play Start", "Play Pause", "Play Stop", "Play Complete"];
 
 // "static" function to return existing objs.
 Media.get = function(id) {
@@ -238,15 +238,15 @@ function onMessageFromNative(msg) {
     }
 }
 
-if (cordova.platformId === 'android' || cordova.platformId === 'amazon-fireos' || cordova.platformId === 'windowsphone') {
-
-    var channel = require('cordova/channel');
-
-    channel.createSticky('onMediaPluginReady');
-    channel.waitForInitialization('onMediaPluginReady');
-
-    channel.onCordovaReady.subscribe(function() {
-        exec(onMessageFromNative, undefined, 'Media', 'messageChannel', []);
-        channel.initializationComplete('onMediaPluginReady');
-    });
-}
+//if (cordova.platformId === 'android' || cordova.platformId === 'amazon-fireos' || cordova.platformId === 'windowsphone') {
+//
+//    var channel = require('cordova/channel');
+//
+//    channel.createSticky('onMediaPluginReady');
+//    channel.waitForInitialization('onMediaPluginReady');
+//
+//    channel.onCordovaReady.subscribe(function() {
+//        exec(onMessageFromNative, undefined, 'Media', 'messageChannel', []);
+//        channel.initializationComplete('onMediaPluginReady');
+//    });
+//}
