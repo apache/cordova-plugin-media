@@ -54,7 +54,7 @@ var Media = function(src, successCallback, errorCallback, statusCallback, meteri
     this._position = -1;
     
     console.log('Metering enabled is: ' + this.isMeteringEnabled);
-    exec(null, this.errorCallback, "Media", "create", [this.id, this.src, this.isMeteringEnabled]);
+    exec(this.successCallback, this.errorCallback, "Media", "create", [this.id, this.src, this.isMeteringEnabled]);
 };
 
 // Media messages
