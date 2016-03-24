@@ -176,10 +176,10 @@
                     if (audioFile.rate != nil){
                         float customRate = [audioFile.rate floatValue];
                         NSLog(@"Playing stream with AVPlayer & custom rate");
-                        [avPlayer setRate:customRate];
+                        [avPlayer.player setRate:customRate];
                     } else {
                         NSLog(@"Playing stream with AVPlayer & custom rate");
-                        [avPlayer play];
+                        [avPlayer.player play];
                     }
 
                 } else {
