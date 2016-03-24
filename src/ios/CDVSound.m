@@ -46,7 +46,7 @@
         [self.commandDelegate evalJs:jsString];
     } else {
         //NSURL* resourceUrl = [[NSURL alloc] initWithString:resourcePath];
-        NSURL* recourceUrl = audioFile.recourceUrl;
+        NSURL* recourceUrl = audioFile.resourceURL;
         
         if (![resourceUrl isFileURL] && ![resourcePath hasPrefix:CDVFILE_PREFIX]) {
             
