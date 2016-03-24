@@ -36,7 +36,8 @@
     NSString* resourcePath = [command argumentAtIndex:1];
     BOOL meteringEnabled = [[command argumentAtIndex: 2] boolValue];
     
-    CDVAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:YES forRecording:NO];
+    //CDVAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:YES forRecording:NO];
+    CDVAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:NO forRecording:NO];
     
     NSLog(@"iOS: Creating Media Object with ID: %@", mediaId);
     
@@ -45,8 +46,8 @@
         NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_ABORTED message:errorMessage]];
         [self.commandDelegate evalJs:jsString];
     } else {
-        //NSURL* resourceUrl = [[NSURL alloc] initWithString:resourcePath];
-        NSURL* resourceUrl = audioFile.resourceURL;
+        NSURL* resourceUrl = [[NSURL alloc] initWithString:resourcePath];
+        //NSURL* resourceUrl = audioFile.resourceURL;
         
         if (![resourceUrl isFileURL] && ![resourcePath hasPrefix:CDVFILE_PREFIX]) {
             
