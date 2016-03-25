@@ -36,7 +36,6 @@
     NSString* resourcePath = [command argumentAtIndex:1];
     BOOL meteringEnabled = [[command argumentAtIndex: 2] boolValue];
     
-    //CDVAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:YES forRecording:NO];
     CDVAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:NO forRecording:NO];
     
     NSLog(@"iOS: Creating Media Object with ID: %@", mediaId);
@@ -47,7 +46,6 @@
         [self.commandDelegate evalJs:jsString];
     } else {
         NSURL* resourceUrl = [[NSURL alloc] initWithString:resourcePath];
-        //NSURL* resourceUrl = audioFile.resourceURL;
         
         if (![resourceUrl isFileURL] && ![resourcePath hasPrefix:CDVFILE_PREFIX]) {
             
@@ -64,8 +62,6 @@
             
             // Pass the AVPlayerItem to a new player
             avPlayer = [[AVPlayer alloc] initWithPlayerItem:playerItem];
-            
-            //avPlayer = [[AVPlayer alloc] initWithURL:resourceUrl];
         }
         
         self.currMediaId = mediaId;
@@ -146,7 +142,6 @@
             bError = [self prepareToPlay:audioFile withId:mediaId];
         }
         if (!bError) {
-            //self.currMediaId = audioFile.player.mediaId;
             self.currMediaId = mediaId;
 
             // audioFile.player != nil  or player was successfully created
@@ -397,7 +392,6 @@
 - (void)release:(CDVInvokedUrlCommand*)command
 {
     NSString* mediaId = [command argumentAtIndex:0];
-    //NSString* mediaId = self.currMediaId;
 
     if (mediaId != nil) {
         CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
@@ -480,7 +474,6 @@
                 if (![weakSelf.avSession setActive:YES error:&error]) {
                     // other audio with higher priority that does not allow mixing could cause this to fail
                     errorMsg = [NSString stringWithFormat:@"Unable to record audio: %@", [error localizedFailureReason]];
-                    // jsString = [NSString stringWithFormat: @"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_ERROR, MEDIA_ERR_ABORTED];
                     jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_ERROR, [weakSelf createMediaErrorWithCode:MEDIA_ERR_ABORTED message:errorMsg]];
                     [weakSelf.commandDelegate evalJs:jsString];
                     return;
@@ -813,7 +806,6 @@
         audioFile.player.currentTime = 0;
         jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_COMPLETE];
     } else {
-        // jsString = [NSString stringWithFormat: @"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_ERROR, MEDIA_ERR_DECODE];
         jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_DECODE message:nil]];
     }
     if (self.avSession) {
@@ -837,7 +829,7 @@
 -(NSNumber*)generateAudioLevel:(CDVAudioRecorder *) recorder {
     [recorder updateMeters];
     NSNumber* level = [NSNumber numberWithFloat: [recorder averagePowerForChannel:0]];
-    
+    NSLog(@"LEVEL: %d", level);
     return level;
 }
 
@@ -848,7 +840,7 @@
     NSNumber* audioLevel = timer.userInfo;
     NSString* mediaId = self.currMediaId;
     NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_AUDIO_LEVEL, audioLevel];
-    [self.commandDelegate evalJs:jsString];
+    //[self.commandDelegate evalJs:jsString];
 }
 
 -(void)itemStalledPlaying:(NSNotification *) notification {
