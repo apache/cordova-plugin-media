@@ -829,7 +829,7 @@
 -(NSNumber*)generateAudioLevel:(CDVAudioRecorder *) recorder {
     [recorder updateMeters];
     NSNumber* level = [NSNumber numberWithFloat: [recorder averagePowerForChannel:0]];
-    NSLog(@"LEVEL: %d", level);
+    NSLog(@"LEVEL: %@", level);
     return level;
 }
 
