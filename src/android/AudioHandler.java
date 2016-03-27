@@ -164,6 +164,10 @@ public class AudioHandler extends CordovaPlugin {
         else if (action.equals("messageChannel")) {
             messageChannel = callbackContext;
             return true;
+        } else if (action.equals("getCurrentAmplitudeAudio")) {
+            float f = this.getCurrentAmplitudeAudio(args.getString(0));
+            callbackContext.sendPluginResult(new PluginResult(status, f));
+            return true;
         }
         else { // Unrecognized action.
             return false;
@@ -471,5 +475,16 @@ public class AudioHandler extends CordovaPlugin {
 
     }
 
-
+    /**
+     * Get current amplitude of recording.
+     * @param id				The id of the audio player
+     * @return 					amplitude
+     */
+    public float getCurrentAmplitudeAudio(String id) {
+        AudioPlayer audio = this.players.get(id);
+        if (audio != null) {
+            return (audio.getCurrentAmplitude());
+        }
+        return 0;
+    }
 }
