@@ -36,9 +36,12 @@
     NSString* resourcePath = [command argumentAtIndex:1];
     BOOL meteringEnabled = [[command argumentAtIndex: 2] boolValue];
     
+    self.currMediaId = mediaId;
+    self.isMeteringEnabled = meteringEnabled;
+    
     CDVAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:NO forRecording:NO];
     
-    NSLog(@"iOS: Creating Media Object with ID: %@", mediaId);
+    NSLog(@"iOS: Creating Media Object with ID: %@, and isMetering: %@", mediaId, self.isMeteringEnabled ? "TRUE":"FALSE");
     
     if (audioFile == nil) {
         NSString* errorMessage = [NSString stringWithFormat:@"Failed to initialize Media file with path %@", resourcePath];
@@ -63,9 +66,6 @@
             // Pass the AVPlayerItem to a new player
             avPlayer = [[AVPlayer alloc] initWithPlayerItem:playerItem];
         }
-        
-        self.currMediaId = mediaId;
-        self.isMeteringEnabled = meteringEnabled;
         
         CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
