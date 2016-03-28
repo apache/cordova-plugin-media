@@ -495,8 +495,8 @@
             audioFile.recorder = [[CDVAudioRecorder alloc] initWithURL:audioFile.resourceURL
                                                               settings:recordSettings
                                                                  error:&error];
-            //audioFile.recorder.meteringEnabled = self.isMeteringEnabled;
-            audioFile.recorder.meteringEnabled = YES;
+            audioFile.recorder.meteringEnabled = self.isMeteringEnabled;
+            //audioFile.recorder.meteringEnabled = YES;
             
             bool recordingSuccess = NO;
             if (error == nil) {
@@ -509,13 +509,13 @@
                     jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_RECORD_START];
                     [weakSelf.commandDelegate evalJs:jsString];
                     
-                    //if (self.isMeteringEnabled) {
-                    self.meterTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f
-                                                                       target:self
-                                                                     selector:@selector(reportAudioLevel:)
-                                                                     userInfo:audioFile.recorder
-                                                                      repeats:YES];
-                    //}
+                    if (self.isMeteringEnabled) {
+                        self.meterTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f
+                                                                           target:self
+                                                                         selector:@selector(reportAudioLevel:)
+                                                                         userInfo:audioFile.recorder
+                                                                          repeats:YES];
+                    }
                 }
             }
             
@@ -578,10 +578,10 @@
         NSLog(@"Stopped recording audio sample '%@'", audioFile.resourcePath);
         [audioFile.recorder stop];
         
-        //if (isMeteringEnabled) {
+        if (self.isMeteringEnabled) {
             [self.meterTimer invalidate];
             self.meterTimer = nil;
-        //}
+        }
         // no callback - that will happen in audioRecorderDidFinishRecording
     }
     // ignore if no media recording
