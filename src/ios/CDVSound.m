@@ -864,7 +864,7 @@
     int scaledAudioLevel = 100 - (([audioLevel intValue] * -1) * 100/160);
     
     NSString* mediaId = self.currMediaId;
-    NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_AUDIO_LEVEL, [NSInteger numberWithInt: scaledAudioLevel]];
+    NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_AUDIO_LEVEL, [NSNumber numberWithInt: scaledAudioLevel]];
     //NSLog(@"LEVEL: %@", audioLevel);
     [self.commandDelegate evalJs:jsString];
 }
