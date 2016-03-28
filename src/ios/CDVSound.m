@@ -27,7 +27,7 @@
 
 @implementation CDVSound
 
-@synthesize soundCache, avSession, currMediaId, meterTimer;//, isMeteringEnabled;
+@synthesize soundCache, avSession, currMediaId, meterTimer, isMeteringEnabled;
 
 
 - (void)create:(CDVInvokedUrlCommand*)command
@@ -65,7 +65,7 @@
         }
         
         self.currMediaId = mediaId;
-        //self.isMeteringEnabled = meteringEnabled;
+        self.isMeteringEnabled = meteringEnabled;
         
         CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
@@ -510,11 +510,6 @@
                     [weakSelf.commandDelegate evalJs:jsString];
                     
                     //if (self.isMeteringEnabled) {
-//                        self.meterTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f
-//                                                                           target:self
-//                                                                         selector:@selector(reportAudioLevel:)
-//                                                                         userInfo:[self generateAudioLevel: audioFile.recorder]
-//                                                                          repeats:YES];
                     self.meterTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f
                                                                        target:self
                                                                      selector:@selector(reportAudioLevel:)
@@ -853,8 +848,8 @@
  Sends audio level back up to Javascript layer
 */
 -(void)reportAudioLevel:(NSTimer *) timer {
-    //NSNumber* audioLevel = timer.userInfo;
-    NSNumber* audioLevel = [self generateAudioLevel: timer.userInfo]; // ref to AVAudioRecorder
+    // userInfo is ref to AVAudioRecorder or AVAudioPlayer
+    NSNumber* audioLevel = [self generateAudioLevel: timer.userInfo];
     
     // convert audioLevel, which is reported in dB from -160 dB to 0 dB, to an integer value from 0 to 100.
     // audioLevel * -1 converts the number to positive value

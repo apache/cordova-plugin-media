@@ -94,7 +94,7 @@ typedef NSUInteger CDVMediaMsg;
 @property (nonatomic, strong) AVAudioSession* avSession;
 @property (nonatomic, strong) NSString* currMediaId;
 @property (nonatomic, strong) NSTimer* meterTimer;
-//@property (nonatomic, assign) BOOL isMeteringEnabled;
+@property (nonatomic, assign) BOOL isMeteringEnabled;
 
 
 - (void)startPlayingAudio:(CDVInvokedUrlCommand*)command;
