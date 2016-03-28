@@ -41,7 +41,7 @@
     
     CDVAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:NO forRecording:NO];
     
-    NSLog(@"iOS: Creating Media Object with ID: %@, and isMetering: %@", mediaId, self.isMeteringEnabled ? "TRUE":"FALSE");
+    NSLog(@"iOS: Creating Media Object with ID: %@, and isMetering: %s", mediaId, self.isMeteringEnabled ? "TRUE":"FALSE");
     
     if (audioFile == nil) {
         NSString* errorMessage = [NSString stringWithFormat:@"Failed to initialize Media file with path %@", resourcePath];
