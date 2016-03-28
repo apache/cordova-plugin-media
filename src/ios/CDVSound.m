@@ -855,7 +855,7 @@
 */
 -(void)reportAudioLevel:(NSTimer *) timer {
     //NSNumber* audioLevel = timer.userInfo;
-    NSNumber* audioLevel = [self generateAudioLevel: time.userInfo]; // ref to AVAudioRecorder
+    NSNumber* audioLevel = [self generateAudioLevel: timer.userInfo]; // ref to AVAudioRecorder
     NSString* mediaId = self.currMediaId;
     //NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_AUDIO_LEVEL, audioLevel];
     NSLog(@"LEVEL: %@", audioLevel);
