@@ -861,7 +861,7 @@
     // 100/160 generates a scaling factor (0.625 in this case)
     // positive audioLevel * scaling factor = audio level value in terms of 0-100
     // Subtract the scaled audio level from the max audio level of 100, since the dB scaled is inversed
-    audioLevel = 100 − ((audioLevel * −1.0) * 100/160);
+    audioLevel = 100 - ((audioLevel * -1.0) * 100/160);
     
     NSString* mediaId = self.currMediaId;
     NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_AUDIO_LEVEL, audioLevel];
