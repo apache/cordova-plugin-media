@@ -486,7 +486,7 @@
                                             AVEncoderAudioQualityKey,
                                             [NSNumber numberWithInt:16],
                                             AVEncoderBitRateKey,
-                                            [NSNumber numberWithInt: 1],
+                                            [NSNumber numberWithInt: 2],
                                             AVNumberOfChannelsKey,
                                             [NSNumber numberWithFloat:44100.0],
                                             AVSampleRateKey,
