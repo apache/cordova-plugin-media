@@ -448,7 +448,7 @@
 #pragma unused(callbackId)
 
     NSString* mediaId = [command argumentAtIndex:0];
-    NSLog(@"iOS: STartRecordingAudio with ID: %@, and PATH: %@", mediaId, [command argumentAtIndex:1]);
+    NSLog(@"iOS: StartRecordingAudio with ID: %@, and PATH: %@", mediaId, [command argumentAtIndex:1]);
     CDVAudioFile* audioFile = [self audioFileForResource:[command argumentAtIndex:1] withId:mediaId doValidation:YES forRecording:YES];
     __block NSString* jsString = nil;
     __block NSString* errorMsg = @"";

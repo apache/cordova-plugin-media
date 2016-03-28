@@ -201,8 +201,9 @@ Media.onStatus = function(id, msgType, value) {
                 }
                 break;
             case Media.MEDIA_AUDIO_LEVEL :
+                console.log("Angular: Audio Level: " + value);
             	//if (isMeteringEnabled) {
-            		media.meteringCallback(value);
+            		//media.meteringCallback(value);
             	//}
             	break;
             case Media.MEDIA_DURATION :
