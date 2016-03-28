@@ -480,8 +480,21 @@
                 }
             }
             
+            
+            NSDictionary* recordSettings = [NSDictionary dictionaryWithObjectsAndKeys:
+                                            [NSNumber numberWithInt:AVAudioQualityMedium],
+                                            AVEncoderAudioQualityKey,
+                                            [NSNumber numberWithInt:16],
+                                            AVEncoderBitRateKey,
+                                            [NSNumber numberWithInt: 1],
+                                            AVNumberOfChannelsKey,
+                                            [NSNumber numberWithFloat:44100.0],
+                                            AVSampleRateKey,
+                                            nil];
             // create a new recorder for each start record
-            audioFile.recorder = [[CDVAudioRecorder alloc] initWithURL:audioFile.resourceURL settings:nil error:&error];
+            audioFile.recorder = [[CDVAudioRecorder alloc] initWithURL:audioFile.resourceURL
+                                                              settings:recordSettings
+                                                                 error:&error];
             //audioFile.recorder.meteringEnabled = self.isMeteringEnabled;
             audioFile.recorder.meteringEnabled = YES;
             
@@ -497,11 +510,16 @@
                     [weakSelf.commandDelegate evalJs:jsString];
                     
                     //if (self.isMeteringEnabled) {
-                        self.meterTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f
-                                                                           target:self
-                                                                         selector:@selector(reportAudioLevel:)
-                                                                         userInfo:[self generateAudioLevel: audioFile.recorder]
-                                                                          repeats:YES];
+//                        self.meterTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f
+//                                                                           target:self
+//                                                                         selector:@selector(reportAudioLevel:)
+//                                                                         userInfo:[self generateAudioLevel: audioFile.recorder]
+//                                                                          repeats:YES];
+                    self.meterTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f
+                                                                       target:self
+                                                                     selector:@selector(reportAudioLevel:)
+                                                                     userInfo:audioFile.recorder
+                                                                      repeats:YES];
                     //}
                 }
             }
@@ -836,9 +854,10 @@
  Sends audio level back up to Javascript layer
 */
 -(void)reportAudioLevel:(NSTimer *) timer {
-    NSNumber* audioLevel = timer.userInfo;
+    //NSNumber* audioLevel = timer.userInfo;
+    NSNumber* audioLevel = [self generateAudioLevel: time.userInfo]; // ref to AVAudioRecorder
     NSString* mediaId = self.currMediaId;
-    NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_AUDIO_LEVEL, audioLevel];
+    //NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_AUDIO_LEVEL, audioLevel];
     NSLog(@"LEVEL: %@", audioLevel);
     //[self.commandDelegate evalJs:jsString];
 }
