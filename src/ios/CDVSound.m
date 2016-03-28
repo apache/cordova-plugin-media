@@ -865,7 +865,7 @@
     
     NSString* mediaId = self.currMediaId;
     NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_AUDIO_LEVEL, [NSNumber numberWithInt: scaledAudioLevel]];
-    //NSLog(@"LEVEL: %@", audioLevel);
+    NSLog(@"iOS: Scaled Audio Level: %@", [NSNumber numberWithInt: scaledAudioLevel]);
     [self.commandDelegate evalJs:jsString];
 }
 
