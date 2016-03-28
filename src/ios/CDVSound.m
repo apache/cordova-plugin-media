@@ -854,17 +854,17 @@
 */
 -(void)reportAudioLevel:(NSTimer *) timer {
     //NSNumber* audioLevel = timer.userInfo;
-    NSInteger audioLevel = [self generateAudioLevel: timer.userInfo]; // ref to AVAudioRecorder
+    NSNumber* audioLevel = [self generateAudioLevel: timer.userInfo]; // ref to AVAudioRecorder
     
     // convert audioLevel, which is reported in dB from -160 dB to 0 dB, to an integer value from 0 to 100.
     // audioLevel * -1 converts the number to positive value
     // 100/160 generates a scaling factor (0.625 in this case)
     // positive audioLevel * scaling factor = audio level value in terms of 0-100
     // Subtract the scaled audio level from the max audio level of 100, since the dB scaled is inversed
-    audioLevel = 100 - ((audioLevel * -1) * 100/160);
+    int scaledAudioLevel = 100 - (([audioLevel intValue] * -1) * 100/160);
     
     NSString* mediaId = self.currMediaId;
-    NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_AUDIO_LEVEL, audioLevel];
+    NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_AUDIO_LEVEL, [NSInteger numberWithInt: scaledAudioLevel]];
     //NSLog(@"LEVEL: %@", audioLevel);
     [self.commandDelegate evalJs:jsString];
 }
