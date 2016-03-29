@@ -852,10 +852,10 @@
     // the minimum to be closer to -80 dB and have seen supporting opinions on the interwebs.
     
     // audioLevel * -1 converts the number to positive value
-    // 100/160 generates a scaling factor (0.625 in this case)
+    // 100/80 generates a scaling factor (1.25 in this case)
     // positive audioLevel * scaling factor = audio level value in terms of 0-100
     // Subtract the scaled audio level from the max audio level of 100, since the dB scaled is inversed
-    int scaledAudioLevel = 100 - (([audioLevel intValue] * -1) * 100/74);
+    int scaledAudioLevel = 100 - (([audioLevel intValue] * -1) * 100/80);
     
     NSLog(@"iOS: Raw Audio Level   : %@", audioLevel);
     NSLog(@"iOS: Scaled Audio Level: %@", [NSNumber numberWithInt: scaledAudioLevel]);
