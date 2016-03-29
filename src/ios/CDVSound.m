@@ -860,7 +860,7 @@
     // Convert from dB to percentage
     // Ten to the power of dB value divided by 10, multiplied by 100 to get percentage
     // Formula: 10^(dB/10) * 100
-    double percentageAudioLevel = (pow(10, [audioLevel doubleValue]/10)) * 100;
+    double percentageAudioLevel = (pow(10, [audioLevel doubleValue]/20)) * 100;
     // Round up and remove decimal points
     percentageAudioLevel = ceil(percentageAudioLevel);
     // Limit upper value of audio to 100
