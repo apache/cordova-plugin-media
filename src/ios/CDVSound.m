@@ -855,7 +855,17 @@
     // 100/80 generates a scaling factor (1.25 in this case)
     // positive audioLevel * scaling factor = audio level value in terms of 0-100
     // Subtract the scaled audio level from the max audio level of 100, since the dB scaled is inversed
-    int scaledAudioLevel = 100 - (([audioLevel intValue] * -1) * 100/80);
+    //int scaledAudioLevel = 100 - (([audioLevel intValue] * -1) * 100/80);
+   
+    // Convert from dB to percentage
+    // Ten to the power of dB value divided by 10, multiplied by 100 to get percentage
+    // Formula: 10^(dB/10) * 100
+    double percentageAudioLevel = (pow(10, audioLevel/10)) * 100;
+    // Round up and remove decimal points
+    percentageAudioLevel = ceil(percentageAudioLevel);
+    // Limit upper value of audio to 100
+    percentageAudioLevel = fmin(percentageAudioLevel, 100);
+    int scaledAudioLevel = (int)percentageAudioLevel;
     
     NSLog(@"iOS: Raw Audio Level   : %@", audioLevel);
     NSLog(@"iOS: Scaled Audio Level: %@", [NSNumber numberWithInt: scaledAudioLevel]);
