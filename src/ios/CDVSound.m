@@ -858,9 +858,11 @@
     // Subtract the scaled audio level from the max audio level of 100, since the dB scaled is inversed
     int scaledAudioLevel = 100 - (([audioLevel intValue] * -1) * 100/160);
     
+    NSLog(@"iOS: Raw Audio Level   : %@", audioLevel);
+    NSLog(@"iOS: Scaled Audio Level: %@", [NSNumber numberWithInt: scaledAudioLevel]);
+    
     NSString* mediaId = self.currMediaId;
     NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_AUDIO_LEVEL, [NSNumber numberWithInt: scaledAudioLevel]];
-    NSLog(@"iOS: Scaled Audio Level: %@", [NSNumber numberWithInt: scaledAudioLevel]);
     [self.commandDelegate evalJs:jsString];
 }
 
