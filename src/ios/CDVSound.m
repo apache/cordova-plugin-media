@@ -30,8 +30,7 @@
 @synthesize soundCache, avSession, currMediaId, meterTimer, isMeteringEnabled;
 
 
-- (void)create:(CDVInvokedUrlCommand*)command
-{
+- (void)create:(CDVInvokedUrlCommand*)command {
     NSString* mediaId = [command argumentAtIndex:0];
     NSString* resourcePath = [command argumentAtIndex:1];
     BOOL meteringEnabled = [[command argumentAtIndex: 2] boolValue];
@@ -72,8 +71,7 @@
     }
 }
 
-- (void)setVolume:(CDVInvokedUrlCommand*)command
-{
+- (void)setVolume:(CDVInvokedUrlCommand*)command {
     NSString* callbackId = command.callbackId;
 
 #pragma unused(callbackId)
@@ -94,8 +92,7 @@
     // don't care for any callbacks
 }
 
-- (void)setRate:(CDVInvokedUrlCommand*)command
-{
+- (void)setRate:(CDVInvokedUrlCommand*)command {
     NSString* callbackId = command.callbackId;
 
 #pragma unused(callbackId)
@@ -122,8 +119,7 @@
     // don't care for any callbacks
 }
 
-- (void)startPlayingAudio:(CDVInvokedUrlCommand*)command
-{
+- (void)startPlayingAudio:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
 
     NSString* callbackId = command.callbackId;
@@ -176,6 +172,7 @@
                     } else {
                         NSLog(@"Playing stream with AVPlayer & custom rate");
                         [audioFile.player play];
+                        
                     }
 
                 } else {
@@ -232,8 +229,7 @@
     }];
 }
 
-- (BOOL)prepareToPlay:(CDVAudioFile*)audioFile withId:(NSString*)mediaId
-{
+- (BOOL)prepareToPlay:(CDVAudioFile*)audioFile withId:(NSString*)mediaId {
     BOOL bError = NO;
     NSError* __autoreleasing playerError = nil;
 
@@ -492,7 +488,6 @@
                                                               settings:recordSettings
                                                                  error:&error];
             audioFile.recorder.meteringEnabled = self.isMeteringEnabled;
-            //audioFile.recorder.meteringEnabled = YES;
             
             bool recordingSuccess = NO;
             if (error == nil) {
@@ -505,13 +500,15 @@
                     jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_RECORD_START];
                     [weakSelf.commandDelegate evalJs:jsString];
                     
-                    if (self.isMeteringEnabled) {
-                        self.meterTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f
-                                                                           target:self
-                                                                         selector:@selector(reportAudioLevel:)
-                                                                         userInfo:audioFile.recorder
-                                                                          repeats:YES];
-                    }
+//                    if (self.isMeteringEnabled) {
+//                        self.meterTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f
+//                                                                           target:self
+//                                                                         selector:@selector(reportAudioLevel:)
+//                                                                         userInfo:audioFile.recorder
+//                                                                          repeats:YES];
+//                    }
+                    
+                    [self runAudioMetering: audioFile.recorder];
                 }
             }
             
@@ -574,10 +571,12 @@
         NSLog(@"Stopped recording audio sample '%@'", audioFile.resourcePath);
         [audioFile.recorder stop];
         
-        if (self.isMeteringEnabled) {
-            [self.meterTimer invalidate];
-            self.meterTimer = nil;
-        }
+//        if (self.isMeteringEnabled) {
+//            [self.meterTimer invalidate];
+//            self.meterTimer = nil;
+//        }
+        
+        [self stopAudioMetering];
         // no callback - that will happen in audioRecorderDidFinishRecording
     }
     // ignore if no media recording
@@ -787,14 +786,18 @@
     if (audioFile != nil) {
         NSLog(@"Finished recording audio sample '%@'", audioFile.resourcePath);
     }
+    
     if (flag) {
         jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_RECORD_STOP];
     } else {
         jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_DECODE message:nil]];
     }
+    
     if (self.avSession) {
         [self.avSession setActive:NO error:nil];
     }
+    
+    [self stopAudioMetering];
     [self.commandDelegate evalJs:jsString];
 }
 
@@ -810,15 +813,19 @@
     if (audioFile != nil) {
         NSLog(@"Finished playing audio sample '%@'", audioFile.resourcePath);
     }
+    
     if (flag) {
         audioFile.player.currentTime = 0;
         jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_COMPLETE];
     } else {
         jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_DECODE message:nil]];
     }
+    
     if (self.avSession) {
         [self.avSession setActive:NO error:nil];
     }
+    
+    [self stopAudioMetering];
     [self.commandDelegate evalJs:jsString];
 }
 
@@ -831,10 +838,29 @@
     if (self.avSession) {
         [self.avSession setActive:NO error:nil];
     }
+    
+    [self stopAudioMetering];
     [self.commandDelegate evalJs:jsString];
 }
 
--(NSNumber*)generateAudioLevel:(CDVAudioRecorder *) recorder {
+-(void)runAudioMetering: (id *) recorder {
+    if (self.isMeteringEnabled) {
+        self.meterTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f
+                                                           target:self
+                                                         selector:@selector(reportAudioLevel:)
+                                                         userInfo:recorder
+                                                          repeats:YES];
+    }
+}
+
+-(void)stopAudioMetering {
+    if (self.isMeteringEnabled) {
+        [self.meterTimer invalidate];
+        self.meterTimer = nil;
+    }
+}
+
+-(NSNumber*)generateAudioLevel:(NSObject *) recorder {
     [recorder updateMeters];
     NSNumber* level = [NSNumber numberWithFloat: [recorder averagePowerForChannel:0]];
     return level;
@@ -847,19 +873,15 @@
     // userInfo is ref to AVAudioRecorder or AVAudioPlayer
     NSNumber* audioLevel = [self generateAudioLevel: timer.userInfo];
     
-    // convert audioLevel, which is reported in dB from -80 dB to 0 dB, to an integer value from 0 to 100.
-    // (NOTE: AVAudioPlayer docs say minimum audio level is -160 dB, but in practice I have found
-    // the minimum to be closer to -80 dB and have seen supporting opinions on the interwebs.
-    
-    // audioLevel * -1 converts the number to positive value
-    // 100/80 generates a scaling factor (1.25 in this case)
-    // positive audioLevel * scaling factor = audio level value in terms of 0-100
-    // Subtract the scaled audio level from the max audio level of 100, since the dB scaled is inversed
-    //int scaledAudioLevel = 100 - (([audioLevel intValue] * -1) * 100/80);
+    // Convert audioLevel from dB's logarithmic scale to a linear scale.
+    // AVAudioPlayer docs say minimum audio level is -160 dB and maximum is 0 dB, but that
+    // the dB value can go into positive values.
    
     // Convert from dB to percentage
-    // Ten to the power of dB value divided by 10, multiplied by 100 to get percentage
-    // Formula: 10^(dB/10) * 100
+    // Ten to the power of dB value divided by 20, multiplied by 100 to get percentage
+    // Formula: 10^(dB/20) * 100
+    // (NOTE: By changing divide by to 10, you'll get a 'truer' conversion, but that also ads
+    // more variability -- a lower floor -- to the linear values.)
     double percentageAudioLevel = (pow(10, [audioLevel doubleValue]/20)) * 100;
     // Round up and remove decimal points
     percentageAudioLevel = ceil(percentageAudioLevel);
@@ -867,8 +889,8 @@
     percentageAudioLevel = fmin(percentageAudioLevel, 100);
     int scaledAudioLevel = (int)percentageAudioLevel;
     
-    NSLog(@"iOS: Raw Audio Level   : %@", audioLevel);
-    NSLog(@"iOS: Scaled Audio Level: %@", [NSNumber numberWithInt: scaledAudioLevel]);
+    //NSLog(@"iOS: Raw Audio Level   : %@", audioLevel);
+    //NSLog(@"iOS: Scaled Audio Level: %@", [NSNumber numberWithInt: scaledAudioLevel]);
     
     NSString* mediaId = self.currMediaId;
     NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_AUDIO_LEVEL, [NSNumber numberWithInt: scaledAudioLevel]];

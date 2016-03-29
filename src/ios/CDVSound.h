@@ -49,22 +49,19 @@ enum CDVMediaMsg {
 };
 typedef NSUInteger CDVMediaMsg;
 
-@interface CDVAudioPlayer : AVAudioPlayer
-{
+@interface CDVAudioPlayer : AVAudioPlayer {
     NSString* mediaId;
 }
 @property (nonatomic, copy) NSString* mediaId;
 @end
 
-@interface CDVAudioRecorder : AVAudioRecorder
-{
+@interface CDVAudioRecorder : AVAudioRecorder {
     NSString* mediaId;
 }
 @property (nonatomic, copy) NSString* mediaId;
 @end
 
-@interface CDVAudioFile : NSObject
-{
+@interface CDVAudioFile : NSObject {
     NSString* resourcePath;
     NSURL* resourceURL;
     CDVAudioPlayer* player;
@@ -83,13 +80,13 @@ typedef NSUInteger CDVMediaMsg;
 
 @end
 
-@interface CDVSound : CDVPlugin <AVAudioPlayerDelegate, AVAudioRecorderDelegate>
-{
+@interface CDVSound : CDVPlugin <AVAudioPlayerDelegate, AVAudioRecorderDelegate> {
     NSMutableDictionary* soundCache;
     NSString* currMediaId;
     AVAudioSession* avSession;
     AVPlayer* avPlayer;
 }
+
 @property (nonatomic, strong) NSMutableDictionary* soundCache;
 @property (nonatomic, strong) AVAudioSession* avSession;
 @property (nonatomic, strong) NSString* currMediaId;
@@ -115,6 +112,9 @@ typedef NSUInteger CDVMediaMsg;
 - (CDVAudioFile*)audioFileForResource:(NSString*)resourcePath withId:(NSString*)mediaId doValidation:(BOOL)bValidate forRecording:(BOOL)bRecord;
 - (BOOL)prepareToPlay:(CDVAudioFile*)audioFile withId:(NSString*)mediaId;
 - (NSString*)createMediaErrorWithCode:(CDVMediaError)code message:(NSString*)message;
+- (void)runAudioMetering: (id *) recorder;
+- (void)stopAudioMetering;
+- (NSNumber*)generateAudioLevel:(id *) recorder;
 - (void)reportAudioLevel: (NSNumber*)audioLevel;
 
 @end
