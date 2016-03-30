@@ -293,7 +293,7 @@
         audioFile.player.mediaId = mediaId;
         audioFile.player.delegate = self;
         if (avPlayer == nil) {
-            NSLog(@"iOS: prepareToPlay: avPlayer is nil... recursive call to preprareToPlay"");
+            NSLog(@"iOS: prepareToPlay: avPlayer is nil... recursive call to preprareToPlay");
             bError = ![audioFile.player prepareToPlay];
         }
     }
