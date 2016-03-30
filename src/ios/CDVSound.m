@@ -871,7 +871,7 @@
 
 -(NSNumber*)generateAudioLevel:(id<CDVPlayer>) player {
     [player updateMeters];
-    NSNumber* level = [NSNumber numberWithFloat: [recorder averagePowerForChannel:0]];
+    NSNumber* level = [NSNumber numberWithFloat: [player averagePowerForChannel:0]];
     return level;
 }
 
