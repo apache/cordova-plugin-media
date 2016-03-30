@@ -843,7 +843,7 @@
     [self.commandDelegate evalJs:jsString];
 }
 
--(void)runAudioMetering: (CDVPlayer *) recorder {
+-(void)runAudioMetering: (id<CDVPlayer> *) recorder {
     if (self.isMeteringEnabled) {
         self.meterTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f
                                                            target:self
@@ -860,7 +860,7 @@
     }
 }
 
--(NSNumber*)generateAudioLevel:(CDVPlayer *) recorder {
+-(NSNumber*)generateAudioLevel:(id<CDVPlayer> *) recorder {
     [recorder updateMeters];
     NSNumber* level = [NSNumber numberWithFloat: [recorder averagePowerForChannel:0]];
     return level;
