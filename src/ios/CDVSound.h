@@ -53,7 +53,7 @@ typedef NSUInteger CDVMediaMsg;
     - (void) updateMeters;
     - (float) averagePowerForChannel: (NSUInteger) channelNumber;
 
-    @property(getter=isMeteringEnabled) BOOL meteringEnabled
+@property(getter=isMeteringEnabled) BOOL meteringEnabled;
 @end
 
 @interface CDVAudioPlayer : AVAudioPlayer <CDVPlayer> {
