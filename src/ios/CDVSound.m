@@ -165,7 +165,6 @@
                 
                 if (!bError) {
                     NSLog(@"iOS: Playing audio sample '%@'", audioFile.resourcePath);
-                    [self runAudioMetering: audioFile.player];
                     
                     double position = 0;
                     
@@ -179,6 +178,7 @@
                             [audioFile.player setRate:customRate];
                         }// else {
                             NSLog(@"iOS: Playing stream with AVPlayer & custom rate");
+                            [self runAudioMetering: audioFile.player];
                             [audioFile.player play];
                         //}
 
@@ -203,6 +203,8 @@
                             audioFile.player.rate = [audioFile.rate floatValue];
                         }
 
+                        NSLog(@"iOS: Playing audio from audioFile.player");
+                        [self runAudioMetering: audioFile.player];
                         [audioFile.player play];
                         position = round(audioFile.player.duration * 1000) / 1000;
                     }
@@ -284,8 +286,9 @@
         NSLog(@"iOS: prepareToPlay: Created media player");
         audioFile.player.mediaId = mediaId;
         audioFile.player.delegate = self;
-        if (avPlayer == nil)
+        if (avPlayer == nil) {
             bError = ![audioFile.player prepareToPlay];
+        }
     }
     return bError;
 }
