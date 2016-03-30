@@ -854,7 +854,7 @@
 -(void)runAudioMetering: (id<CDVPlayer>) player {
     NSLog(@"iOS: runAudioMetering: isMeteringEnabled: %s", self.isMeteringEnabled ? "TRUE":"FALSE");
     if (self.isMeteringEnabled) {
-        [player meteringEnabled: YES];
+        player.meteringEnabled = YES;
         self.meterTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f
                                                            target:self
                                                          selector:@selector(reportAudioLevel:)
