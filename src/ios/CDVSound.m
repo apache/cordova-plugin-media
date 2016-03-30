@@ -249,7 +249,13 @@
     NSURL* resourceURL = audioFile.resourceURL;
 
     if ([resourceURL isFileURL]) {
+        NSLog(@"iOS: prepareToPlay: resourceURL is file, creating new CDVAudioPlayer");
         audioFile.player = [[CDVAudioPlayer alloc] initWithContentsOfURL:resourceURL error:&playerError];
+        
+        if (self.isMeteringEnabled == YES) {
+            audioFile.player.meteringEnabled = YES;
+        }
+        
     } else {
         /*      
         NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:resourceURL];
@@ -287,6 +293,7 @@
         audioFile.player.mediaId = mediaId;
         audioFile.player.delegate = self;
         if (avPlayer == nil) {
+            NSLog(@"iOS: prepareToPlay: avPlayer is nil... recursive call to preprareToPlay"");
             bError = ![audioFile.player prepareToPlay];
         }
     }
