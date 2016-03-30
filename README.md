@@ -92,6 +92,8 @@ The following constants are reported as the only parameter to the
 
 ### Methods
 
+- `media.getCurrentAmplitude`: Returns the current position within an audio file.
+
 - `media.getCurrentPosition`: Returns the current position within an audio file.
 
 - `media.getDuration`: Returns the duration of an audio file.
@@ -118,6 +120,47 @@ The following constants are reported as the only parameter to the
     - Not automatically updated during play; call `getCurrentPosition` to update.
 
 - __duration__: The duration of the media, in seconds.
+
+
+## media.getCurrentAmplitude
+
+Returns the current amplitude of the current recording.
+
+    media.getCurrentAmplitude(mediaSuccess, [mediaError]);
+
+### Supported Platforms
+
+- Android
+- iOS
+
+### Parameters
+
+- __mediaSuccess__: The callback that is passed the current amplitude (0.0 - 1.0).
+
+- __mediaError__: (Optional) The callback to execute if an error occurs.
+
+### Quick Example
+
+    // Audio player
+    //
+    var my_media = new Media(src, onSuccess, onError);
+
+    // Record audio
+    my_media.startRecord();
+
+    mediaTimer = setInterval(function () {
+        // get media amplitude
+        my_media.getCurrentAmplitude(
+            // success callback
+            function (amp) {
+                console.log(amp + "%");
+            },
+            // error callback
+            function (e) {
+                console.log("Error getting amp=" + e);
+            }
+        );
+    }, 1000);
 
 
 ## media.getCurrentPosition

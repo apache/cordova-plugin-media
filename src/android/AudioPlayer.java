@@ -501,13 +501,13 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                                 sendErrorStatus(MEDIA_ERR_ABORTED);
                             }
                             return false;//we´re not ready yet
-                        } 
+                        }
                         else {
                            //reset the audio file
                             player.seekTo(0);
                             player.pause();
-                            return true; 
-                        } 
+                            return true;
+                        }
                     } else {
                         //reset the player
                         this.player.reset();
@@ -597,5 +597,24 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         }
 
         this.handler.sendEventMessage("status", statusDetails);
+    }
+
+    /**
+     * Get current amplitude of recording.
+     *
+     * @return amplitude or 0 if not recording
+     */
+    public float getCurrentAmplitude() {
+        if (this.recorder != null) {
+            try{
+                if (this.state == STATE.MEDIA_RUNNING) {
+                    return (float) this.recorder.getMaxAmplitude() / 32762;
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return 0;
     }
 }

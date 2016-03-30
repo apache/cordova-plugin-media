@@ -163,6 +163,14 @@ Media.prototype.setRate = function(rate) {
     }
 };
 
+/**
+ * Get amplitude of audio.
+ */
+Media.prototype.getCurrentAmplitude = function(success, fail) {
+    exec(function(p) {
+        success(p);
+    }, fail, "Media", "getCurrentAmplitudeAudio", [this.id]);
+};
 
 /**
  * Audio has status update.
