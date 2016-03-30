@@ -50,8 +50,10 @@ enum CDVMediaMsg {
 typedef NSUInteger CDVMediaMsg;
 
 @protocol CDVPlayer
-- (void) updateMeters;
-- (float) averagePowerForChannel: (NSUInteger) channelNumber;
+    - (void) updateMeters;
+    - (float) averagePowerForChannel: (NSUInteger) channelNumber;
+
+    @property(getter=isMeteringEnabled) BOOL meteringEnabled
 @end
 
 @interface CDVAudioPlayer : AVAudioPlayer <CDVPlayer> {
