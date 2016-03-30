@@ -117,9 +117,9 @@ typedef NSUInteger CDVMediaMsg;
 - (CDVAudioFile*)audioFileForResource:(NSString*)resourcePath withId:(NSString*)mediaId doValidation:(BOOL)bValidate forRecording:(BOOL)bRecord;
 - (BOOL)prepareToPlay:(CDVAudioFile*)audioFile withId:(NSString*)mediaId;
 - (NSString*)createMediaErrorWithCode:(CDVMediaError)code message:(NSString*)message;
-- (void)runAudioMetering: (id<CDVPlayer> *) recorder;
+- (void)runAudioMetering: (id<CDVPlayer>) recorder;
 - (void)stopAudioMetering;
-- (NSNumber*)generateAudioLevel:(id<CDVPlayer> *) recorder;
+- (NSNumber*)generateAudioLevel:(id<CDVPlayer>) recorder;
 - (void)reportAudioLevel: (NSNumber*)audioLevel;
 
 @end
