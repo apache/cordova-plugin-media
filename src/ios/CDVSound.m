@@ -172,7 +172,6 @@
                     } else {
                         NSLog(@"Playing stream with AVPlayer & custom rate");
                         [audioFile.player play];
-                        
                     }
 
                 } else {
@@ -201,6 +200,7 @@
                 }
 
                 jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);\n%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_DURATION, position, @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_START];
+                [self runAudioMetering: audioFile.player];
                 [self.commandDelegate evalJs:jsString];
             }
         }
@@ -303,6 +303,7 @@
     }
     // ignore if no media playing
     if (jsString) {
+        [self stopAudioMetering];
         [self.commandDelegate evalJs:jsString];
     }
 }
@@ -326,6 +327,7 @@
     // ignore if no media playing
 
     if (jsString) {
+        [self stopAudioMetering];
         [self.commandDelegate evalJs:jsString];
     }
 }
@@ -410,6 +412,11 @@
             [[self soundCache] removeObjectForKey:mediaId];
             NSLog(@"Media with id %@ released", mediaId);
         }
+    }
+    
+    if (self.meterTimer =! nil) {
+        [self.meterTimer invalidate];
+        self.meterTimer = nil;
     }
 }
 
