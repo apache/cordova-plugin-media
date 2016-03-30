@@ -49,13 +49,18 @@ enum CDVMediaMsg {
 };
 typedef NSUInteger CDVMediaMsg;
 
-@interface CDVAudioPlayer : AVAudioPlayer {
+@protocol CDVPlayer
+- (void) updateMeters;
+- (float) averagePowerForChannel: (NSUInteger) channelNumber;
+@end
+
+@interface CDVAudioPlayer : AVAudioPlayer <CDVPlayer> {
     NSString* mediaId;
 }
 @property (nonatomic, copy) NSString* mediaId;
 @end
 
-@interface CDVAudioRecorder : AVAudioRecorder {
+@interface CDVAudioRecorder : AVAudioRecorder <CDVPlayer> {
     NSString* mediaId;
 }
 @property (nonatomic, copy) NSString* mediaId;
