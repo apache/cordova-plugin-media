@@ -414,7 +414,7 @@
         }
     }
     
-    if (self.meterTimer =! nil) {
+    if (self.meterTimer != nil) {
         [self.meterTimer invalidate];
         self.meterTimer = nil;
     }
