@@ -49,7 +49,7 @@ var Media = function(src, successCallback, errorCallback, statusCallback, meteri
     this.errorCallback = errorCallback;
     this.statusCallback = statusCallback;
     this.meteringCallback = meteringCallback;
-    this.isMeteringEnabled = (meteringCallback) ? true : false;
+    this.isMeteringEnabled = (typeof meteringCallback === 'function') ? true : false;
     this._duration = -1;
     this._position = -1;
     
