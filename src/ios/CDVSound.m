@@ -143,7 +143,7 @@
             
             if (!bError) {
                 self.currMediaId = mediaId;
-
+                
                 // audioFile.player != nil  or player was successfully created
                 // get the audioSession and set the category to allow Playing when device is locked or ring/silent switch engaged
                 if ([self hasAudioSession]) {
@@ -163,9 +163,12 @@
                     }
                 }
                 
-                //if (!bError) {
+                if (!bError) {
                     NSLog(@"iOS: Playing audio sample '%@'", audioFile.resourcePath);
+                    [self runAudioMetering: audioFile.player];
+                    
                     double position = 0;
+                    
                     if (avPlayer.currentItem && avPlayer.currentItem.asset) {
                         CMTime time = avPlayer.currentItem.asset.duration;
                         position = CMTimeGetSeconds(time);
@@ -205,9 +208,9 @@
                     }
 
                     jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);\n%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_DURATION, position, @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_START];
-                    [self runAudioMetering: audioFile.player];
+                
                     [self.commandDelegate evalJs:jsString];
-                //}
+                }
             }
             
             if (bError) {
