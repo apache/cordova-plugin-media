@@ -209,9 +209,10 @@
                     
                     jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);\n%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_DURATION, position, @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_START];
 
-                    [self runAudioMetering: audioFile.player];
                     [self.commandDelegate evalJs:jsString];
                 }
+                
+                [self runAudioMetering: audioFile.player];
             }
             
             if (bError) {
@@ -883,6 +884,7 @@
 -(NSNumber*)generateAudioLevel:(id<CDVPlayer>) player {
     [player updateMeters];
     NSNumber* level = [NSNumber numberWithFloat: [player averagePowerForChannel:0]];
+    NSLog(@"iOS: generateAudioLevel: %@", level);
     return level;
 }
 
