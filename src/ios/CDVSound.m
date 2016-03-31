@@ -120,6 +120,9 @@
 }
 
 - (void)startPlayingAudio:(CDVInvokedUrlCommand*)command {
+    
+    CDVPlayer* outerPlayer;
+    
     [self.commandDelegate runInBackground:^{
 
         NSString* callbackId = command.callbackId;
@@ -211,6 +214,8 @@
 
                     [self.commandDelegate evalJs:jsString];
                 }
+                
+                outerPlayer = audioFile.player;
             }
             
             if (bError) {
@@ -237,7 +242,8 @@
 
     }];
     
-    [self runAudioMetering: audioFile.player];
+    //[self runAudioMetering: audioFile.player];
+    [self runAudioMetering: outerPlayer];
 }
 
 - (BOOL)prepareToPlay:(CDVAudioFile*)audioFile withId:(NSString*)mediaId {
