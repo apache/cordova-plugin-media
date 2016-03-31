@@ -252,10 +252,6 @@
         NSLog(@"iOS: prepareToPlay: resourceURL is file, creating new CDVAudioPlayer");
         audioFile.player = [[CDVAudioPlayer alloc] initWithContentsOfURL:resourceURL error:&playerError];
         
-        if (self.isMeteringEnabled == YES) {
-            audioFile.player.meteringEnabled = YES;
-        }
-        
     } else {
         /*      
         NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:resourceURL];
@@ -912,8 +908,8 @@
     percentageAudioLevel = fmin(percentageAudioLevel, 100);
     int scaledAudioLevel = (int)percentageAudioLevel;
     
-    //NSLog(@"iOS: Raw Audio Level   : %@", audioLevel);
-    //NSLog(@"iOS: Scaled Audio Level: %@", [NSNumber numberWithInt: scaledAudioLevel]);
+    NSLog(@"iOS: Raw Audio Level   : %@", audioLevel);
+    NSLog(@"iOS: Scaled Audio Level: %@", [NSNumber numberWithInt: scaledAudioLevel]);
     
     NSString* mediaId = self.currMediaId;
     NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_AUDIO_LEVEL, [NSNumber numberWithInt: scaledAudioLevel]];
