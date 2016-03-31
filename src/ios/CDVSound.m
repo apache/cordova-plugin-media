@@ -253,6 +253,7 @@
         audioFile.player = [[CDVAudioPlayer alloc] initWithContentsOfURL:resourceURL error:&playerError];
         
     } else {
+        NSLog(@"prepareToPlay: ORPHANED ELSE");
         /*      
         NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:resourceURL];
         NSString* userAgent = [self.commandDelegate userAgent];
@@ -520,14 +521,6 @@
                     jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_RECORD_START];
                     [weakSelf.commandDelegate evalJs:jsString];
                     
-//                    if (self.isMeteringEnabled) {
-//                        self.meterTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f
-//                                                                           target:self
-//                                                                         selector:@selector(reportAudioLevel:)
-//                                                                         userInfo:audioFile.recorder
-//                                                                          repeats:YES];
-//                    }
-                    
                     [self runAudioMetering: audioFile.recorder];
                 }
             }
@@ -589,11 +582,6 @@
     if ((audioFile != nil) && (audioFile.recorder != nil)) {
         NSLog(@"iOS: Stopped recording audio sample '%@'", audioFile.resourcePath);
         [audioFile.recorder stop];
-        
-//        if (self.isMeteringEnabled) {
-//            [self.meterTimer invalidate];
-//            self.meterTimer = nil;
-//        }
         
         [self stopAudioMetering];
         // no callback - that will happen in audioRecorderDidFinishRecording
@@ -911,8 +899,8 @@
     percentageAudioLevel = fmin(percentageAudioLevel, 100);
     int scaledAudioLevel = (int)percentageAudioLevel;
     
-    NSLog(@"iOS: Raw Audio Level   : %@", audioLevel);
-    NSLog(@"iOS: Scaled Audio Level: %@", [NSNumber numberWithInt: scaledAudioLevel]);
+    //NSLog(@"iOS: Raw Audio Level   : %@", audioLevel);
+    //NSLog(@"iOS: Scaled Audio Level: %@", [NSNumber numberWithInt: scaledAudioLevel]);
     
     NSString* mediaId = self.currMediaId;
     NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_AUDIO_LEVEL, [NSNumber numberWithInt: scaledAudioLevel]];
