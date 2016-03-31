@@ -211,8 +211,6 @@
 
                     [self.commandDelegate evalJs:jsString];
                 }
-                
-                [self runAudioMetering: audioFile.player];
             }
             
             if (bError) {
@@ -238,6 +236,8 @@
         return;
 
     }];
+    
+    [self runAudioMetering: audioFile.player];
 }
 
 - (BOOL)prepareToPlay:(CDVAudioFile*)audioFile withId:(NSString*)mediaId {
@@ -854,7 +854,6 @@
     if (self.isMeteringEnabled == YES) {
         player.meteringEnabled = YES;
         [self stopAudioMetering];
-        NSLog(@"iOS: runAudioMetering: About to start NSTimer...");
         self.meterTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f
                                                            target:self
                                                          selector:@selector(reportAudioLevel:)
@@ -873,7 +872,6 @@
 -(NSNumber*)generateAudioLevel:(id<CDVPlayer>) player {
     [player updateMeters];
     NSNumber* level = [NSNumber numberWithFloat: [player averagePowerForChannel:0]];
-    NSLog(@"iOS: generateAudioLevel: %@", level);
     return level;
 }
 
