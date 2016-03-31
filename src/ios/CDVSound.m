@@ -178,7 +178,6 @@
                             [audioFile.player setRate:customRate];
                         }// else {
                             NSLog(@"iOS: Playing stream with AVPlayer & custom rate");
-                            [self runAudioMetering: audioFile.player];
                             [audioFile.player play];
                         //}
 
@@ -204,13 +203,13 @@
                         }
 
                         NSLog(@"iOS: Playing audio from audioFile.player");
-                        [self runAudioMetering: audioFile.player];
                         [audioFile.player play];
                         position = round(audioFile.player.duration * 1000) / 1000;
                     }
-
+                    
                     jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);\n%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_DURATION, position, @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_START];
-                
+
+                    [self runAudioMetering: audioFile.player];
                     [self.commandDelegate evalJs:jsString];
                 }
             }
@@ -290,6 +289,7 @@
         audioFile.player.delegate = self;
         if (avPlayer == nil) {
             NSLog(@"iOS: prepareToPlay: avPlayer is nil... recursive call to preprareToPlay");
+            // AVAudioPlayer:prepareToPlay takes no arguments and returns YES/NO on success/failure
             bError = ![audioFile.player prepareToPlay];
         }
     }
@@ -864,6 +864,7 @@
     NSLog(@"iOS: runAudioMetering: isMeteringEnabled: %s", self.isMeteringEnabled ? "TRUE":"FALSE");
     if (self.isMeteringEnabled) {
         player.meteringEnabled = YES;
+        [self stopAudioMetering];
         self.meterTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f
                                                            target:self
                                                          selector:@selector(reportAudioLevel:)
