@@ -42,7 +42,6 @@ var isMeteringEnabled = false;
  */
 var Media = function(src, successCallback, errorCallback, statusCallback, meteringCallback) {
     argscheck.checkArgs('sFFF', 'Media', arguments);
-    console.log('Media plugin (JS interface): Creating Media object');
     this.id = utils.createUUID();
     mediaObjects[this.id] = this;
     this.src = src;
@@ -50,13 +49,11 @@ var Media = function(src, successCallback, errorCallback, statusCallback, meteri
     this.errorCallback = errorCallback;
     this.statusCallback = statusCallback;
     this.meteringCallback = meteringCallback;
-    //this.isMeteringEnabled = (typeof meteringCallback === 'function') ? true : false;
     isMeteringEnabled = (typeof meteringCallback === 'function') ? true : false;
     this._duration = -1;
     this._position = -1;
     
-    console.log('Media plugin (JS interface): isMeteringEnabled: ' + this.isMeteringEnabled);
-    //exec(this.successCallback, this.errorCallback, "Media", "create", [this.id, this.src, this.isMeteringEnabled]);
+    console.log('JS: Media plugin: Creating Media object: isMeteringEnabled: ' + isMeteringEnabled);
     exec(this.successCallback, this.errorCallback, "Media", "create", [this.id, this.src, isMeteringEnabled]);
 };
 
@@ -195,16 +192,15 @@ Media.onStatus = function(id, msgType, value) {
                 if (media.statusCallback) {
                     media.statusCallback(value);
                 }
-                if (value === Media.MEDIA_PLAY_COMPLETE ||
-                    value === Media.MEDIA_PLAY_STOP ||
-                    value === Media.MEDIA_RECORD_STOP) {
-                    if (media.successCallback) {
-                        media.successCallback();
-                    }
-                }
+                // if (value === Media.MEDIA_PLAY_COMPLETE ||
+                //     value === Media.MEDIA_PLAY_STOP ||
+                //     value === Media.MEDIA_RECORD_STOP) {
+                //     if (media.successCallback) {
+                //         media.successCallback();
+                //     }
+                // }
                 break;
             case Media.MEDIA_AUDIO_LEVEL :
-                console.log("JS: Media: Audio Level: " + value);
                 if (isMeteringEnabled) {
                     media.meteringCallback(value);
                 }
