@@ -24,6 +24,7 @@ var argscheck = require('cordova/argscheck'),
     exec = require('cordova/exec');
 
 var mediaObjects = {};
+var isMeteringEnabled = false;
 
 /**
  * This class provides access to the device media, interfaces to both sound and video
@@ -49,12 +50,14 @@ var Media = function(src, successCallback, errorCallback, statusCallback, meteri
     this.errorCallback = errorCallback;
     this.statusCallback = statusCallback;
     this.meteringCallback = meteringCallback;
-    this.isMeteringEnabled = (typeof meteringCallback === 'function') ? true : false;
+    //this.isMeteringEnabled = (typeof meteringCallback === 'function') ? true : false;
+    isMeteringEnabled = (typeof meteringCallback === 'function') ? true : false;
     this._duration = -1;
     this._position = -1;
     
     console.log('Media plugin (JS interface): isMeteringEnabled: ' + this.isMeteringEnabled);
-    exec(this.successCallback, this.errorCallback, "Media", "create", [this.id, this.src, this.isMeteringEnabled]);
+    //exec(this.successCallback, this.errorCallback, "Media", "create", [this.id, this.src, this.isMeteringEnabled]);
+    exec(this.successCallback, this.errorCallback, "Media", "create", [this.id, this.src, isMeteringEnabled]);
 };
 
 // Media messages
@@ -202,10 +205,10 @@ Media.onStatus = function(id, msgType, value) {
                 break;
             case Media.MEDIA_AUDIO_LEVEL :
                 console.log("JS: Media: Audio Level: " + value);
-            	//if (isMeteringEnabled) {
-            		//media.meteringCallback(value);
-            	//}
-            	break;
+                if (isMeteringEnabled) {
+                    media.meteringCallback(value);
+                }
+                break;
             case Media.MEDIA_DURATION :
                 media._duration = value;
                 break;
