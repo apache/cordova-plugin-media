@@ -35,12 +35,12 @@ var isMeteringEnabled = false;
  *                                  successCallback()
  * @param errorCallback         The callback to be called if there is an error.
  *                                  errorCallback(int errorCode) - OPTIONAL
- * @param statusCallback        The callback to be called when media status has changed.
- *                                  statusCallback(int statusCode) - OPTIONAL
- * @param meteringCallback      The function to be called when audio is being recorded or played back.
-                                    meteringCallback(int audioLevel) - OPTIONAL
+ * @param statusCallback        The callback to be called when media status has changed, including duration,
+ *                                  position and audio level values.
+ *                                  statusCallback(int statusCode, value) - OPTIONAL
+ * @param meteringEnabled       The whether or not to turn on audio level metering for recording or playback. - OPTIONAL
  */
-var Media = function(src, successCallback, errorCallback, statusCallback, meteringCallback) {
+var Media = function(src, successCallback, errorCallback, statusCallback, meteringEnabled) {
     argscheck.checkArgs('sFFF', 'Media', arguments);
     this.id = utils.createUUID();
     mediaObjects[this.id] = this;
@@ -48,8 +48,7 @@ var Media = function(src, successCallback, errorCallback, statusCallback, meteri
     this.successCallback = successCallback;
     this.errorCallback = errorCallback;
     this.statusCallback = statusCallback;
-    this.meteringCallback = meteringCallback;
-    isMeteringEnabled = (typeof meteringCallback === 'function') ? true : false;
+    isMeteringEnabled = (meteringEnabled !== undefined && meteringEnabled !== null) ? true : false;
     this._duration = -1;
     this._position = -1;
     
@@ -57,14 +56,14 @@ var Media = function(src, successCallback, errorCallback, statusCallback, meteri
     exec(this.successCallback, this.errorCallback, "Media", "create", [this.id, this.src, isMeteringEnabled]);
 };
 
-// Media messages
+// Media messages -- These are used internally by the plugin
 Media.MEDIA_STATE = 1;
 Media.MEDIA_DURATION = 2;
 Media.MEDIA_POSITION = 4;
 Media.MEDIA_AUDIO_LEVEL = 6;
 Media.MEDIA_ERROR = 99;
 
-// Media states
+// Media states -- these are reported to whatever is using the Media plugin
 Media.MEDIA_NONE = 0;
 Media.MEDIA_RECORD_START = 8;
 Media.MEDIA_RECORD_STOP = 10;
@@ -72,7 +71,9 @@ Media.MEDIA_PLAY_START = 12;
 Media.MEDIA_PLAY_PAUSE = 14;
 Media.MEDIA_PLAY_STOP = 16;
 Media.MEDIA_PLAY_COMPLETE = 18;
-//Media.MEDIA_MSG = ["None", "Record Start", "Record Stop", "Play Start", "Play Pause", "Play Stop", "Play Complete"];
+Media.MEDIA_DURATION_REPORT = 20;
+Media.MEDIA_POSITION_REPORT = 22;
+Media.MEDIA_AUDIO_LEVEL_REPORT = 24;
 
 // "static" function to return existing objs.
 Media.get = function(id) {
@@ -192,21 +193,15 @@ Media.onStatus = function(id, msgType, value) {
                 if (media.statusCallback) {
                     media.statusCallback(value);
                 }
-                // if (value === Media.MEDIA_PLAY_COMPLETE ||
-                //     value === Media.MEDIA_PLAY_STOP ||
-                //     value === Media.MEDIA_RECORD_STOP) {
-                //     if (media.successCallback) {
-                //         media.successCallback();
-                //     }
-                // }
                 break;
             case Media.MEDIA_AUDIO_LEVEL :
                 if (isMeteringEnabled) {
-                    media.meteringCallback(value);
+                    media.statusCallback(Media.MEDIA_AUDIO_LEVEL_REPORT, value);
                 }
                 break;
             case Media.MEDIA_DURATION :
                 media._duration = value;
+                media.statusCallback(Media.MEDIA_DURATION_REPORT, media._duration);
                 break;
             case Media.MEDIA_ERROR :
                 if (media.errorCallback) {
@@ -215,6 +210,7 @@ Media.onStatus = function(id, msgType, value) {
                 break;
             case Media.MEDIA_POSITION :
                 media._position = Number(value);
+                media.statusCallback(Media.MEDIA_POSITION_REPORT, media._position);
                 break;
             default :
                 if (console.error) {
