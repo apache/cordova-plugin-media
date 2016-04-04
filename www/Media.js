@@ -60,18 +60,18 @@ var Media = function(src, successCallback, errorCallback, statusCallback, meteri
 // Media messages
 Media.MEDIA_STATE = 1;
 Media.MEDIA_DURATION = 2;
-Media.MEDIA_POSITION = 3;
-Media.MEDIA_AUDIO_LEVEL = 4;
-Media.MEDIA_ERROR = 9;
+Media.MEDIA_POSITION = 4;
+Media.MEDIA_AUDIO_LEVEL = 6;
+Media.MEDIA_ERROR = 99;
 
 // Media states
 Media.MEDIA_NONE = 0;
-Media.MEDIA_RECORD_START = 1;
-Media.MEDIA_RECORD_STOP = 2;
-Media.MEDIA_PLAY_START = 3;
-Media.MEDIA_PLAY_PAUSE = 4;
-Media.MEDIA_PLAY_STOP = 5;
-Media.MEDIA_PLAY_COMPLETE = 6;
+Media.MEDIA_RECORD_START = 8;
+Media.MEDIA_RECORD_STOP = 10;
+Media.MEDIA_PLAY_START = 12;
+Media.MEDIA_PLAY_PAUSE = 14;
+Media.MEDIA_PLAY_STOP = 16;
+Media.MEDIA_PLAY_COMPLETE = 18;
 //Media.MEDIA_MSG = ["None", "Record Start", "Record Stop", "Play Start", "Play Pause", "Play Stop", "Play Complete"];
 
 // "static" function to return existing objs.

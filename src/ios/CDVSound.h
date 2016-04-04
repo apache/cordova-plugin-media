@@ -31,21 +31,21 @@ typedef NSUInteger CDVMediaError;
 
 enum CDVMediaStates {
     MEDIA_NONE = 0,
-    MEDIA_RECORD_START = 1,
-    MEDIA_RECORD_STOP = 2,
-    MEDIA_PLAY_START = 3,
-    MEDIA_PLAY_PAUSE = 4,
-    MEDIA_PLAY_STOP = 5,
-    MEDIA_PLAY_COMPLETE = 6
+    MEDIA_RECORD_START = 8,
+    MEDIA_RECORD_STOP = 10,
+    MEDIA_PLAY_START = 12,
+    MEDIA_PLAY_PAUSE = 14,
+    MEDIA_PLAY_STOP = 16,
+    MEDIA_PLAY_COMPLETE = 18
 };
 typedef NSUInteger CDVMediaStates;
 
 enum CDVMediaMsg {
     MEDIA_STATE = 1,
     MEDIA_DURATION = 2,
-    MEDIA_POSITION = 3,
-    MEDIA_AUDIO_LEVEL = 4,
-    MEDIA_ERROR = 9
+    MEDIA_POSITION = 4,
+    MEDIA_AUDIO_LEVEL = 6,
+    MEDIA_ERROR = 99
 };
 typedef NSUInteger CDVMediaMsg;
 
