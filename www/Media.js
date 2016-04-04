@@ -48,10 +48,11 @@ var Media = function(src, successCallback, errorCallback, statusCallback, meteri
     this.successCallback = successCallback;
     this.errorCallback = errorCallback;
     this.statusCallback = statusCallback;
-    isMeteringEnabled = (meteringEnabled) ? true : false;
+    isMeteringEnabled = meteringEnabled;
     this._duration = -1;
     this._position = -1;
-    
+
+    console.log('JS: Media plugin: Creating Media object: meteringEnabled: ' + meteringEnabled);
     console.log('JS: Media plugin: Creating Media object: isMeteringEnabled: ' + isMeteringEnabled);
     exec(this.successCallback, this.errorCallback, "Media", "create", [this.id, this.src, isMeteringEnabled]);
 };
