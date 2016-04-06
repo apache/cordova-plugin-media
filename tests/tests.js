@@ -175,7 +175,21 @@ exports.defineAutoTests = function () {
             media1.release();
         });
 
-        it("media.spec.16 should return MediaError for bad filename", function (done) {
+        it("media.spec.16 should contain a pauseRecord function", function () {
+            var media1 = new Media("dummy");
+            expect(media1.pauseRecord).toBeDefined();
+            expect(typeof media1.pauseRecord).toBe('function');
+            media1.release();
+        });
+
+        it("media.spec.17 should contain a resumeRecord function", function () {
+            var media1 = new Media("dummy");
+            expect(media1.resumeRecord).toBeDefined();
+            expect(typeof media1.resumeRecord).toBe('function');
+            media1.release();
+        });
+
+        it("media.spec.18 should return MediaError for bad filename", function (done) {
             //bb10 dialog pops up, preventing tests from running
             if (cordova.platformId === 'blackberry10') {
                 pending();
@@ -210,7 +224,7 @@ exports.defineAutoTests = function () {
                 }
             });
 
-            it("media.spec.17 position should be set properly", function (done) {
+            it("media.spec.19 position should be set properly", function (done) {
                 // no audio hardware available
                 if (!isAudioSupported) {
                     pending();
@@ -240,7 +254,7 @@ exports.defineAutoTests = function () {
                 media.play();
             }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
 
-            it("media.spec.18 duration should be set properly", function (done) {
+            it("media.spec.20 duration should be set properly", function (done) {
                 if (!isAudioSupported || cordova.platformId === 'blackberry10') {
                     pending();
                 }
@@ -269,7 +283,7 @@ exports.defineAutoTests = function () {
                 media.play();
             }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
 
-            it("media.spec.19 should be able to resume playback after pause", function (done) {
+            it("media.spec.21 should be able to resume playback after pause", function (done) {
                 if (!isAudioSupported || cordova.platformId === 'blackberry10') {
                     pending();
                 }
@@ -312,7 +326,7 @@ exports.defineAutoTests = function () {
 
             }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
 
-            it("media.spec.20 should be able to seek through file", function (done) {
+            it("media.spec.22 should be able to seek through file", function (done) {
                 if (!isAudioSupported || cordova.platformId === 'blackberry10') {
                     pending();
                 }
@@ -346,14 +360,14 @@ exports.defineAutoTests = function () {
             }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
         });
 
-        it("media.spec.21 should contain a setRate function", function () {
+        it("media.spec.23 should contain a setRate function", function () {
             var media1 = new Media("dummy");
             expect(media1.setRate).toBeDefined();
             expect(typeof media1.setRate).toBe('function');
             media1.release();
         });
 
-        it("media.spec.22 playback rate should be set properly using setRate", function (done) {
+        it("media.spec.24 playback rate should be set properly using setRate", function (done) {
             if (cordova.platformId !== 'ios') {
                 expect(true).toFailWithMessage('Platform does not supported this feature');
                 pending();

@@ -106,7 +106,11 @@ The following constants are reported as the only parameter to the
 
 - `media.pause`: Pause playback of an audio file.
 
+- `media.pauseRecord`: Pause recording of an audio file.
+
 - `media.release`: Releases the underlying operating system's audio resources.
+
+- `media.resumeRecord`: Resume recording of an audio file.
 
 - `media.seekTo`: Moves the position within the audio file.
 
@@ -261,6 +265,44 @@ Pauses playing an audio file.
     }
 
 
+## media.pauseRecord
+
+Pauses recording an audio file.
+
+    media.pauseRecord();
+
+
+### Supported Platforms
+
+- iOS
+
+
+### Quick Example
+
+    // Record audio
+    //
+    function recordAudio() {
+        var src = "myrecording.mp3";
+        var mediaRec = new Media(src,
+            // success callback
+            function() {
+                console.log("recordAudio():Audio Success");
+            },
+
+            // error callback
+            function(err) {
+                console.log("recordAudio():Audio Error: "+ err.code);
+            });
+
+        // Record audio
+        mediaRec.startRecord();
+
+        // Pause Recording after 5 seconds
+        setTimeout(function() {
+            my_media.pauseRecord();
+        }, 5000);
+    }
+
 ## media.play
 
 Starts or resumes playing an audio file.
@@ -331,6 +373,50 @@ function for any `Media` resource that is no longer needed.
     my_media.play();
     my_media.stop();
     my_media.release();
+
+
+## media.resumeRecord
+
+Resume recording an audio file.
+
+    media.resumeRecord();
+
+
+### Supported Platforms
+
+- iOS
+
+
+### Quick Example
+
+    // Record audio
+    //
+    function recordAudio() {
+        var src = "myrecording.mp3";
+        var mediaRec = new Media(src,
+            // success callback
+            function() {
+                console.log("recordAudio():Audio Success");
+            },
+
+            // error callback
+            function(err) {
+                console.log("recordAudio():Audio Error: "+ err.code);
+            });
+
+        // Record audio
+        mediaRec.startRecord();
+
+        // Pause Recording after 5 seconds
+        setTimeout(function() {
+            my_media.pauseRecord();
+        }, 5000);
+
+        // Resume Recording after 10 seconds
+        setTimeout(function() {
+            my_media.resumeRecord();
+        }, 10000);
+    }
 
 
 ## media.seekTo

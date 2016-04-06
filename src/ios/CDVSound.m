@@ -867,6 +867,47 @@
     [self.commandDelegate sendPluginResult:result callbackId:callbackId];
  }
 
+ - (void)resumeRecordingAudio:(CDVInvokedUrlCommand*)command
+  {
+     NSString* mediaId = [command argumentAtIndex:0];
+
+     CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
+     NSString* jsString = nil;
+
+     if ((audioFile != nil) && (audioFile.recorder != nil)) {
+         NSLog(@"Resumed recording audio sample '%@'", audioFile.resourcePath);
+         [audioFile.recorder record];
+         // no callback - that will happen in audioRecorderDidFinishRecording
+         jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_RUNNING];
+     }
+
+    // ignore if no media recording
+    if (jsString) {
+        [self.commandDelegate evalJs:jsString];
+    }
+}
+
+ - (void)pauseRecordingAudio:(CDVInvokedUrlCommand*)command
+  {
+     NSString* mediaId = [command argumentAtIndex:0];
+
+     CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
+     NSString* jsString = nil;
+
+     if ((audioFile != nil) && (audioFile.recorder != nil)) {
+         NSLog(@"Paused recording audio sample '%@'", audioFile.resourcePath);
+         [audioFile.recorder pause];
+         // no callback - that will happen in audioRecorderDidFinishRecording
+         // no callback - that will happen in audioRecorderDidFinishRecording
+         jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_PAUSED];
+     }
+
+      // ignore if no media recording
+      if (jsString) {
+          [self.commandDelegate evalJs:jsString];
+      }
+ }
+
 @end
 
 @implementation CDVAudioFile
