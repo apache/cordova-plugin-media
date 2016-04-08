@@ -32,7 +32,11 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.IOException;
+import java.util.LinkedList;
 
 /**
  * This class implements the audio playback and recording capabilities used by Cordova.
@@ -81,7 +85,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     private float duration = -1;            // Duration of audio
 
     private MediaRecorder recorder = null;  // Audio recording object
-    private String tempFile = null;         // Temporary recording file name
+    private LinkedList<String> tempFiles = null; // Temporary recording file name
+    private String tempFile = null;
 
     private MediaPlayer player = null;      // Audio player object
     private boolean prepareOnly = true;     // playback after file prepare flag
@@ -98,13 +103,17 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         this.id = id;
         this.audioFile = file;
         this.recorder = new MediaRecorder();
+        this.tempFiles = new LinkedList<String>();
+    }
 
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            this.tempFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmprecording.3gp";
-        } else {
-            this.tempFile = "/data/data/" + handler.cordova.getActivity().getPackageName() + "/cache/tmprecording.3gp";
-        }
-
+    private String generateTempFile() {
+      String tempFileName = null;
+      if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+          tempFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmprecording-" + System.currentTimeMillis() + ".3gp";
+      } else {
+          tempFileName = "/data/data/" + handler.cordova.getActivity().getPackageName() + "/cache/tmprecording-" + System.currentTimeMillis() + ".3gp";
+      }
+      return tempFileName;
     }
 
     /**
@@ -121,7 +130,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             this.player = null;
         }
         if (this.recorder != null) {
-            this.stopRecording();
+            this.stopRecording(true);
             this.recorder.release();
             this.recorder = null;
         }
@@ -141,8 +150,9 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         case NONE:
             this.audioFile = file;
             this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            this.recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT); // THREE_GPP);
-            this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT); //AMR_NB);
+            this.recorder.setOutputFormat(MediaRecorder.OutputFormat.RAW_AMR); // THREE_GPP);
+            this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB); //AMR_NB);
+            this.tempFile = generateTempFile();
             this.recorder.setOutputFile(this.tempFile);
             try {
                 this.recorder.prepare();
@@ -170,7 +180,6 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      */
     public void moveFile(String file) {
         /* this is a hack to save the file as the specified name */
-        File f = new File(this.tempFile);
 
         if (!file.startsWith("/")) {
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
@@ -180,28 +189,100 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             }
         }
 
-        String logMsg = "renaming " + this.tempFile + " to " + file;
-        Log.d(LOG_TAG, logMsg);
-        if (!f.renameTo(new File(file))) Log.e(LOG_TAG, "FAILED " + logMsg);
+        int size = this.tempFiles.size();
+        Log.d(LOG_TAG, "size = " + size);
+
+        // only one file so just copy it
+        if (size == 1) {
+            String logMsg = "renaming " + this.tempFile + " to " + file;
+            Log.d(LOG_TAG, logMsg);
+            File f = new File(this.tempFile);
+            if (!f.renameTo(new File(file))) Log.e(LOG_TAG, "FAILED " + logMsg);
+        }
+        // more than one file so the user must have pause recording. We'll need to concat files.
+        else {
+          FileOutputStream outputStream = null;
+          try {
+              outputStream = new FileOutputStream(new File(file));
+              FileInputStream inputStream = null;
+              File inputFile = null;
+              for (int i = 0; i < size; i++) {
+                  try {
+                      inputFile = new File(this.tempFiles.get(i));
+                      inputStream = new FileInputStream(inputFile);
+                      copy(inputStream, outputStream, (i>0));
+                  } catch(Exception e) {
+                      Log.e(LOG_TAG, e.getLocalizedMessage(), e);
+                  } finally {
+                      if (inputStream != null) try {
+                          inputStream.close();
+                          inputFile.delete();
+                          inputFile = null;
+                      } catch (Exception e) {
+                          Log.e(LOG_TAG, e.getLocalizedMessage(), e);
+                      }
+                  }
+              }
+          } catch(Exception e) {
+              e.printStackTrace();
+          } finally {
+              if (outputStream != null) try {
+                  outputStream.close();
+              } catch (Exception e) {
+                  Log.e(LOG_TAG, e.getLocalizedMessage(), e);
+              }
+          }
+        }
+    }
+
+    private static long copy(InputStream from, OutputStream to, boolean skipHeader)
+                throws IOException {
+        byte[] buf = new byte[8096];
+        long total = 0;
+        if (skipHeader) {
+            from.skip(6);
+        }
+        while (true) {
+            int r = from.read(buf);
+            if (r == -1) {
+                break;
+            }
+            to.write(buf, 0, r);
+            total += r;
+        }
+        return total;
     }
 
     /**
-     * Stop recording and save to the file specified when recording started.
+     * Stop/Pause recording and save to the file specified when recording started.
      */
-    public void stopRecording() {
+    public void stopRecording(boolean stop) {
         if (this.recorder != null) {
             try{
                 if (this.state == STATE.MEDIA_RUNNING) {
                     this.recorder.stop();
-                    this.setState(STATE.MEDIA_STOPPED);
                 }
                 this.recorder.reset();
-                this.moveFile(this.audioFile);
+                this.tempFiles.add(this.tempFile);
+                if (stop) {
+                    Log.d(LOG_TAG, "stopping recording");
+                    this.setState(STATE.MEDIA_STOPPED);
+                    this.moveFile(this.audioFile);
+                } else {
+                    Log.d(LOG_TAG, "pause recording");
+                }
             }
             catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * Resume recording and save to the file specified when recording started.
+     */
+    public void resumeRecording() {
+        startRecording(this.audioFile);
     }
 
     //==========================================================================
