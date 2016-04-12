@@ -125,6 +125,17 @@ Media.prototype.getCurrentPosition = function(success, fail) {
 };
 
 /**
+ * Get buffered percent of audio.
+ */
+Media.prototype.getBufferedPercent = function(success, fail) {
+    var me = this;
+    exec(function(p) {
+        me._position = p;
+        success(p);
+    }, fail, "Media", "getBufferedPercentAudio", [this.id]);
+};
+
+/**
  * Start recording audio file.
  */
 Media.prototype.startRecord = function() {

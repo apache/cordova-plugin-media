@@ -152,6 +152,11 @@ public class AudioHandler extends CordovaPlugin {
             callbackContext.sendPluginResult(new PluginResult(status, f));
             return true;
         }
+		else if (action.equals("getBufferedPercentAudio")) {
+        	int f = this.getBufferedPercentAudio(args.getString(0));
+            callbackContext.sendPluginResult(new PluginResult(status, f));
+            return true;
+        }
         else if (action.equals("create")) {
             String id = args.getString(0);
             String src = FileHelper.stripFileProtocol(args.getString(1));
@@ -355,6 +360,19 @@ public class AudioHandler extends CordovaPlugin {
     public float getDurationAudio(String id, String file) {
         AudioPlayer audio = getOrCreatePlayer(id, file);
         return audio.getDuration(file);
+    }
+	
+	/**
+     * Get percentage of buffered data of playback.
+     * @param id				The id of the audio player
+     * @return 					buffered data in percentage
+     */
+    public int getBufferedPercentAudio(String id) {
+        AudioPlayer audio = this.players.get(id);
+        if (audio != null) {
+            return audio.getBufferedPercent();
+        }
+        return 0;
     }
 
     /**
