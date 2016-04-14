@@ -54,7 +54,6 @@ import java.util.HashMap;
  */
 public class AudioHandler extends CordovaPlugin {
 
-    public static String TAG = "AudioHandler";
     HashMap<String, AudioPlayer> players;  // Audio player object
     ArrayList<AudioPlayer> pausedForPhone; // Audio players that were paused when phone call came in
     ArrayList<AudioPlayer> pausedForFocus; // Audio players that were paused when focus was lost
@@ -70,6 +69,7 @@ public class AudioHandler extends CordovaPlugin {
 
     private String recordId;
     private String fileUriStr;
+    private static final String LOG_TAG = "AudioHandler";
 
     /**
      * Constructor.
@@ -371,7 +371,7 @@ public class AudioHandler extends CordovaPlugin {
             audiMgr.setRouting(AudioManager.MODE_NORMAL, AudioManager.ROUTE_EARPIECE, AudioManager.ROUTE_ALL);
         }
         else {
-            System.out.println("AudioHandler.setAudioOutputDevice() Error: Unknown output device.");
+            Log.e(LOG_TAG, "setAudioOutputDevice() Error: Unknown output device.");
         }
     }
 
@@ -418,7 +418,7 @@ public class AudioHandler extends CordovaPlugin {
                                           AudioManager.AUDIOFOCUS_GAIN);
 
         if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            System.out.println("AudioHandler.getAudioFocus() Error: Got " + result + " instead of " + AudioManager.AUDIOFOCUS_REQUEST_GRANTED);
+            Log.e(LOG_TAG, "getAudioFocus() Error: Got " + result + " instead of " + AudioManager.AUDIOFOCUS_REQUEST_GRANTED);
         }
 
     }
@@ -452,9 +452,10 @@ public class AudioHandler extends CordovaPlugin {
     public void setVolume(String id, float volume) {
         AudioPlayer audio = this.players.get(id);
         if (audio != null) {
+            Log.d(LOG_TAG, "setVolume() Player:" + id + " Volume:" + String.format("%f",0.0f));
             audio.setVolume(volume);
         } else {
-            System.out.println("AudioHandler.setVolume() Error: Unknown Audio Player " + id);
+            Log.e(LOG_TAG, "setVolume() Error: Unknown Audio Player:" + id );
         }
     }
 
@@ -478,7 +479,7 @@ public class AudioHandler extends CordovaPlugin {
                 message.put(action, actionData);
             }
         } catch (JSONException e) {
-            Log.e(TAG, "Failed to create event message", e);
+            Log.e(LOG_TAG, "Failed to create event message", e);
         }
 
         PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, message);
