@@ -20,6 +20,16 @@
 -->
 # Release Notes
 
+### 2.3.0 (Apr 15, 2016)
+* Request audio focus when playing; Pause audio when audio focus is lost; resume playing when audio focus is granted again.
+* Replace `PermissionHelper.java` with `cordova-plugin-compat`
+* CB-10783 Modify expected position to be in a proper range.
+* CB-9487 Support getting amplitude for recording
+* **iOS** audio should handle naked local file sources
+* CB-10720 Fixing README for display on Cordova website
+* CB-10636 Add `JSHint` for plugins
+* CB-10535 Fix CI crash caused by media plugin
+
 ### 2.2.0 (Feb 09, 2016)
 * [CB-10476](https://issues.apache.org/jira/browse/CB-10476) Fix problem where callbacks were not invoked on android due to messageChannel being overridden by callbackContext in every execute() call
 * Edit package.json license to match SPDX id
