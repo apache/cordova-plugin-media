@@ -74,8 +74,8 @@ public class mp4ParserWrapper {
      */
     private static void copyFile(final String from, final String destination)
             throws IOException {
-        FileInputStream in;
-        FileOutputStream out;
+        FileInputStream in = null;
+        FileOutputStream out = null;
         try {
             in = new FileInputStream(from);
             out = new FileOutputStream(destination);
@@ -116,7 +116,7 @@ public class mp4ParserWrapper {
 
         final Container container = new DefaultMp4Builder().build(finalMovie);
 
-        final FileOutputStream fos;
+        final FileOutputStream fos = null;
         try {
             fos =  new FileOutputStream(new File(String.format(newFile)));
             final WritableByteChannel bb = Channels.newChannel(fos);
