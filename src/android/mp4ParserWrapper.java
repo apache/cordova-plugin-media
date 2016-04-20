@@ -34,8 +34,8 @@ public class mp4ParserWrapper {
     public static boolean append(String mainFileName, String anotherFileName) {
         boolean rvalue = false;
         try {
-            File targetFile = new File(mainFileName);
-            File anotherFile = new File(anotherFileName);
+            final File targetFile = new File(mainFileName);
+            final File anotherFile = new File(anotherFileName);
             if (targetFile.exists() && targetFile.length() > 0) {
                 // the target file already exists, just append the new content
                 String tmpFileName = mainFileName + ".tmp";
@@ -116,7 +116,7 @@ public class mp4ParserWrapper {
 
         final Container container = new DefaultMp4Builder().build(finalMovie);
 
-        final FileOutputStream fos = null;
+        FileOutputStream fos = null;
         try {
             fos =  new FileOutputStream(new File(String.format(newFile)));
             final WritableByteChannel bb = Channels.newChannel(fos);
