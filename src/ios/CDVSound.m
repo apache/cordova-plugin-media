@@ -215,6 +215,8 @@
 {
     NSString* mediaId = [command argumentAtIndex:0];
     NSString* resourcePath = [command argumentAtIndex:1];
+    NSError* __autoreleasing playerError = nil;
+    NSString* jsString = nil;
 
     CDVAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:YES forRecording:NO];
 
@@ -239,6 +241,13 @@
             avPlayer = [[AVPlayer alloc] initWithPlayerItem:playerItem];
 
             //avPlayer = [[AVPlayer alloc] initWithURL:resourceUrl];
+        }
+        
+        if ([resourceUrl isFileURL]) {
+            audioFile.player = [[CDVAudioPlayer alloc] initWithContentsOfURL:resourceUrl error:&playerError];
+            double duration = audioFile.player.duration;
+            jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_DURATION, duration];
+            [self.commandDelegate evalJs:jsString];
         }
 
         self.currMediaId = mediaId;
