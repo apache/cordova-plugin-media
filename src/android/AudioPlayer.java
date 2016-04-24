@@ -102,7 +102,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             this.tempFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmprecording.3gp";
         } else {
-            this.tempFile = "/data/data/" + handler.cordova.getActivity().getPackageName() + "/cache/tmprecording.3gp";
+            this.tempFile = handler.cordova.getActivity().getCacheDir().getAbsolutePath() + "/tmprecording.3gp";
         }
 
     }
@@ -176,7 +176,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
                 file = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + file;
             } else {
-                file = "/data/data/" + handler.cordova.getActivity().getPackageName() + "/cache/" + file;
+                file = this.handler.cordova.getActivity().getCacheDir().getAbsolutePath() + "/" + file;
             }
         }
 
