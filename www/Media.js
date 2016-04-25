@@ -62,6 +62,7 @@ Media.MEDIA_STATE = 1;
 Media.MEDIA_DURATION = 2;
 Media.MEDIA_POSITION = 4;
 Media.MEDIA_AUDIO_LEVEL = 6;
+Media.MEDIA_MICROPHONE_ACCESS = 7;
 Media.MEDIA_ERROR = 99;
 
 // Media states -- these are reported to whatever is using the Media plugin
@@ -75,6 +76,7 @@ Media.MEDIA_PLAY_COMPLETE = 18;
 Media.MEDIA_DURATION_REPORT = 20;
 Media.MEDIA_POSITION_REPORT = 22;
 Media.MEDIA_AUDIO_LEVEL_REPORT = 24;
+Media.MEDIA_MICROPHONE_ACCESS_REPORT = 26;
 
 // "static" function to return existing objs.
 Media.get = function(id) {
@@ -212,6 +214,9 @@ Media.onStatus = function(id, msgType, value) {
             case Media.MEDIA_POSITION :
                 media._position = Number(value);
                 media.statusCallback(Media.MEDIA_POSITION_REPORT, media._position);
+                break;
+            case Media.MEDIA_MICROPHONE_ACCESS_GRANTED :
+                media.statusCallback(Media.MEDIA_MICROPHONE_ACCESS_GRANTED, value);
                 break;
             default :
                 if (console.error) {

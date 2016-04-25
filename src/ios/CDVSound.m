@@ -32,17 +32,6 @@
 
 - (void)create:(CDVInvokedUrlCommand*)command {
     
-    // This is just to force a request for microphone access whenever a CDVSound
-    // object is requested.
-    [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
-        if (granted) {
-            NSLog(@"Permission granted");
-        }
-        else {
-            NSLog(@"Permission denied");
-        }
-    }];
-    
     NSString* mediaId = [command argumentAtIndex:0];
     NSString* resourcePath = [command argumentAtIndex:1];
     BOOL meteringEnabled = [[command argumentAtIndex: 2] boolValue];
@@ -81,6 +70,29 @@
         CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }
+}
+
+- (void)requestMicrophoneAccess: (CDVInvokedUrlCommand*)command {
+    [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
+        
+        if (granted) {
+            NSLog(@"Permission granted");
+            
+            CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK message:YES];
+            NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_MICROPHONE_ACCESS, YES];
+            [self.commandDelegate evalJs:jsString];
+            [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+            
+        }
+        else {
+            NSLog(@"Permission denied");
+            
+            CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK message:NO];
+            NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_MICROPHONE_ACCESS, NO];
+            [self.commandDelegate evalJs:jsString];
+            [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+        }
+    }];
 }
 
 - (void)setVolume:(CDVInvokedUrlCommand*)command {
@@ -882,7 +894,7 @@
     }
 }
 
--(NSNumber*)generateAudioLevel:(id<CDVPlayer>) player {
+-(NSNumber*)calcAudioLevel:(id<CDVPlayer>) player {
     [player updateMeters];
     NSNumber* level = [NSNumber numberWithFloat: [player averagePowerForChannel:0]];
     return level;
@@ -893,7 +905,7 @@
 */
 -(void)reportAudioLevel:(NSTimer *) timer {
     // userInfo is ref to AVAudioRecorder or AVAudioPlayer
-    NSNumber* audioLevel = [self generateAudioLevel: timer.userInfo];
+    NSNumber* audioLevel = [self calcAudioLevel: timer.userInfo];
     
     // Convert audioLevel from dB's logarithmic scale to a linear scale.
     // AVAudioPlayer docs say minimum audio level is -160 dB and maximum is 0 dB, but that

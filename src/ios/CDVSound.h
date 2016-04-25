@@ -45,6 +45,7 @@ enum CDVMediaMsg {
     MEDIA_DURATION = 2,
     MEDIA_POSITION = 4,
     MEDIA_AUDIO_LEVEL = 6,
+    MEDIA_MICROPHONE_ACCESS = 7;
     MEDIA_ERROR = 99
 };
 typedef NSUInteger CDVMediaMsg;
@@ -100,7 +101,7 @@ typedef NSUInteger CDVMediaMsg;
 @property (nonatomic, strong) NSTimer* meterTimer;
 @property (nonatomic, assign) BOOL isMeteringEnabled;
 
-
+- (void)requestMicrophoneAccess: (CDVInvokedUrlCommand*) command;
 - (void)startPlayingAudio:(CDVInvokedUrlCommand*)command;
 - (void)pausePlayingAudio:(CDVInvokedUrlCommand*)command;
 - (void)stopPlayingAudio:(CDVInvokedUrlCommand*)command;
@@ -121,7 +122,7 @@ typedef NSUInteger CDVMediaMsg;
 - (NSString*)createMediaErrorWithCode:(CDVMediaError)code message:(NSString*)message;
 - (void)runAudioMetering: (id<CDVPlayer>) recorder;
 - (void)stopAudioMetering;
-- (NSNumber*)generateAudioLevel:(id<CDVPlayer>) recorder;
+- (NSNumber*)calcAudioLevel:(id<CDVPlayer>) recorder;
 - (void)reportAudioLevel: (NSNumber*)audioLevel;
 
 @end
