@@ -320,12 +320,6 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
       *                             -2=not allowed
       */
     public float getDuration(String file) {
-
-        // Can't get duration of recording
-        if (this.recorder != null) {
-            return (-2); // not allowed
-        }
-
         // If audio file already loaded and started, then return duration
         if (this.player != null) {
             return this.duration;
@@ -334,7 +328,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         // If no player yet, then create one
         else {
             this.prepareOnly = true;
-            this.startPlaying(file);
+            this.readyPlayer(file);
 
             // This will only return value for local, since streaming
             // file hasn't been read yet.

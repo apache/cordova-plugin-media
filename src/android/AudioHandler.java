@@ -150,15 +150,11 @@ public class AudioHandler extends CordovaPlugin {
             callbackContext.sendPluginResult(new PluginResult(status, f));
             return true;
         }
-        else if (action.equals("getDurationAudio")) {
-            float f = this.getDurationAudio(args.getString(0), args.getString(1));
-            callbackContext.sendPluginResult(new PluginResult(status, f));
-            return true;
-        }
         else if (action.equals("create")) {
             String id = args.getString(0);
             String src = FileHelper.stripFileProtocol(args.getString(1));
-            getOrCreatePlayer(id, src);
+            AudioPlayer player = getOrCreatePlayer(id, src);
+			player.getDuration(src);
         }
         else if (action.equals("release")) {
             boolean b = this.release(args.getString(0));
@@ -348,17 +344,6 @@ public class AudioHandler extends CordovaPlugin {
             return (audio.getCurrentPosition() / 1000.0f);
         }
         return -1;
-    }
-
-    /**
-     * Get the duration of the audio file.
-     * @param id				The id of the audio player
-     * @param file				The name of the audio file.
-     * @return					The duration in msec.
-     */
-    public float getDurationAudio(String id, String file) {
-        AudioPlayer audio = getOrCreatePlayer(id, file);
-        return audio.getDuration(file);
     }
 
     /**
