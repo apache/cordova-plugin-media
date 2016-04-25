@@ -75,24 +75,30 @@
 - (void)requestMicrophoneAccess: (CDVInvokedUrlCommand*)command {
     [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
         
+        NSString* callbackId = command.callbackId;
+        NSString* mediaId = [command argumentAtIndex:0];
+        CDVPluginResult* result;
+        NSString* jsString;
+        
         if (granted) {
             NSLog(@"Permission granted");
             
-            CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK message:YES];
-            NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_MICROPHONE_ACCESS, YES];
-            [self.commandDelegate evalJs:jsString];
-            [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:YES];
+            jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%s);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_MICROPHONE_ACCESS, granted ? "true" : "false"];
             
         }
         else {
             NSLog(@"Permission denied");
             
-            CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK message:NO];
-            NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_MICROPHONE_ACCESS, NO];
-            [self.commandDelegate evalJs:jsString];
-            [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:NO];
+            jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%s);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_MICROPHONE_ACCESS, granted ? "true" : "false"];
+            
         }
+        
+        [self.commandDelegate evalJs:jsString];
+        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
     }];
+
 }
 
 - (void)setVolume:(CDVInvokedUrlCommand*)command {
