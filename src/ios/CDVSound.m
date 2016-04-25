@@ -31,6 +31,18 @@
 
 
 - (void)create:(CDVInvokedUrlCommand*)command {
+    
+    // This is just to force a request for microphone access whenever a CDVSound
+    // object is requested.
+    [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
+        if (granted) {
+            NSLog(@"Permission granted");
+        }
+        else {
+            NSLog(@"Permission denied");
+        }
+    }];
+    
     NSString* mediaId = [command argumentAtIndex:0];
     NSString* resourcePath = [command argumentAtIndex:1];
     BOOL meteringEnabled = [[command argumentAtIndex: 2] boolValue];
