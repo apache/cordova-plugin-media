@@ -40,9 +40,6 @@
     "test": "npm run jshint",
     "jshint": "jshint www && jshint src && jshint tests"
   },
-  "peerDependencies": {
-    "cordova-plugin-file": "^4.0.0"
-  },
   "author": "Apache Software Foundation",
   "license": "Apache-2.0",
   "devDependencies": {
