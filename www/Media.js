@@ -219,8 +219,8 @@ Media.onStatus = function(id, msgType, value) {
                 media._position = Number(value);
                 media.statusCallback(Media.MEDIA_POSITION_REPORT, media._position);
                 break;
-            case Media.MEDIA_MICROPHONE_ACCESS_GRANTED :
-                media.statusCallback(Media.MEDIA_MICROPHONE_ACCESS_GRANTED, value);
+            case Media.MEDIA_MICROPHONE_ACCESS :
+                media.statusCallback(Media.MEDIA_MICROPHONE_ACCESS_REPORT, value);
                 break;
             default :
                 if (console.error) {
