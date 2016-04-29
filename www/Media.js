@@ -83,6 +83,10 @@ Media.get = function(id) {
     return mediaObjects[id];
 };
 
+Media.prototype.requestMicrophoneAccess = function() {
+    exec(null, this.errorCallback, "Media", "requestMicrophoneAccess", [this.id]);
+};
+
 /**
  * Start or resume playing audio file.
  */
