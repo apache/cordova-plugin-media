@@ -72,7 +72,7 @@
     }
 }
 
-- (void)requestMicrophoneAccess: (CDVInvokedUrlCommand*)command {
+- (void)requestMicAccess: (CDVInvokedUrlCommand*)command {
     [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
         
         NSString* callbackId = command.callbackId;

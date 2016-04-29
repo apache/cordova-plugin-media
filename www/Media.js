@@ -84,7 +84,7 @@ Media.get = function(id) {
 };
 
 Media.prototype.requestMicrophoneAccess = function() {
-    exec(null, this.errorCallback, "Media", "requestMicrophoneAccess", [this.id]);
+    exec(null, this.errorCallback, "Media", "requestMicAccess", [this.id]);
 };
 
 /**
