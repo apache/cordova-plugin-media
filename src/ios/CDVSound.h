@@ -101,7 +101,7 @@ typedef NSUInteger CDVMediaMsg;
 @property (nonatomic, strong) NSTimer* meterTimer;
 @property (nonatomic, assign) BOOL isMeteringEnabled;
 
-- (void)requestMicAccess:(CDVInvokedUrlCommand*) command;
+- (void)requestMicAccess:(CDVInvokedUrlCommand*)command;
 - (void)startPlayingAudio:(CDVInvokedUrlCommand*)command;
 - (void)pausePlayingAudio:(CDVInvokedUrlCommand*)command;
 - (void)stopPlayingAudio:(CDVInvokedUrlCommand*)command;

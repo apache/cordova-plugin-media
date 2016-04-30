@@ -83,10 +83,6 @@ Media.get = function(id) {
     return mediaObjects[id];
 };
 
-Media.prototype.requestMicrophoneAccess = function() {
-    exec(null, this.errorCallback, "Media", "requestMicAccess", [this.id]);
-};
-
 /**
  * Start or resume playing audio file.
  */
@@ -179,6 +175,13 @@ Media.prototype.setRate = function(rate) {
     } else {
         console.warn('media.setRate method is currently not supported for', cordova.platformId, 'platform.');
     }
+};
+
+/**
+ * Force a microphone request event, rather than wait for the first audio recording to do so.
+ */
+Media.prototype.requestMicrophoneAccess = function() {
+    exec(null, this.errorCallback, "Media", "requestMicAccess", [this.id]);
 };
 
 

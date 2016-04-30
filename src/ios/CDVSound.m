@@ -72,7 +72,7 @@
     }
 }
 
-- (void)requestMicAccess: (CDVInvokedUrlCommand*)command {
+- (void)requestMicAccess:(CDVInvokedUrlCommand*)command {
     [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
         
         NSString* callbackId = command.callbackId;
@@ -84,14 +84,14 @@
             NSLog(@"Permission granted");
             
             result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:YES];
-            jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%s);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_MICROPHONE_ACCESS, granted ? "true" : "false"];
+            jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%s);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_MICROPHONE_ACCESS, (granted ? "true" : "false")];
             
         }
         else {
             NSLog(@"Permission denied");
             
             result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:NO];
-            jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%s);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_MICROPHONE_ACCESS, granted ? "true" : "false"];
+            jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%s);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_MICROPHONE_ACCESS, (granted ? "true" : "false")];
             
         }
         
