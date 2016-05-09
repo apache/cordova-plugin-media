@@ -489,6 +489,7 @@
 }
 
 - (void)getDurationAudio:(CDVInvokedUrlCommand*)command {
+    NSLog(@"iOS: Requesting audio file duration");
     NSString* callbackId = command.callbackId;
     NSString* mediaId = [command argumentAtIndex:0];
 
@@ -496,6 +497,7 @@
     CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
     double duration = -1;
 
+    NSLog(@"iOS: audioFile (nil=%s) audioFile.player (nil=%s)", (audioFile = nil)?"true":"false", (audioFile.player = nil)?"true":"false");
     if ((audioFile != nil) && (audioFile.player != nil)) {
         duration = audioFile.player.duration;
     }
