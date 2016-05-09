@@ -164,7 +164,9 @@
         NSString* jsString = nil;
 
         CDVAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:YES forRecording:NO];
-        
+    
+        NSLog(@"iOS: startPlayingAudio: got audioFile (nil = %s)", (audioFile == nil ? "true":"false"));
+    
         if ((audioFile != nil) && (audioFile.resourceURL != nil)) {
             
             if (audioFile.player == nil) {
