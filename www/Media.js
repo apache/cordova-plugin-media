@@ -121,10 +121,10 @@ Media.prototype.pause = function() {
  * Get duration of an audio file.
  * The duration is only set for audio that is playing, paused or stopped.
  *
- * @return      duration or -1 if not known.
+ * @return  duration or -1 if not known.
  */
 Media.prototype.getDuration = function() {
-    return this._duration;
+    exec(null, this.errorCallback, "Media", "getDurationAudio", [this.id]);
 };
 
 /**

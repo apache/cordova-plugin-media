@@ -494,7 +494,7 @@
 
 #pragma unused(mediaId)
     CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
-    double duration = 0;
+    double duration = -1;
 
     if ((audioFile != nil) && (audioFile.player != nil)) {
         duration = audioFile.player.duration;
