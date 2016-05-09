@@ -51,6 +51,7 @@ var Media = function(src, successCallback, errorCallback, statusCallback, meteri
     isMeteringEnabled = meteringEnabled;
     this._duration = -1;
     this._position = -1;
+    this._micAccess = false;
 
     console.log('JS: Media plugin: Creating Media object: meteringEnabled: ' + meteringEnabled);
     console.log('JS: Media plugin: Creating Media object: isMeteringEnabled: ' + isMeteringEnabled);
@@ -210,7 +211,7 @@ Media.onStatus = function(id, msgType, value) {
                 }
                 break;
             case Media.MEDIA_DURATION :
-                media._duration = value;
+                media._duration = Number(value);
                 media.statusCallback(Media.MEDIA_DURATION_REPORT, media._duration);
                 break;
             case Media.MEDIA_ERROR :
