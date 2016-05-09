@@ -192,46 +192,36 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         int size = this.tempFiles.size();
         Log.d(LOG_TAG, "size = " + size);
 
-        // only one file so just copy it
-        if (size == 1) {
-            String logMsg = "renaming " + this.tempFile + " to " + file;
-            Log.d(LOG_TAG, logMsg);
-            File f = new File(this.tempFile);
-            if (!f.renameTo(new File(file))) Log.e(LOG_TAG, "FAILED " + logMsg);
-        }
-        // more than one file so the user must have pause recording. We'll need to concat files.
-        else {
-          FileOutputStream outputStream = null;
-          try {
-              outputStream = new FileOutputStream(new File(file));
-              FileInputStream inputStream = null;
-              File inputFile = null;
-              for (int i = 0; i < size; i++) {
-                  try {
-                      inputFile = new File(this.tempFiles.get(i));
-                      inputStream = new FileInputStream(inputFile);
-                      copy(inputStream, outputStream, (i>0));
-                  } catch(Exception e) {
-                      Log.e(LOG_TAG, e.getLocalizedMessage(), e);
-                  } finally {
-                      if (inputStream != null) try {
-                          inputStream.close();
-                          inputFile.delete();
-                          inputFile = null;
-                      } catch (Exception e) {
-                          Log.e(LOG_TAG, e.getLocalizedMessage(), e);
-                      }
-                  }
-              }
-          } catch(Exception e) {
-              e.printStackTrace();
-          } finally {
-              if (outputStream != null) try {
-                  outputStream.close();
-              } catch (Exception e) {
-                  Log.e(LOG_TAG, e.getLocalizedMessage(), e);
-              }
-          }
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(new File(file));
+            FileInputStream inputStream = null;
+            File inputFile = null;
+            for (int i = 0; i < size; i++) {
+                try {
+                    inputFile = new File(this.tempFiles.get(i));
+                    inputStream = new FileInputStream(inputFile);
+                    copy(inputStream, outputStream, (i>0));
+                } catch(Exception e) {
+                    Log.e(LOG_TAG, e.getLocalizedMessage(), e);
+                } finally {
+                    if (inputStream != null) try {
+                        inputStream.close();
+                        inputFile.delete();
+                        inputFile = null;
+                    } catch (Exception e) {
+                        Log.e(LOG_TAG, e.getLocalizedMessage(), e);
+                    }
+                }
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (outputStream != null) try {
+                outputStream.close();
+            } catch (Exception e) {
+                Log.e(LOG_TAG, e.getLocalizedMessage(), e);
+            }
         }
     }
 
