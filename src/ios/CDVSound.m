@@ -199,7 +199,7 @@
                 if (!bError) {
                     NSLog(@"iOS: Playing audio sample '%@'", audioFile.resourcePath);
                     
-                    double position = 0;
+                    //double position = 0;
                     
                     if (avPlayer.currentItem && avPlayer.currentItem.asset) {
                         CMTime time = avPlayer.currentItem.asset.duration;
@@ -237,10 +237,10 @@
 
                         NSLog(@"iOS: Playing audio from audioFile.player");
                         [audioFile.player play];
-                        position = round(audioFile.player.duration * 1000) / 1000;
+                        //position = round(audioFile.player.duration * 1000) / 1000;
                     }
                     
-                    jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);\n%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_DURATION, position, @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_START];
+                    jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_START];
 
                     [self.commandDelegate evalJs:jsString];
                 }
@@ -489,6 +489,23 @@
     CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:position];
     
     NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_POSITION, position];
+    [self.commandDelegate evalJs:jsString];
+    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+}
+
+- (void)getDurationAudio:(CDVInvokedUrlCommand*)command {
+    NSString* callbackId = command.callbackId;
+    NSString* mediaId = [command argumentAtIndex:0];
+
+#pragma unused(mediaId)
+    CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
+    double duration = 0;
+
+    if ((audioFile != nil) && (audioFile.player != nil)) {
+        duration = audioFile.player.duration;
+    }
+    
+    NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_DURATION, duration];
     [self.commandDelegate evalJs:jsString];
     [self.commandDelegate sendPluginResult:result callbackId:callbackId];
 }
