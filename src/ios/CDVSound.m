@@ -200,17 +200,16 @@
                 
                 if (avPlayer.currentItem && avPlayer.currentItem.asset) {
 
-                    CMTime time = avPlayer.currentItem.asset.duration;
-                    self.currDuration = (double)CMTimeGetSeconds(time);
-                    
                     if (audioFile.rate != nil){
                         float customRate = [audioFile.rate floatValue];
                         NSLog(@"iOS: Setting AVPlayer custom rate");
                         [avPlayer setRate:customRate];
                     }
                     
-                    NSLog(@"iOS: Playing stream with AVPlayer & custom rate");
                     [avPlayer play];
+                    CMTime time = avPlayer.currentItem.asset.duration;
+                    self.currDuration = (double)CMTimeGetSeconds(time);
+                    NSLog(@"iOS: Playing stream with AVPlayer, custom rate and duration: %f", self.currDuration);
                     
                 } else {
 
@@ -233,9 +232,9 @@
                         audioFile.player.rate = [audioFile.rate floatValue];
                     }
 
-                    NSLog(@"iOS: Playing audio from audioFile.player");
                     [audioFile.player play];
                     self.currDuration = audioFile.player.duration;
+                    NSLog(@"iOS: Playing audio from audioFile.player with duration: %f", self.currDuration);
                 }
                 
                 jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_START];
