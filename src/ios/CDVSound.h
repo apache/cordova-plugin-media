@@ -100,6 +100,7 @@ typedef NSUInteger CDVMediaMsg;
 @property (nonatomic, strong) NSString* currMediaId;
 @property (nonatomic, strong) NSTimer* meterTimer;
 @property (nonatomic, assign) BOOL isMeteringEnabled;
+@property (nonatomic, assign) double currDuration;
 
 - (void)requestMicAccess:(CDVInvokedUrlCommand*)command;
 - (void)startPlayingAudio:(CDVInvokedUrlCommand*)command;
