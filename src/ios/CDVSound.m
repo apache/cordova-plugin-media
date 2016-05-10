@@ -27,7 +27,7 @@
 
 @implementation CDVSound
 
-@synthesize soundCache, avSession, currMediaId, meterTimer, isMeteringEnabled;
+@synthesize soundCache, avSession, currMediaId, currDuration, meterTimer, isMeteringEnabled;
 
 
 - (void)create:(CDVInvokedUrlCommand*)command {
@@ -493,8 +493,8 @@
 
 #pragma unused(mediaId)
     CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
-    double duration = -1;
-
+//    double duration = -1;
+//
 //    NSLog(@"iOS: audioFile (nil=%s) audioFile.player (nil=%s)", (audioFile = nil)?"true":"false", (audioFile.player = nil)?"true":"false");
 //    if ((audioFile != nil) && (audioFile.player != nil)) {
 //        duration = audioFile.player.duration;
