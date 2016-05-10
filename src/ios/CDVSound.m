@@ -200,7 +200,7 @@
                 
                 if (avPlayer.currentItem && avPlayer.currentItem.asset) {
 
-                    currDuration = avPlayer.currentItem.asset.duration;
+                    self.currDuration = avPlayer.currentItem.asset.duration;
                     
                     if (audioFile.rate != nil){
                         float customRate = [audioFile.rate floatValue];
@@ -234,7 +234,7 @@
 
                     NSLog(@"iOS: Playing audio from audioFile.player");
                     [audioFile.player play];
-                    currDuration = audioFile.player.duration;
+                    self.currDuration = audioFile.player.duration;
                 }
                 
                 jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_START];
@@ -502,7 +502,7 @@
 //    
 //    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:duration];
 
-    CDVPluginResult* resulte = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble: currDuration];
+    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble: self.currDuration];
     
     NSString* jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_DURATION, duration];
     [self.commandDelegate evalJs:jsString];
