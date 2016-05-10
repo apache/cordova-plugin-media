@@ -200,7 +200,8 @@
                 
                 if (avPlayer.currentItem && avPlayer.currentItem.asset) {
 
-                    self.currDuration = avPlayer.currentItem.asset.duration;
+                    CMTime time = avPlayer.currentItem.asset.duration;
+                    self.currDuration = (double)CMTimeGetSeconds(time);
                     
                     if (audioFile.rate != nil){
                         float customRate = [audioFile.rate floatValue];
