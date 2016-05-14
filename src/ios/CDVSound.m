@@ -889,7 +889,7 @@
     // Will be called when AVPlayer finishes playing playerItem
     NSString* mediaId = self.currMediaId;
     NSString* jsString = nil;
-    jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_STOP];
+    jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_PLAY_COMPLETE];
 
     if (self.avSession) {
         [self.avSession setActive:NO error:nil];
