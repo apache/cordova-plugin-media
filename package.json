@@ -1,40 +1,25 @@
 {
   "name": "cordova-plugin-media",
-  "version": "2.2.1-dev",
-  "description": "Cordova Media Plugin",
+  "version": "0.9",
+  "description": "Cordova Audio Monitoring, Recording and Playback Plugin",
   "cordova": {
-    "id": "cordova-plugin-media",
+    "id": "cordova-plugin-audio-mrp",
     "platforms": [
-      "android",
-      "amazon-fireos",
-      "ubuntu",
-      "ios",
-      "blackberry10",
-      "wp7",
-      "wp8",
-      "windows8",
-      "windows",
-      "tizen"
+      "ios"
     ]
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/apache/cordova-plugin-media"
+    "url": "https://github.com/fedhat/cordova-plugin-audio-mrp"
   },
   "keywords": [
     "cordova",
     "media",
-    "ecosystem:cordova",
-    "cordova-android",
-    "cordova-amazon-fireos",
-    "cordova-ubuntu",
-    "cordova-ios",
-    "cordova-blackberry10",
-    "cordova-wp7",
-    "cordova-wp8",
-    "cordova-windows8",
-    "cordova-windows",
-    "cordova-tizen"
+    "audio",
+    "recording",
+    "playback",
+    "monitoring",
+    "cordova-ios"
   ],
   "scripts": {
     "test": "npm run jshint",

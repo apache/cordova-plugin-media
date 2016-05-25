@@ -40,8 +40,8 @@ var isMeteringEnabled = false;
  *                                  statusCallback(int statusCode, value) - OPTIONAL
  * @param meteringEnabled       The whether or not to turn on audio level metering for recording or playback. - OPTIONAL
  */
-var Media = function(src, successCallback, errorCallback, statusCallback, meteringEnabled) {
-    argscheck.checkArgs('sFFF', 'Media', arguments);
+var AudioMRP = function(src, successCallback, errorCallback, statusCallback, meteringEnabled) {
+    argscheck.checkArgs('sFFF', 'AudioMRP', arguments);
     this.id = utils.createUUID();
     mediaObjects[this.id] = this;
     this.src = src;
@@ -52,70 +52,69 @@ var Media = function(src, successCallback, errorCallback, statusCallback, meteri
     this._duration = -1;
     this._position = -1;
     this._micAccess = false;
-
-    console.log('JS: Media plugin: Creating Media object: meteringEnabled: ' + meteringEnabled);
-    console.log('JS: Media plugin: Creating Media object: isMeteringEnabled: ' + isMeteringEnabled);
-    exec(this.successCallback, this.errorCallback, "Media", "create", [this.id, this.src, isMeteringEnabled]);
+    
+    console.log('JS: AudioMRP plugin: Creating AudioMRP object: isMeteringEnabled: ' + isMeteringEnabled);
+    exec(this.successCallback, this.errorCallback, "AudioMRP", "create", [this.id, this.src, isMeteringEnabled]);
 };
 
-// Media messages -- These are used internally by the plugin
-Media.MEDIA_STATE = 1;
-Media.MEDIA_DURATION = 2;
-Media.MEDIA_POSITION = 4;
-Media.MEDIA_AUDIO_LEVEL = 6;
-Media.MEDIA_MICROPHONE_ACCESS = 7;
-Media.MEDIA_ERROR = 99;
+// AudioMRP messages -- These are used internally by the plugin
+AudioMRP.MEDIA_STATE = 1;
+AudioMRP.MEDIA_DURATION = 2;
+AudioMRP.MEDIA_POSITION = 4;
+AudioMRP.MEDIA_AUDIO_LEVEL = 6;
+AudioMRP.MEDIA_MICROPHONE_ACCESS = 7;
+AudioMRP.MEDIA_ERROR = 99;
 
-// Media states -- these are reported to whatever is using the Media plugin
-Media.MEDIA_NONE = 0;
-Media.MEDIA_RECORD_START = 8;
-Media.MEDIA_RECORD_STOP = 10;
-Media.MEDIA_PLAY_START = 12;
-Media.MEDIA_PLAY_PAUSE = 14;
-Media.MEDIA_PLAY_STOP = 16;
-Media.MEDIA_PLAY_COMPLETE = 18;
-Media.MEDIA_DURATION_REPORT = 20;
-Media.MEDIA_POSITION_REPORT = 22;
-Media.MEDIA_AUDIO_LEVEL_REPORT = 24;
-Media.MEDIA_MICROPHONE_ACCESS_REPORT = 26;
+// AudioMRP states -- these are reported to whatever is using the AudioMRP plugin
+AudioMRP.MEDIA_NONE = 0;
+AudioMRP.MEDIA_RECORD_START = 8;
+AudioMRP.MEDIA_RECORD_STOP = 10;
+AudioMRP.MEDIA_PLAY_START = 12;
+AudioMRP.MEDIA_PLAY_PAUSE = 14;
+AudioMRP.MEDIA_PLAY_STOP = 16;
+AudioMRP.MEDIA_PLAY_COMPLETE = 18;
+AudioMRP.MEDIA_DURATION_REPORT = 20;
+AudioMRP.MEDIA_POSITION_REPORT = 22;
+AudioMRP.MEDIA_AUDIO_LEVEL_REPORT = 24;
+AudioMRP.MEDIA_MICROPHONE_ACCESS_REPORT = 26;
 
 // "static" function to return existing objs.
-Media.get = function(id) {
+AudioMRP.get = function(id) {
     return mediaObjects[id];
 };
 
 /**
  * Start or resume playing audio file.
  */
-Media.prototype.play = function(options) {
-    exec(null, null, "Media", "startPlayingAudio", [this.id, this.src, options]);
+AudioMRP.prototype.play = function(options) {
+    exec(null, null, "AudioMRP", "startPlayingAudio", [this.id, this.src, options]);
 };
 
 /**
  * Stop playing audio file.
  */
-Media.prototype.stop = function() {
+AudioMRP.prototype.stop = function() {
     var me = this;
     exec(function() {
         me._position = 0;
-    }, this.errorCallback, "Media", "stopPlayingAudio", [this.id]);
+    }, this.errorCallback, "AudioMRP", "stopPlayingAudio", [this.id]);
 };
 
 /**
  * Seek or jump to a new time in the track..
  */
-Media.prototype.seekTo = function(milliseconds) {
+AudioMRP.prototype.seekTo = function(milliseconds) {
     var me = this;
     exec(function(p) {
         me._position = p;
-    }, this.errorCallback, "Media", "seekToAudio", [this.id, milliseconds]);
+    }, this.errorCallback, "AudioMRP", "seekToAudio", [this.id, milliseconds]);
 };
 
 /**
  * Pause playing audio file.
  */
-Media.prototype.pause = function() {
-    exec(null, this.errorCallback, "Media", "pausePlayingAudio", [this.id]);
+AudioMRP.prototype.pause = function() {
+    exec(null, this.errorCallback, "AudioMRP", "pausePlayingAudio", [this.id]);
 };
 
 /**
@@ -124,55 +123,55 @@ Media.prototype.pause = function() {
  *
  * @return  duration or -1 if not known.
  */
-Media.prototype.getDuration = function() {
-    exec(null, this.errorCallback, "Media", "getDurationAudio", [this.id]);
+AudioMRP.prototype.getDuration = function() {
+    exec(null, this.errorCallback, "AudioMRP", "getDurationAudio", [this.id]);
 };
 
 /**
  * Get position of audio.
  */
-Media.prototype.getCurrentPosition = function(success, fail) {
+AudioMRP.prototype.getCurrentPosition = function(success, fail) {
     var me = this;
     exec(function(p) {
         me._position = p;
         success(p);
-    }, fail, "Media", "getCurrentPositionAudio", [this.id]);
+    }, fail, "AudioMRP", "getCurrentPositionAudio", [this.id]);
 };
 
 /**
  * Start recording audio file.
  */
-Media.prototype.startRecord = function() {
-    exec(null, this.errorCallback, "Media", "startRecordingAudio", [this.id, this.src]);
+AudioMRP.prototype.startRecord = function() {
+    exec(null, this.errorCallback, "AudioMRP", "startRecordingAudio", [this.id, this.src]);
 };
 
 /**
  * Stop recording audio file.
  */
-Media.prototype.stopRecord = function() {
-    exec(null, this.errorCallback, "Media", "stopRecordingAudio", [this.id]);
+AudioMRP.prototype.stopRecord = function() {
+    exec(null, this.errorCallback, "AudioMRP", "stopRecordingAudio", [this.id]);
 };
 
 /**
  * Release the resources.
  */
-Media.prototype.release = function() {
-    exec(null, this.errorCallback, "Media", "release", [this.id]);
+AudioMRP.prototype.release = function() {
+    exec(null, this.errorCallback, "AudioMRP", "release", [this.id]);
 };
 
 /**
  * Adjust the volume.
  */
-Media.prototype.setVolume = function(volume) {
-    exec(null, null, "Media", "setVolume", [this.id, volume]);
+AudioMRP.prototype.setVolume = function(volume) {
+    exec(null, null, "AudioMRP", "setVolume", [this.id, volume]);
 };
 
 /**
  * Adjust the playback rate.
  */
-Media.prototype.setRate = function(rate) {
+AudioMRP.prototype.setRate = function(rate) {
     if (cordova.platformId === 'ios'){
-        exec(null, null, "Media", "setRate", [this.id, rate]);
+        exec(null, null, "AudioMRP", "setRate", [this.id, rate]);
     } else {
         console.warn('media.setRate method is currently not supported for', cordova.platformId, 'platform.');
     }
@@ -181,8 +180,8 @@ Media.prototype.setRate = function(rate) {
 /**
  * Force a microphone request event, rather than wait for the first audio recording to do so.
  */
-Media.prototype.requestMicrophoneAccess = function() {
-    exec(null, this.errorCallback, "Media", "requestMicAccess", [this.id]);
+AudioMRP.prototype.requestMicrophoneAccess = function() {
+    exec(null, this.errorCallback, "AudioMRP", "requestMicAccess", [this.id]);
 };
 
 
@@ -194,55 +193,55 @@ Media.prototype.requestMicrophoneAccess = function() {
  * @param msgType       The 'type' of update this is
  * @param value         Use of value is determined by the msgType
  */
-Media.onStatus = function(id, msgType, value) {
+AudioMRP.onStatus = function(id, msgType, value) {
 
     var media = mediaObjects[id];
 
     if (media) {
         switch(msgType) {
-            case Media.MEDIA_STATE :
+            case AudioMRP.MEDIA_STATE :
                 if (media.statusCallback) {
                     media.statusCallback(value);
                 }
                 break;
-            case Media.MEDIA_AUDIO_LEVEL :
+            case AudioMRP.MEDIA_AUDIO_LEVEL :
                 if (isMeteringEnabled) {
-                    media.statusCallback(Media.MEDIA_AUDIO_LEVEL_REPORT, value);
+                    media.statusCallback(AudioMRP.MEDIA_AUDIO_LEVEL_REPORT, value);
                 }
                 break;
-            case Media.MEDIA_DURATION :
+            case AudioMRP.MEDIA_DURATION :
                 media._duration = Number(value);
-                media.statusCallback(Media.MEDIA_DURATION_REPORT, media._duration);
+                media.statusCallback(AudioMRP.MEDIA_DURATION_REPORT, media._duration);
                 break;
-            case Media.MEDIA_ERROR :
+            case AudioMRP.MEDIA_ERROR :
                 if (media.errorCallback) {
                     media.errorCallback(value);
                 }
                 break;
-            case Media.MEDIA_POSITION :
+            case AudioMRP.MEDIA_POSITION :
                 media._position = Number(value);
-                media.statusCallback(Media.MEDIA_POSITION_REPORT, media._position);
+                media.statusCallback(AudioMRP.MEDIA_POSITION_REPORT, media._position);
                 break;
-            case Media.MEDIA_MICROPHONE_ACCESS :
-                media.statusCallback(Media.MEDIA_MICROPHONE_ACCESS_REPORT, value);
+            case AudioMRP.MEDIA_MICROPHONE_ACCESS :
+                media.statusCallback(AudioMRP.MEDIA_MICROPHONE_ACCESS_REPORT, value);
                 break;
             default :
                 if (console.error) {
-                    console.error("Unhandled Media.onStatus :: " + msgType);
+                    console.error("Unhandled AudioMRP.onStatus :: " + msgType);
                 }
                 break;
         }
     } else if (console.error) {
-        console.error("Received Media.onStatus callback for unknown media :: " + id);
+        console.error("Received AudioMRP.onStatus callback for unknown media :: " + id);
     }
 
 };
 
-module.exports = Media;
+module.exports = AudioMRP;
 
 function onMessageFromNative(msg) {
     if (msg.action == 'status') {
-        Media.onStatus(msg.status.id, msg.status.msgType, msg.status.value);
+        AudioMRP.onStatus(msg.status.id, msg.status.msgType, msg.status.value);
     } else {
         throw new Error('Unknown media action' + msg.action);
     }
