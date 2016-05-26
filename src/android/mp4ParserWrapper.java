@@ -34,16 +34,31 @@ public class mp4ParserWrapper {
     public static boolean append(String mainFileName, String anotherFileName) {
         boolean rvalue = false;
         try {
-            File targetFile = new File(mainFileName);
-            File anotherFile = new File(anotherFileName);
+            final File targetFile = new File(mainFileName);
+            final File anotherFile = new File(anotherFileName);
             if (targetFile.exists() && targetFile.length() > 0) {
+                // the target file already exists, just append the new content
                 String tmpFileName = mainFileName + ".tmp";
                 append(mainFileName, anotherFileName, tmpFileName);
                 copyFile(tmpFileName, mainFileName);
                 rvalue = anotherFile.delete() && new File(tmpFileName).delete();
-            } else if (targetFile.getParentFile().mkdirs() && targetFile.createNewFile()) {
-                copyFile(anotherFileName, mainFileName);
-                rvalue = anotherFile.delete();
+            } else {
+                // create the target file
+                final File parent = targetFile.getParentFile();
+                if (!parent.exists() && !parent.mkdirs()) {
+                    // impossible to create the directory folder
+                    Log.e(TAG, "Impossible to create the directory");
+                    throw new IllegalArgumentException("Impossible to create the directory");
+                } else {
+                    // the target direct
+                    if (!targetFile.createNewFile()) {
+                        Log.e(TAG, "Impossible to create the file");
+                        throw new IllegalArgumentException("Impossible to create the file");
+                    } else {
+                        copyFile(anotherFileName, mainFileName);
+                        rvalue = anotherFile.delete();
+                    }
+                }
             }
         } catch (IOException e) {
             Log.e(TAG, "Append two mp4 files exception", e);
@@ -51,14 +66,28 @@ public class mp4ParserWrapper {
         return rvalue;
     }
 
-
+    /**
+     * Copy one file inside another one.
+     * @param from
+     * @param destination
+     * @throws IOException
+     */
     private static void copyFile(final String from, final String destination)
             throws IOException {
-        FileInputStream in = new FileInputStream(from);
-        FileOutputStream out = new FileOutputStream(destination);
-        copy(in, out);
-        in.close();
-        out.close();
+        FileInputStream in = null;
+        FileOutputStream out = null;
+        try {
+            in = new FileInputStream(from);
+            out = new FileOutputStream(destination);
+            copy(in, out);
+        } finally {
+            if (in != null) {
+                try {in.close();}  catch(IOException e) {};
+            }
+            if (out != null) {
+                try {out.close();} catch(IOException e) {};
+            }
+        }
     }
 
     private static void copy(FileInputStream in, FileOutputStream out) throws IOException {
@@ -87,10 +116,16 @@ public class mp4ParserWrapper {
 
         final Container container = new DefaultMp4Builder().build(finalMovie);
 
-        final FileOutputStream fos = new FileOutputStream(new File(String.format(newFile)));
-        final WritableByteChannel bb = Channels.newChannel(fos);
-        container.writeContainer(bb);
-        fos.close();
+        FileOutputStream fos = null;
+        try {
+            fos =  new FileOutputStream(new File(String.format(newFile)));
+            final WritableByteChannel bb = Channels.newChannel(fos);
+            container.writeContainer(bb);
+        } finally {
+            if (fos != null) {
+                try {fos.close();} catch (Exception e) {};
+            }
+        }
     }
 
 }
