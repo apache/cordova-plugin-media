@@ -49,9 +49,15 @@ for significantly better compression.
  Resolves playback to earpiece from HTML5 audio tag if the media play method is not called prior to the app using HTML5 audio tag for playback 
  */
 
+ /*06/07/2016: resolve compile error with Cordova 4.x
+ Remove: #import <Cordova/NSArray+Comparisons.h>
+ Add: #import <AVFoundation/AVFoundation.h>
+ */
+
 #import "CDVSound.h"
 #import "CDVFile.h"
-#import <Cordova/NSArray+Comparisons.h>
+#import <AVFoundation/AVFoundation.h>
+
 
 #define DOCUMENTS_SCHEME_PREFIX @"documents://"
 #define HTTP_SCHEME_PREFIX @"http://"
