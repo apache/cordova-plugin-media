@@ -309,7 +309,9 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      */
     public void seekToPlaying(int milliseconds) {
         if (this.readyPlayer(this.audioFile)) {
-            this.player.seekTo(milliseconds);
+            if (milliseconds > 0) {
+                this.player.seekTo(milliseconds);
+            }
             Log.d(LOG_TAG, "Send a onStatus update for the new seek");
             sendStatusChange(MEDIA_POSITION, null, (milliseconds / 1000.0f));
         }
