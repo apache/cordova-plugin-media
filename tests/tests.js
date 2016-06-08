@@ -402,6 +402,34 @@ exports.defineAutoTests = function () {
             media1.setRate(2);
             media1.play();
         }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
+
+        it("media.spec.25 should be able to play an audio stream", function (done) {
+            // no audio hardware available
+            if (!isAudioSupported) {
+                pending();
+            }
+
+            var mediaFile = 'http://209.73.138.20:80',
+                successCallback,
+                context = this,
+                flag = true,
+                statusChange = function (statusCode) {
+                    console.log("status code: " + statusCode);
+                    if (statusCode == Media.MEDIA_RUNNING && flag) {
+                        //flag variable used to ensure an extra security statement to ensure that the callback is processed only once,
+                        //in case for some reason the statusChange callback is reached more than one time with the same status code.
+                        //Some information about this kind of behavior it can be found at JIRA: CB-7099
+                        flag = false;
+                        expect(true).toBe(true);
+                        media1.stop();
+                        media1.release();
+                        done();
+                    }
+                };
+
+            var media1 = new Media(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange); // jshint ignore:line
+            media1.play();
+        }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
     });
 };
 
