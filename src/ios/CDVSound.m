@@ -180,7 +180,7 @@
     return audioFile;
 }
 
-// returns whether or not audioSession is available - creates it if necessary
+// returns whether or not audioSession is available - retrieve the instance (app singleton) if necessary
 - (BOOL)hasAudioSession
 {
     BOOL bSession = YES;
@@ -191,7 +191,7 @@
         self.avSession = [AVAudioSession sharedInstance];
         if (error) {
             // is not fatal if can't get AVAudioSession , just log the error
-            NSLog(@"error creating audio session: %@", [[error userInfo] description]);
+            NSLog(@"error retrieving audio session: %@", [[error userInfo] description]);
             self.avSession = nil;
             bSession = NO;
         }
@@ -447,9 +447,6 @@
     if (playerError != nil) {
         NSLog(@"Failed to initialize AVAudioPlayer: %@\n", [playerError localizedDescription]);
         audioFile.player = nil;
-        if (self.avSession) {
-            [self.avSession setActive:NO error:nil];
-        }
         bError = YES;
     } else {
         audioFile.player.mediaId = mediaId;
@@ -586,7 +583,6 @@
                 avPlayer = nil;
             }
             if (self.avSession) {
-                [self.avSession setActive:NO error:nil];
                 self.avSession = nil;
             }
             [[self soundCache] removeObjectForKey:mediaId];
@@ -685,9 +681,6 @@
                     errorMsg = @"Failed to start recording using AVAudioRecorder";
                 }
                 audioFile.recorder = nil;
-                if (weakSelf.avSession) {
-                    [weakSelf.avSession setActive:NO error:nil];
-                }
                 jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_ERROR, [weakSelf createMediaErrorWithCode:MEDIA_ERR_ABORTED message:errorMsg]];
                 [weakSelf.commandDelegate evalJs:jsString];
             }
@@ -705,9 +698,6 @@
                     NSString* msg = @"Error creating audio session, microphone permission denied.";
                     NSLog(@"%@", msg);
                     audioFile.recorder = nil;
-                    if (weakSelf.avSession) {
-                        [weakSelf.avSession setActive:NO error:nil];
-                    }
                     jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_ABORTED message:msg]];
                     [weakSelf.commandDelegate evalJs:jsString];
                 }
@@ -759,9 +749,6 @@
         // jsString = [NSString stringWithFormat: @"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_ERROR, MEDIA_ERR_DECODE];
         jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_DECODE message:nil]];
     }
-    if (self.avSession) {
-        [self.avSession setActive:NO error:nil];
-    }
     [self.commandDelegate evalJs:jsString];
 }
 
@@ -783,9 +770,6 @@
         // jsString = [NSString stringWithFormat: @"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_ERROR, MEDIA_ERR_DECODE];
         jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%@);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_ERROR, [self createMediaErrorWithCode:MEDIA_ERR_DECODE message:nil]];
     }
-    if (self.avSession) {
-        [self.avSession setActive:NO error:nil];
-    }
     [self.commandDelegate evalJs:jsString];
 }
 
@@ -795,9 +779,6 @@
     NSString* jsString = nil;
     jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_STOPPED];
 
-    if (self.avSession) {
-        [self.avSession setActive:NO error:nil];
-    }
     [self.commandDelegate evalJs:jsString];
 }
 
