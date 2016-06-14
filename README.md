@@ -135,6 +135,9 @@ The following constants are reported as the only parameter to the
 
 - __duration__: The duration of the media, in seconds.
 
+### Class methods
+
+- `Media.shouldReleaseOnMemoryWarning`: Define if the plugin should automatically release its resources when a memory warnings is received (iOS).
 
 ## media.getCurrentAmplitude
 
@@ -670,3 +673,25 @@ function when an error occurs.
 - `MediaError.MEDIA_ERR_NETWORK`        = 2
 - `MediaError.MEDIA_ERR_DECODE`         = 3
 - `MediaError.MEDIA_ERR_NONE_SUPPORTED` = 4
+
+## Media.shouldReleaseOnMemoryWarning
+
+Static method to define if the plugin should automatically stop all sounds and release all possible resources when a memory warning is received. Default value is `true`.
+
+    Media.shouldReleaseOnMemoryWarning(status);
+
+### Parameters
+
+- __status__: Boolean value
+
+### Supported Platforms
+
+
+- iOS
+
+### Quick Example
+
+```js
+Media.shouldReleaseOnMemoryWarning(false);
+// Here comes custom code to handle memoryWarnings
+```
