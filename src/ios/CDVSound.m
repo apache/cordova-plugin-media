@@ -342,12 +342,13 @@
             }
             if (!bError) {
                 NSLog(@"Playing audio sample '%@'", audioFile.resourcePath);
-                double position = 0;
+                double duration = 0;
                 if (avPlayer.currentItem && avPlayer.currentItem.asset) {
                     CMTime time = avPlayer.currentItem.asset.duration;
-                    position = CMTimeGetSeconds(time);
-                    if (isnan(position)) {
-                        position = 0;
+                    duration = CMTimeGetSeconds(time);
+                    if (isnan(duration)) {
+                        NSLog(@"Duration is infifnite, setting it to -1");
+                        duration = -1;
                     }
 
                     if (audioFile.rate != nil){
@@ -355,7 +356,7 @@
                         NSLog(@"Playing stream with AVPlayer & custom rate");
                         [avPlayer setRate:customRate];
                     } else {
-                        NSLog(@"Playing stream with AVPlayer & custom rate");
+                        NSLog(@"Playing stream with AVPlayer & default rate");
                         [avPlayer play];
                     }
 
@@ -381,10 +382,10 @@
                     }
 
                     [audioFile.player play];
-                    position = round(audioFile.player.duration * 1000) / 1000;
+                    duration = round(audioFile.player.duration * 1000) / 1000;
                 }
 
-                jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);\n%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_DURATION, position, @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_RUNNING];
+                jsString = [NSString stringWithFormat:@"%@(\"%@\",%d,%.3f);\n%@(\"%@\",%d,%d);", @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_DURATION, duration, @"cordova.require('cordova-plugin-media.Media').onStatus", mediaId, MEDIA_STATE, MEDIA_RUNNING];
                 [self.commandDelegate evalJs:jsString];
             }
         }
