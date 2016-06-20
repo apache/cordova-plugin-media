@@ -18,6 +18,7 @@
 #import "CDVSound.h"
 #import "CDVFile.h"
 #import <AVFoundation/AVFoundation.h>
+#include <math.h>
 
 #define DOCUMENTS_SCHEME_PREFIX @"documents://"
 #define HTTP_SCHEME_PREFIX @"http://"
@@ -345,6 +346,9 @@
                 if (avPlayer.currentItem && avPlayer.currentItem.asset) {
                     CMTime time = avPlayer.currentItem.asset.duration;
                     position = CMTimeGetSeconds(time);
+                    if (isnan(position)) {
+                        position = 0;
+                    }
 
                     if (audioFile.rate != nil){
                         float customRate = [audioFile.rate floatValue];
