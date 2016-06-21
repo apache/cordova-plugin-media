@@ -27,8 +27,11 @@
 var ACTUAL_PLAYBACK_TEST_TIMEOUT = 2 * 60 * 1000;
 
 var isWindows = cordova.platformId == 'windows8' || cordova.platformId == 'windows';
-// detect whether audio hardware is available and enabled
-var isAudioSupported = isWindows ? Windows.Media.Devices.MediaDevice.getDefaultAudioRenderId(Windows.Media.Devices.AudioDeviceRole.default) : true;
+// Detect whether audio hardware is available and enabled. For iOS playing audio is
+// not supported on emulators w/out sound device connected to host PC but (which is
+// the case for Sauce Labs emulators - see CB-11430)
+var isAudioSupported = isWindows ? !!Windows.Media.Devices.MediaDevice.getDefaultAudioRenderId(Windows.Media.Devices.AudioDeviceRole.default) :
+    cordova.platformId === 'ios' ? !window.SAUCELABS_ENV : true;
 
 exports.defineAutoTests = function () {
     var failed = function (done, msg, context) {
@@ -371,8 +374,13 @@ exports.defineAutoTests = function () {
             if (cordova.platformId !== 'ios') {
                 expect(true).toFailWithMessage('Platform does not supported this feature');
                 pending();
-                return;
             }
+
+            // no audio hardware available
+            if (!isAudioSupported) {
+                pending();
+            }
+
             var mediaFile = 'https://cordova.apache.org/downloads/BlueZedEx.mp3',
                 successCallback,
                 context = this,
