@@ -417,7 +417,8 @@ exports.defineAutoTests = function () {
                 pending();
             }
 
-            var mediaFile = 'http://209.73.138.20:80',
+            // The link below points to an infinite mp3 stream
+            var mediaFile = 'http://c22033-l.i.core.cdn.streamfarm.net/22033mdr/live/3087mdr_figaro/ch_classic_128.mp3',
                 successCallback,
                 context = this,
                 flag = true,
