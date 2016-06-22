@@ -396,7 +396,8 @@ exports.defineAutoTests = function () {
                             media1.getCurrentPosition(function (position) {
                                 //in four seconds expect position to be between 4 & 10. Here, the values are chosen to give
                                 //a large enough buffer range for the position to fall in and are not based on any calculation.
-                                expect(position >= 4 && position < 10).toBeTruthy();
+                                expect(position).not.toBeLessThan(4);
+                                expect(position).toBeLessThan(10);
                                 media1.stop();
                                 media1.release();
                                 done();
