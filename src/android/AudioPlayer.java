@@ -102,7 +102,6 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         this.handler = handler;
         this.id = id;
         this.audioFile = file;
-        this.recorder = new MediaRecorder();
         this.tempFiles = new LinkedList<String>();
     }
 
@@ -149,6 +148,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             break;
         case NONE:
             this.audioFile = file;
+            this.recorder = new MediaRecorder();
             this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             this.recorder.setOutputFormat(MediaRecorder.OutputFormat.RAW_AMR); // THREE_GPP);
             this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB); //AMR_NB);
@@ -472,12 +472,13 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     public boolean onError(MediaPlayer player, int arg1, int arg2) {
         Log.d(LOG_TAG, "AudioPlayer.onError(" + arg1 + ", " + arg2 + ")");
 
-        // TODO: Not sure if this needs to be sent?
-        this.player.stop();
-        this.player.release();
-
+        // we don't want to send success callback
+        // so we don't call setState() here
+        this.state = STATE.MEDIA_STOPPED;
+        this.destroy();
         // Send error notification to JavaScript
         sendErrorStatus(arg1);
+
         return false;
     }
 
@@ -554,6 +555,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                 case MEDIA_NONE:
                     if (this.player == null) {
                         this.player = new MediaPlayer();
+                        this.player.setOnErrorListener(this);
                     }
                     try {
                         this.loadAudioFile(file);
@@ -576,6 +578,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                         //maybe it was recording?
                         if(this.recorder!=null && player==null) {
                             this.player = new MediaPlayer();
+                            this.player.setOnErrorListener(this);
                             this.prepareOnly = false;
 
                             try {
