@@ -709,6 +709,15 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         });
     }
 
+    //set audio volume
+    function setVolume() {
+        console.log("setVolume()");
+        var volume = document.getElementById("volumeInput").value;
+        if (media1 !== null) {
+            media1.setVolume(volume);
+        }
+    }
+
     //for forced updates of position after a successful seek
 
     function updatePosition() {
@@ -970,6 +979,24 @@ exports.defineManualTests = function (contentEl, createActionButton) {
                 row:0,
                 cell:2
             }
+        },
+         {
+            id: "setVolumeBtn",
+            content: "",
+            tag: "div",
+            position: {
+                row: 3,
+                cell: 0
+            }
+        },
+        {
+            id: "volumeInput",
+            tag: "input",
+            type: "text",
+            position: {
+                row: 3,
+                cell: 1
+            }
         }
     ],
     elementsRecord =
@@ -1022,7 +1049,7 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     div.setAttribute("align", "center");
     contentEl.appendChild(div);
     //Generate and add buttons table
-    contentEl.appendChild(generateTable('audioActions', 3, 3, elementsAudio));
+    contentEl.appendChild(generateTable('audioActions', 4, 3, elementsAudio));
     createActionButton('Play', function () {
         playAudio();
     }, 'playBtn');
@@ -1055,6 +1082,9 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     createActionButton('Seek To', function () {
         seekAudio('to');
     }, 'seekToBtn');
+    createActionButton('Set volume', function() {
+        setVolume();
+    }, 'setVolumeBtn');
     //get Special path to record if iOS || Blackberry
     if (cordova.platformId === 'ios')
         getRecordSrc();

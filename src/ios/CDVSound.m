@@ -270,6 +270,15 @@
             if (audioFile.player) {
                 audioFile.player.volume = [volume floatValue];
             }
+            else {
+                float customVolume = [volume floatValue];
+                if (customVolume >= 0.0 && customVolume <= 1.0) {
+                    [avPlayer setVolume: customVolume];
+                }
+                else {
+                    NSLog(@"The value must be within the range of 0.0 to 1.0");
+                }
+            }
             [[self soundCache] setObject:audioFile forKey:mediaId];
         }
     }
