@@ -30,11 +30,11 @@ import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
 
 import java.security.Permission;
 import java.util.ArrayList;
 
+import org.apache.cordova.LOG;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -501,7 +501,7 @@ public class AudioHandler extends CordovaPlugin {
                 message.put(action, actionData);
             }
         } catch (JSONException e) {
-            Log.e(TAG, "Failed to create event message", e);
+            LOG.e(TAG, "Failed to create event message", e);
         }
 
         PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, message);
