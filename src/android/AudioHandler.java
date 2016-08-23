@@ -396,7 +396,7 @@ public class AudioHandler extends CordovaPlugin {
             audiMgr.setRouting(AudioManager.MODE_NORMAL, AudioManager.ROUTE_EARPIECE, AudioManager.ROUTE_ALL);
         }
         else {
-             Log.e(TAG1," Unknown output device");
+             LOG.e(TAG1," Unknown output device");
         }
     }
 
@@ -445,7 +445,7 @@ public class AudioHandler extends CordovaPlugin {
                                           AudioManager.AUDIOFOCUS_GAIN);
 
         if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            Log.e(TAG2,result + " instead of " + AudioManager.AUDIOFOCUS_REQUEST_GRANTED);
+            LOG.e(TAG2,result + " instead of " + AudioManager.AUDIOFOCUS_REQUEST_GRANTED);
         }
 
     }
@@ -483,7 +483,7 @@ public class AudioHandler extends CordovaPlugin {
         if (audio != null) {
             audio.setVolume(volume);
         } else {
-          Log.e(TAG3,"Unknown Audio Player " + id);
+          LOG.e(TAG3,"Unknown Audio Player " + id);
         }
     }
 
