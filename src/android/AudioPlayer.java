@@ -523,7 +523,11 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * @param volume
      */
     public void setVolume(float volume) {
-        this.player.setVolume(volume, volume);
+        try {
+            this.player.setVolume(volume, volume);
+        } catch (NullPointerException npe) {
+            Log.e(LOG_TAG, "AudioPlayer Error: Can't set volume.");
+        }
     }
 
     /**
