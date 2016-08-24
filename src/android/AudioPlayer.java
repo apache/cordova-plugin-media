@@ -526,7 +526,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         if (this.player != null) {
             this.player.setVolume(volume, volume);
         } else {
-            Log.d(LOG_TAG, "AudioPlayer Error: Cannot set volume until the audio file is initialized.");
+            LOG.d(LOG_TAG, "AudioPlayer Error: Cannot set volume until the audio file is initialized.");
             sendErrorStatus(MEDIA_ERR_NONE_ACTIVE);
         }
     }
