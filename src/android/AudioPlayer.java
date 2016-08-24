@@ -523,7 +523,12 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * @param volume
      */
     public void setVolume(float volume) {
-        this.player.setVolume(volume, volume);
+        if (this.player != null) {
+            this.player.setVolume(volume, volume);
+        } else {
+            Log.d(LOG_TAG, "AudioPlayer Error: Cannot set volume until the audio file is initialized.");
+            sendErrorStatus(MEDIA_ERR_NONE_ACTIVE);
+        }
     }
 
     /**

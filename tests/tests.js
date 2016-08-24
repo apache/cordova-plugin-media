@@ -1,4 +1,4 @@
-﻿/*
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -25,6 +25,9 @@
 // increased timeout for actual playback to give device chance to download and play mp3 file
 // some emulators can be REALLY slow at this, so two minutes
 var ACTUAL_PLAYBACK_TEST_TIMEOUT = 2 * 60 * 1000;
+
+var WEB_MP3_FILE = 'https://cordova.apache.org/downloads/BlueZedEx.mp3';
+var WEB_MP3_STREAM = 'http://c22033-l.i.core.cdn.streamfarm.net/22033mdr/live/3087mdr_figaro/ch_classic_128.mp3';
 
 var isWindows = cordova.platformId == 'windows8' || cordova.platformId == 'windows';
 // Detect whether audio hardware is available and enabled. For iOS playing audio is
@@ -237,7 +240,7 @@ exports.defineAutoTests = function () {
                 //in case the statusChange callback is reached more than one time with the same status code.
                 //Some information about this kind of behaviour can be found at JIRA: CB-7099.
                 var context = this,
-                    mediaFile = 'https://cordova.apache.org/downloads/BlueZedEx.mp3',
+                    mediaFile = WEB_MP3_FILE,
                     successCallback = function () { },
                     statusChange = function (statusCode) {
                         if (!context.done && statusCode == Media.MEDIA_RUNNING) {
@@ -266,7 +269,7 @@ exports.defineAutoTests = function () {
                 //in case the statusChange callback is reached more than one time with the same status code.
                 //Some information about this kind of behaviour can be found at JIRA: CB-7099.
                 var context = this,
-                    mediaFile = 'https://cordova.apache.org/downloads/BlueZedEx.mp3',
+                    mediaFile = WEB_MP3_FILE,
                     successCallback = function () { },
                     statusChange = function (statusCode) {
                         if (!context.done && statusCode == Media.MEDIA_RUNNING) {
@@ -296,7 +299,7 @@ exports.defineAutoTests = function () {
                 //Some information about this kind of behaviour can be found at JIRA: CB-7099.
                 var context = this;
                 var resumed = false;
-                var mediaFile = 'https://cordova.apache.org/downloads/BlueZedEx.mp3';
+                var mediaFile = WEB_MP3_FILE;
                 var successCallback = function () { };
                 var statusChange = function (statusCode) {
                     if (context.done) return;
@@ -338,7 +341,7 @@ exports.defineAutoTests = function () {
                 //in case the statusChange callback is reached more than one time with the same status code.
                 //Some information about this kind of behaviour can be found at JIRA: CB-7099.
                 var context = this;
-                var mediaFile = 'https://cordova.apache.org/downloads/BlueZedEx.mp3';
+                var mediaFile = WEB_MP3_FILE;
                 var successCallback = function () { };
                 var statusChange = function (statusCode) {
                     if (!context.done && statusCode == Media.MEDIA_RUNNING) {
@@ -381,7 +384,7 @@ exports.defineAutoTests = function () {
                 pending();
             }
 
-            var mediaFile = 'https://cordova.apache.org/downloads/BlueZedEx.mp3',
+            var mediaFile = WEB_MP3_FILE,
                 successCallback,
                 context = this,
                 flag = true,
@@ -419,7 +422,7 @@ exports.defineAutoTests = function () {
             }
 
             // The link below points to an infinite mp3 stream
-            var mediaFile = 'http://c22033-l.i.core.cdn.streamfarm.net/22033mdr/live/3087mdr_figaro/ch_classic_128.mp3',
+            var mediaFile = WEB_MP3_STREAM,
                 successCallback,
                 context = this,
                 flag = true,
@@ -440,6 +443,28 @@ exports.defineAutoTests = function () {
             var media1 = new Media(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange); // jshint ignore:line
             media1.play();
         }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
+
+        it("media.spec.26 should not crash or throw when setting the volume right after creating the media", function () {
+            //bb10 dialog pops up, preventing tests from running
+            if (cordova.platformId === 'blackberry10') {
+                pending();
+            }
+
+            var context = this;
+            var mediaFile = WEB_MP3_FILE;
+            var media = null;
+
+            var successCallback = function () { };
+            var statusChange = function () { };
+
+            expect(function () {
+                media = new Media(mediaFile, successCallback, failed.bind(null, successCallback, 'Error creating Media object. Media file: ' + mediaFile, context), statusChange);
+                media.setVolume('0.5');
+            }).not.toThrow();
+            if (media) {
+                media.release();
+            }
+        });
     });
 };
 
@@ -454,7 +479,7 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     var media1 = null;
     var media1Timer = null;
     var audioSrc = null;
-    var defaultaudio = "https://cordova.apache.org/downloads/BlueZedEx.mp3";
+    var defaultaudio = WEB_MP3_FILE;
 
     //Play audio function
     function playAudio(url) {
