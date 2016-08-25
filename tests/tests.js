@@ -685,15 +685,14 @@ exports.defineManualTests = function (contentEl, createActionButton) {
 
     //Record audio
     function recordAudio() {
-        console.log("recordAudio()");
+        console.log("recordAudio(), recording to " + recordSrc);
         console.log(" -- media=" + mediaRec);
 
         releaseAudio();
 
         if (!mediaRec) {
-            var src = recordSrc;
-            mediaRec = new Media(src,
-                    function () {
+            mediaRec = new Media(recordSrc,
+                function () {
                     console.log("recordAudio():Audio Success");
                 },
                     function (err) {
@@ -731,22 +730,16 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         playAudio(recordSrc);
     }
 
-    //Function to create a file for iOS recording
-
+    //Function to get a filename for iOS recording
+    //Ensures that file doesn't exist to test CB-11380
     function getRecordSrc() {
-        var fsFail = function (error) {
-            console.log("error creating file for iOS recording");
-        };
-        var gotFile = function (file) {
-            recordSrc = file.fullPath;
-            //console.log("recording Src: " + recordSrc);
-        };
-        var gotFS = function (fileSystem) {
-            fileSystem.root.getFile("iOSRecording.wav", {
-                create : true
-            }, gotFile, fsFail);
-        };
-        window.requestFileSystem(LocalFileSystem.TEMPORARY, 0, gotFS, fsFail);
+        var noop = function () {};
+        recordSrc = "cdvfile://localhost/temporary/iOSRecording.wav";
+        window.resolveLocalFileSystemURL(recordSrc, function (file) {
+            file.remove(function() {
+                console.log("Successfully removed " + recordSrc);
+            }, noop);
+        }, noop);
     }
 
     //Function to create a file for BB recording
