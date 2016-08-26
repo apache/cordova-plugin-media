@@ -181,6 +181,12 @@
     return audioFile;
 }
 
+// Creates or gets the cached audio file resource object
+- (CDVAudioFile*)audioFileForResource:(NSString*)resourcePath withId:(NSString*)mediaId doValidation:(BOOL)bValidate forRecording:(BOOL)bRecord
+{
+    return [self audioFileForResource:resourcePath withId:mediaId doValidation:bValidate forRecording:bRecord suppressValidationErrors:NO];
+}
+
 // returns whether or not audioSession is available - creates it if necessary
 - (BOOL)hasAudioSession
 {
@@ -313,7 +319,7 @@
     BOOL bError = NO;
     NSString* jsString = nil;
 
-    CDVAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:YES forRecording:NO suppressValidationErrors:NO];
+    CDVAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:YES forRecording:NO];
     if ((audioFile != nil) && (audioFile.resourceURL != nil)) {
         if (audioFile.player == nil) {
             bError = [self prepareToPlay:audioFile withId:mediaId];
@@ -636,7 +642,7 @@
 #pragma unused(callbackId)
 
     NSString* mediaId = [command argumentAtIndex:0];
-    CDVAudioFile* audioFile = [self audioFileForResource:[command argumentAtIndex:1] withId:mediaId doValidation:YES forRecording:YES suppressValidationErrors:NO];
+    CDVAudioFile* audioFile = [self audioFileForResource:[command argumentAtIndex:1] withId:mediaId doValidation:YES forRecording:YES];
     __block NSString* jsString = nil;
     __block NSString* errorMsg = @"";
 
