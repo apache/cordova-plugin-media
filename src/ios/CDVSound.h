@@ -22,6 +22,7 @@
 #import <Cordova/CDVPlugin.h>
 
 enum CDVMediaError {
+    MEDIA_ERR_NONE_ACTIVE = 0,
     MEDIA_ERR_ABORTED = 1,
     MEDIA_ERR_NETWORK = 2,
     MEDIA_ERR_DECODE = 3,
