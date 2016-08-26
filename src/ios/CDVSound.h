@@ -106,6 +106,7 @@ typedef NSUInteger CDVMediaMsg;
 - (NSURL*)urlForRecording:(NSString*)resourcePath;
 - (NSURL*)urlForPlaying:(NSString*)resourcePath;
 
+- (CDVAudioFile*)audioFileForResource:(NSString*)resourcePath withId:(NSString*)mediaId doValidation:(BOOL)bValidate forRecording:(BOOL)bRecord;
 - (CDVAudioFile*)audioFileForResource:(NSString*)resourcePath withId:(NSString*)mediaId doValidation:(BOOL)bValidate forRecording:(BOOL)bRecord suppressValidationErrors:(BOOL)bSuppress;
 - (BOOL)prepareToPlay:(CDVAudioFile*)audioFile withId:(NSString*)mediaId;
 - (NSString*)createMediaErrorWithCode:(CDVMediaError)code message:(NSString*)message;
