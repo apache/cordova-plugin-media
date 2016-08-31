@@ -386,7 +386,7 @@ public class AudioHandler extends CordovaPlugin {
      */
     @SuppressWarnings("deprecation")
     public void setAudioOutputDevice(int output) {
-        private static final String TAG1 = "AudioHandler.setAudioOutputDevice(): Error : ";
+        String TAG1 = "AudioHandler.setAudioOutputDevice(): Error : ";
 
         AudioManager audiMgr = (AudioManager) this.cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
         if (output == 2) {
@@ -437,7 +437,7 @@ public class AudioHandler extends CordovaPlugin {
         };
 
     public void getAudioFocus() {
-        private static final String TAG2 = "AudioHandler.getAudioFocus(): Error : ";
+        String TAG2 = "AudioHandler.getAudioFocus(): Error : ";
 
         AudioManager am = (AudioManager) this.cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
         int result = am.requestAudioFocus(focusChangeListener,
@@ -477,7 +477,7 @@ public class AudioHandler extends CordovaPlugin {
      * @param volume            Volume to adjust to 0.0f - 1.0f
      */
     public void setVolume(String id, float volume) {
-        private static final String TAG3 = "AudioHandler.setVolume(): Error : ";
+        String TAG3 = "AudioHandler.setVolume(): Error : ";
 
         AudioPlayer audio = this.players.get(id);
         if (audio != null) {
