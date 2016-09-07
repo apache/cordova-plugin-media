@@ -691,7 +691,7 @@
                                              AVNumberOfChannelsKey: @(1),
                                              AVEncoderAudioQualityKey: @(AVAudioQualityMedium)
                                              };
-            audioFile.recorder = [[CDVAudioRecorder alloc] initWithURL:audioFile.resourceURL settings:nil error:&error];
+            audioFile.recorder = [[CDVAudioRecorder alloc] initWithURL:audioFile.resourceURL settings:audioSettings error:&error];
 
             bool recordingSuccess = NO;
             if (error == nil) {
