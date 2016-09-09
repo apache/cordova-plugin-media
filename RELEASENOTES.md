@@ -20,15 +20,42 @@
 -->
 # Release Notes
 
+### 2.4.0 (Sep 08, 2016)
+* [CB-11795](https://issues.apache.org/jira/browse/CB-11795) Add 'protective' entry to cordovaDependencies
+* [CB-11793](https://issues.apache.org/jira/browse/CB-11793) fixed **android** build issue with last commit
+* [CB-11085](https://issues.apache.org/jira/browse/CB-11085) Fix error output using `println` to `LOG.e`
+* [CB-11757](https://issues.apache.org/jira/browse/CB-11757) (**ios**) Error out if trying to stop playback while in a wrong state
+* [CB-11380](https://issues.apache.org/jira/browse/CB-11380) (**ios**) Overloaded `audioFileForResource` method instead of modifying its signature
+* [CB-11380](https://issues.apache.org/jira/browse/CB-11380) (**ios**) Updated modified method signature in the .h file
+* [CB-11380](https://issues.apache.org/jira/browse/CB-11380) (**ios**) Fixed an unexpected error callback when initializing Media with file that doesn't exist
+* [CB-10849](https://issues.apache.org/jira/browse/CB-10849) (ios) Fixed a crash when playing soundfiles consecutively
+* [CB-11754](https://issues.apache.org/jira/browse/CB-11754) (**Android**) Fixed the build error
+* [CB-11086](https://issues.apache.org/jira/browse/CB-11086) (**Android**) Fixed a crash when `setVolume()` is called on unitialized audio This closes #93
+* Plugin uses `Android Log class` and not `Cordova LOG class`
+* [CB-11655](https://issues.apache.org/jira/browse/CB-11655) (**Android**) Enabled asynchronous error handling
+* [CB-11430](https://issues.apache.org/jira/browse/CB-11430) Report duration NaN value to JS properly
+* [CB-11429](https://issues.apache.org/jira/browse/CB-11429) Update test stream URL
+* [CB-11430](https://issues.apache.org/jira/browse/CB-11430) Skip audio playback tests on Saucelabs
+* [CB-11458](https://issues.apache.org/jira/browse/CB-11458) - `media.spec.25` 'should be able to play an audio stream' fails on **iOS** platform
+* Add badges for paramedic builds on Jenkins
+* [CB-11313](https://issues.apache.org/jira/browse/CB-11313) Can't start media streaming on **Android 6.0**
+* Add pull request template.
+* Readme: Add fenced code blocks with langauage hints
+* [CB-11165](https://issues.apache.org/jira/browse/CB-11165) removed peer dependency
+* [CB-10776](https://issues.apache.org/jira/browse/CB-10776) Add the ability to pause and resume an audio recording (**Android**)
+* [CB-10776](https://issues.apache.org/jira/browse/CB-10776) Add the ability to pause and resume an audio recording (**iOS**)
+* [CB-9487](https://issues.apache.org/jira/browse/CB-9487) Don't update position when getting amplitude
+* [CB-10996](https://issues.apache.org/jira/browse/CB-10996) Adding front matter to README.md
+
 ### 2.3.0 (Apr 15, 2016)
 * Request audio focus when playing; Pause audio when audio focus is lost; resume playing when audio focus is granted again.
 * Replace `PermissionHelper.java` with `cordova-plugin-compat`
-* CB-10783 Modify expected position to be in a proper range.
-* CB-9487 Support getting amplitude for recording
+* [CB-10783](https://issues.apache.org/jira/browse/CB-10783) Modify expected position to be in a proper range.
+* [CB-9487](https://issues.apache.org/jira/browse/CB-9487) Support getting amplitude for recording
 * **iOS** audio should handle naked local file sources
-* CB-10720 Fixing README for display on Cordova website
-* CB-10636 Add `JSHint` for plugins
-* CB-10535 Fix CI crash caused by media plugin
+* [CB-10720](https://issues.apache.org/jira/browse/CB-10720) Fixing README for display on Cordova website
+* [CB-10636](https://issues.apache.org/jira/browse/CB-10636) Add `JSHint` for plugins
+* [CB-10535](https://issues.apache.org/jira/browse/CB-10535) Fix CI crash caused by media plugin
 
 ### 2.2.0 (Feb 09, 2016)
 * [CB-10476](https://issues.apache.org/jira/browse/CB-10476) Fix problem where callbacks were not invoked on android due to messageChannel being overridden by callbackContext in every execute() call
@@ -39,10 +66,10 @@
 
 ### 2.1.0 (Jan 15, 2016)
 * Fixed example referencing non-existent variable
-* CB-9452: Treat `RTSP streams` as `remote URLs`
+* [CB-9452](https://issues.apache.org/jira/browse/CB-9452) Treat `RTSP streams` as `remote URLs`
 * add JIRA issue tracker link
-* fix CB-9884 & CB-9885
-* CB-10100 updated file dependency to not grab new majors
+* fix [CB-9884](https://issues.apache.org/jira/browse/CB-9884) & [CB-9885](https://issues.apache.org/jira/browse/CB-9885)
+* [CB-10100](https://issues.apache.org/jira/browse/CB-10100) updated file dependency to not grab new majors
 * Fix block usage of self
 
 ### 2.0.0 (Nov 18, 2015)
