@@ -312,7 +312,7 @@ function recordAudio() {
 
     // Pause Recording after 5 seconds
     setTimeout(function() {
-        my_media.pauseRecord();
+        mediaRec.pauseRecord();
     }, 5000);
 }
 ```
@@ -427,12 +427,12 @@ function recordAudio() {
 
     // Pause Recording after 5 seconds
     setTimeout(function() {
-        my_media.pauseRecord();
+        mediaRec.pauseRecord();
     }, 5000);
 
     // Resume Recording after 10 seconds
     setTimeout(function() {
-        my_media.resumeRecord();
+        mediaRec.resumeRecord();
     }, 10000);
 }
 ```
@@ -562,6 +562,14 @@ function recordAudio() {
 - Files can be recorded and played back using the documents URI:
 
         var myMedia = new Media("documents://beer.mp3")
+
+- Since iOS 10 it's mandatory to add a `NSMicrophoneUsageDescription` entry in the info.plist.
+
+`NSMicrophoneUsageDescription` describes the reason that the app accesses the user’s microphone. When the system prompts the user to allow access, this string is displayed as part of the dialog box. To add this entry you can pass the variable `MICROPHONE_USAGE_DESCRIPTION` on plugin install.
+
+Example: `cordova plugin add cordova-plugin-media --variable MICROPHONE_USAGE_DESCRIPTION="your usage message"`
+
+If you don't pass the variable, the plugin will add an empty string as value.
 
 ### Windows Quirks
 
