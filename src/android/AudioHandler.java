@@ -21,15 +21,21 @@ package org.apache.cordova.media;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaResourceApi;
+import org.apache.cordova.PermissionHelper;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
+import android.media.AudioManager.OnAudioFocusChangeListener;
+
 import android.net.Uri;
-import android.util.Log;
 
 import java.util.ArrayList;
 
 import org.apache.cordova.PluginResult;
+import org.apache.cordova.LOG;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,10 +60,23 @@ public class AudioHandler extends CordovaPlugin {
     public static String TAG = "AudioHandler";
     HashMap<String, AudioPlayer> players;       // Audio player object
     ArrayList<AudioPlayer> pausedForPhone;      // Audio players that were paused when phone call came in
+    ArrayList<AudioPlayer> pausedForFocus;      // Audio players that were paused when focus was lost
+
     private int origVolumeStream = -1;
     private CallbackContext messageChannel;
     private int audioChannels;
     private int audioSampleRate;
+    private boolean useCompression;
+
+    public static String [] permissions = { Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    public static int RECORD_AUDIO = 0;
+    public static int WRITE_EXTERNAL_STORAGE = 1;
+
+    public static final int PERMISSION_DENIED_ERROR = 20;
+
+    private String recordId;
+    private String fileUriStr;
+
 
     /**
      * Constructor.
@@ -65,9 +84,24 @@ public class AudioHandler extends CordovaPlugin {
     public AudioHandler() {
         this.players = new HashMap<String, AudioPlayer>();
         this.pausedForPhone = new ArrayList<AudioPlayer>();
+        this.pausedForFocus = new ArrayList<AudioPlayer>();
         this.audioChannels = 1;
-        this.audioSampleRate = 41000;
+        this.audioSampleRate = 44100;
+        this.useCompression = false;
+
     }
+
+    protected void getWritePermission(int requestCode)
+    {
+        PermissionHelper.requestPermission(this, requestCode, permissions[WRITE_EXTERNAL_STORAGE]);
+    }
+
+
+    protected void getMicPermission(int requestCode)
+    {
+        PermissionHelper.requestPermission(this, requestCode, permissions[RECORD_AUDIO]);
+    }
+
 
     /**
      * Executes the request and returns PluginResult.
@@ -82,45 +116,42 @@ public class AudioHandler extends CordovaPlugin {
         String result = "";
 
         if (action.equals("startRecordingAudio")) {
+            recordId = args.getString(0);
             String target = args.getString(1);
-            String fileUriStr;
+
             try {
                 Uri targetUri = resourceApi.remapUri(Uri.parse(target));
                 fileUriStr = targetUri.toString();
             } catch (IllegalArgumentException e) {
                 fileUriStr = target;
             }
-            this.startRecordingAudio(args.getString(0), FileHelper.stripFileProtocol(fileUriStr));
+            this.useCompression = false;
+            promptForRecord(this.useCompression);
         }
 		
         else if (action.equals("startRecordingAudioWithCompression")) {
+            recordId = args.getString(0);
             String target = args.getString(1);
-            String fileUriStr;
+
             try {
                 Uri targetUri = resourceApi.remapUri(Uri.parse(target));
                 fileUriStr = targetUri.toString();
             } catch (IllegalArgumentException e) {
                 fileUriStr = target;
             }
-            
-            // set defaults
-            Integer sampleRate = 44100;
-            Integer channels = 1;
 
             JSONObject options = args.getJSONObject(2);
 
             try {
-                channels = options.getInt("NumberOfChannels");
-                sampleRate = options.getInt("SampleRate");
+                this.audioChannels = options.getInt("NumberOfChannels");
+                this.audioSampleRate = options.getInt("SampleRate");
             } catch (JSONException e) {
-                channels = 1;
-                sampleRate = 44100;
+                this.audioChannels = 1;
+                this.audioSampleRate = 44100;
             }
-            // for use within resumeRecord, these values must be consistent when resume record is called.
-            this.audioChannels = channels;
-            this.audioSampleRate = sampleRate;
+            this.useCompression = true;
+            promptForRecord(this.useCompression);
 
-            this.startRecordingAudioWithCompression(args.getString(0), FileHelper.stripFileProtocol(fileUriStr), channels, sampleRate);
         }
         else if (action.equals("pauseRecordingAudio")) {
             this.pauseRecordingAudio(args.getString(0));
@@ -152,7 +183,11 @@ public class AudioHandler extends CordovaPlugin {
             this.startPlayingAudio(args.getString(0), FileHelper.stripFileProtocol(fileUriStr));
         }
         else if (action.equals("seekToAudio")) {
-            this.seekToAudio(args.getString(0), args.getInt(1));
+           try {
+                this.seekToAudio(args.getString(0), args.getInt(1));
+            } catch (NumberFormatException nfe) {
+               //no-op
+           }
         }
         else if (action.equals("pausePlayingAudio")) {
             this.pausePlayingAudio(args.getString(0));
@@ -457,6 +492,7 @@ public class AudioHandler extends CordovaPlugin {
         }
     }
 
+
     /**
      * Get the audio device to be used for playback.
      *
@@ -491,6 +527,57 @@ public class AudioHandler extends CordovaPlugin {
         }
     }
 
+
+    public void pauseAllLostFocus() {
+        for (AudioPlayer audio : this.players.values()) {
+            if (audio.getState() == AudioPlayer.STATE.MEDIA_RUNNING.ordinal()) {
+                this.pausedForFocus.add(audio);
+                audio.pausePlaying();
+            }
+        }
+    }
+
+    public void resumeAllGainedFocus() {
+        for (AudioPlayer audio : this.pausedForFocus) {
+            audio.startPlaying(null);
+        }
+        this.pausedForFocus.clear();
+    }
+
+    /**
+     * Get the the audio focus
+     */
+    private OnAudioFocusChangeListener focusChangeListener = new OnAudioFocusChangeListener() {
+        public void onAudioFocusChange(int focusChange) {
+            switch (focusChange) {
+                case (AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) :
+                case (AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) :
+                case (AudioManager.AUDIOFOCUS_LOSS) :
+                    pauseAllLostFocus();
+                    break;
+                case (AudioManager.AUDIOFOCUS_GAIN):
+                    resumeAllGainedFocus();
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    public void getAudioFocus() {
+        String TAG2 = "AudioHandler.getAudioFocus(): Error : ";
+
+        AudioManager am = (AudioManager) this.cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
+        int result = am.requestAudioFocus(focusChangeListener,
+                AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN);
+
+        if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            LOG.e(TAG2,result + " instead of " + AudioManager.AUDIOFOCUS_REQUEST_GRANTED);
+        }
+
+    }
+
     private void onFirstPlayerCreated() {
         origVolumeStream = cordova.getActivity().getVolumeControlStream();
         cordova.getActivity().setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -511,7 +598,7 @@ public class AudioHandler extends CordovaPlugin {
                 message.put(action, actionData);
             }
         } catch (JSONException e) {
-            Log.e(TAG, "Failed to create event message", e);
+            LOG.e(TAG, "Failed to create event message", e);
         }
 
         PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, message);
@@ -519,5 +606,45 @@ public class AudioHandler extends CordovaPlugin {
         if (messageChannel != null) {
             messageChannel.sendPluginResult(pluginResult);
         }
+    }
+
+    public void onRequestPermissionResult(int requestCode, String[] permissions,
+                                          int[] grantResults) throws JSONException
+    {
+        for(int r:grantResults)
+        {
+            if(r == PackageManager.PERMISSION_DENIED)
+            {
+                this.messageChannel.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, PERMISSION_DENIED_ERROR));
+                return;
+            }
+        }
+        promptForRecord(this.useCompression);
+    }
+
+    /*
+     * This little utility method catch-all work great for multi-permission stuff.
+     *
+     */
+
+    private void promptForRecord(boolean withCompression)
+    {
+        if(PermissionHelper.hasPermission(this, permissions[WRITE_EXTERNAL_STORAGE])  &&
+                PermissionHelper.hasPermission(this, permissions[RECORD_AUDIO])) {
+            if (withCompression) {
+                this.startRecordingAudioWithCompression(recordId, FileHelper.stripFileProtocol(fileUriStr),this.audioChannels,this.audioSampleRate);
+            } else {
+                this.startRecordingAudio(recordId, FileHelper.stripFileProtocol(fileUriStr));
+            }
+        }
+        else if(PermissionHelper.hasPermission(this, permissions[RECORD_AUDIO]))
+        {
+            getWritePermission(WRITE_EXTERNAL_STORAGE);
+        }
+        else
+        {
+            getMicPermission(RECORD_AUDIO);
+        }
+
     }
 }
