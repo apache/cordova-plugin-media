@@ -21,7 +21,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
 xmlns:android="http://schemas.android.com/apk/res/android"
 id="cordova-media-with-compression"
-version="2.1.0">
+version="2.1.1">
 
     <name>Media With Compression: Alpha Software Edition</name>
     <description>Cordova Media Plugin with MPEG 4 audio compression for iOS and Android</description>
@@ -111,9 +111,9 @@ version="2.1.0">
          <header-file src="src/ios/CDVSound.h" />
          <source-file src="src/ios/CDVSound.m" />
 	     
-     	 <preference name="MICROPHONE_USAGE_DESCRIPTION" default=" " />
+     	
          <config-file target="*-Info.plist" parent="NSMicrophoneUsageDescription">
-             <string>$MICROPHONE_USAGE_DESCRIPTION</string>
+             <string>This app requires access to the microphone to record audio.</string>
          </config-file>
      </platform>
 

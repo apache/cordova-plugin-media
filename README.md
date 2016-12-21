@@ -293,6 +293,17 @@ Starts or resumes playing an audio file.
         var myMedia = new Media("audio/beer.mp3")
         myMedia.play()  // first looks for file in www/audio/beer.mp3 then in <application>/documents/tmp/audio/beer.mp3
 
+Since iOS 10 it's mandatory to add a `NSMicrophoneUsageDescription` in the info.plist.
+
+* `NSMicrophoneUsageDescription` describes the reason that the app accesses the user’s microphone.
+
+When the system prompts the user to allow access, this string is displayed as part of the dialog box.
+
+This string has been hard coded with the following text to allow the plugin to be used by PhoneGap Build as well as the Cordova CLI:
+
+* `NSMicrophoneUsageDescription:` This app requires access to the microphone to record audio. 
+
+
 ## media.release
 
 Releases the underlying operating system's audio resources.
