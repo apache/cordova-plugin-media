@@ -30,6 +30,10 @@ id="cordova-plugin-media"
     <repo>https://git-wip-us.apache.org/repos/asf/cordova-plugin-media.git</repo>
     <issue>https://issues.apache.org/jira/browse/CB/component/12320647</issue>
 
+    <engines>
+        <engine name="cordova-android" version=">=6.1.0" />
+    </engines>
+  
     <dependency id="cordova-plugin-file" version="^4.0.0" />
     <dependency id="cordova-plugin-compat" version="^1.0.0" />
 
