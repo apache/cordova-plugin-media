@@ -155,7 +155,7 @@ id="cordova-plugin-media"
     <!-- windows8 -->
     <platform name="windows8">
         <js-module src="src/windows/MediaProxy.js" name="MediaProxy">
-            <merges target="" />
+            <runs />
         </js-module>
 
         <config-file target="package.appxmanifest" parent="/Package/Capabilities">
@@ -166,7 +166,7 @@ id="cordova-plugin-media"
     <!-- windows -->
     <platform name="windows">
         <js-module src="src/windows/MediaProxy.js" name="MediaProxy">
-            <merges target="" />
+            <runs />
         </js-module>
 
         <config-file target="package.appxmanifest" parent="/Package/Capabilities">
