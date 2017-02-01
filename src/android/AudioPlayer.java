@@ -271,6 +271,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                     this.moveFile(this.audioFile);
                 } else {
                     LOG.d(LOG_TAG, "pause recording");
+                    this.setState(STATE.MEDIA_PAUSED);
                 }
             }
             catch (Exception e) {
