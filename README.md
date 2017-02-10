@@ -325,6 +325,16 @@ Starts or resumes playing an audio file.
 media.play();
 ```
 
+### Parameters
+
+- __playAudioWhenScreenIsLocked__: Pass in this option to the `play`
+  method to specify whether you want to allow playback when the screen
+  is locked.  If set to `true` (the default value), the state of the
+  hardware mute button is ignored, e.g.:
+
+        var myMedia = new Media("http://audio.ibeat.org/content/p1rj1s/p1rj1s_-_rockGuitar.mp3")
+        myMedia.play({ playAudioWhenScreenIsLocked : false })
+
 ### Quick Example
 
 ```js
@@ -355,20 +365,16 @@ function playAudio(url) {
         var myMedia = new Media("http://audio.ibeat.org/content/p1rj1s/p1rj1s_-_rockGuitar.mp3")
         myMedia.play({ numberOfLoops: 2 })
 
-- __playAudioWhenScreenIsLocked__: Pass in this option to the `play`
-  method to specify whether you want to allow playback when the screen
-  is locked.  If set to `true` (the default value), the state of the
-  hardware mute button is ignored, e.g.:
-
-        var myMedia = new Media("http://audio.ibeat.org/content/p1rj1s/p1rj1s_-_rockGuitar.mp3")
-        myMedia.play({ playAudioWhenScreenIsLocked : false })
-
 - __order of file search__: When only a file name or simple path is
   provided, iOS searches in the `www` directory for the file, then in
   the application's `documents/tmp` directory:
 
         var myMedia = new Media("audio/beer.mp3")
         myMedia.play()  // first looks for file in www/audio/beer.mp3 then in <application>/documents/tmp/audio/beer.mp3
+
+### Windows Quirks
+
+- __playAudioWhenScreenIsLocked__: not supported.
 
 ## media.release
 
