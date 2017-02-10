@@ -151,6 +151,13 @@ public class AudioHandler extends CordovaPlugin {
            } catch (NumberFormatException nfe) {
                //no-op
            }
+        }
+         else if (action.equals("setRate")) {
+           try {
+               this.setRate(args.getString(0), Float.parseFloat(args.getString(1)));
+           } catch (NumberFormatException nfe) {
+               //no-op
+           }
         } else if (action.equals("getCurrentPositionAudio")) {
             float f = this.getCurrentPositionAudio(args.getString(0));
             callbackContext.sendPluginResult(new PluginResult(status, f));
@@ -486,6 +493,24 @@ public class AudioHandler extends CordovaPlugin {
           LOG.e(TAG3,"Unknown Audio Player " + id);
         }
     }
+
+    
+  /**
+   * Set the volume for an audio device
+   *
+   * @param id     The id of the audio player
+   * @param volume Volume to adjust to 0.0f - 1.0f
+   */
+  public void setRate(String id, float volume) {
+    String TAG3 = "AudioHandler.setVolume(): Error : ";
+
+    AudioPlayer audio = this.players.get(id);
+    if (audio != null) {
+      audio.setRate(volume);
+    } else {
+      LOG.e(TAG3, "Unknown Audio Player " + id);
+    }
+  }
 
     private void onFirstPlayerCreated() {
         origVolumeStream = cordova.getActivity().getVolumeControlStream();
