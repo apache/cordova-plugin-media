@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-media",
-  "version": "2.4.2-dev",
+  "version": "3.0.0-dev",
   "description": "Cordova Media Plugin",
   "types": "./types/index.d.ts",
   "cordova": {
@@ -45,8 +45,11 @@
   "license": "Apache-2.0",
   "engines": {
     "cordovaDependencies": {
-      "3.0.0": {
+      "4.0.0": {
         "cordova": ">100"
+      },
+      "3.0.0": {
+        "cordova-android": ">=6.1.0"
       }
     }
   },
