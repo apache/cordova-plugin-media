@@ -590,7 +590,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                     return true;
                 case MEDIA_STOPPED:
                     //if we are readying the same file
-                    if (this.audioFile.compareTo(file) == 0) {
+                    if (file!=null && this.audioFile.compareTo(file) == 0) {
                         //maybe it was recording?
                         if (player == null) {
                             this.player = new MediaPlayer();
