@@ -312,7 +312,8 @@ exports.defineAutoTests = function () {
                         }
 
                         media.getCurrentPosition(function (position) {
-                            expect(position).toBeCloseTo(20, 0);
+                            expect(position).toBeGreaterThan(19);
+                            expect(position).toBeLessThan(21);
                             context.done = true;
                             done();
                         }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position', context));
