@@ -24,7 +24,7 @@
 #define HTTP_SCHEME_PREFIX @"http://"
 #define HTTPS_SCHEME_PREFIX @"https://"
 #define CDVFILE_PREFIX @"cdvfile://"
-#define RECORDING_WAV @"wav"
+#define RECORDING_WAV @"m4a"
 
 @implementation CDVSound
 

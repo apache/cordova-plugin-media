@@ -792,7 +792,7 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     //Ensures that file doesn't exist to test CB-11380
     function getRecordSrc() {
         var noop = function () {};
-        recordSrc = "cdvfile://localhost/temporary/iOSRecording.wav";
+        recordSrc = "cdvfile://localhost/temporary/iOSRecording.m4a";
         window.resolveLocalFileSystemURL(recordSrc, function (file) {
             file.remove(function() {
                 console.log("Successfully removed " + recordSrc);
