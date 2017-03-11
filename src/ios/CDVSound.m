@@ -24,7 +24,6 @@
 #define HTTP_SCHEME_PREFIX @"http://"
 #define HTTPS_SCHEME_PREFIX @"https://"
 #define CDVFILE_PREFIX @"cdvfile://"
-#define RECORDING_WAV @"wav"
 
 @implementation CDVSound
 
@@ -38,9 +37,11 @@
     NSString* docsPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
 
     // first check for correct extension
-    if ([[resourcePath pathExtension] caseInsensitiveCompare:RECORDING_WAV] != NSOrderedSame) {
+    NSString* ext=[resourcePath pathExtension];
+    if ([ext caseInsensitiveCompare:@"wav"] != NSOrderedSame &&
+        [ext caseInsensitiveCompare:@"m4a"] != NSOrderedSame) {
         resourceURL = nil;
-        NSLog(@"Resource for recording must have %@ extension", RECORDING_WAV);
+        NSLog(@"Resource for recording must have wav or m4a extension");
     } else if ([resourcePath hasPrefix:DOCUMENTS_SCHEME_PREFIX]) {
         // try to find Documents:// resources
         filePath = [resourcePath stringByReplacingOccurrencesOfString:DOCUMENTS_SCHEME_PREFIX withString:[NSString stringWithFormat:@"%@/", docsPath]];
@@ -686,11 +687,20 @@
             }
 
             // create a new recorder for each start record
-            NSDictionary *audioSettings = @{AVFormatIDKey: @(kAudioFormatMPEG4AAC),
-                                             AVSampleRateKey: @(44100),
+            bool isWav=[[audioFile.resourcePath pathExtension] isEqualToString:@"wav"];
+            NSMutableDictionary *audioSettings = [NSMutableDictionary dictionaryWithDictionary:
+                                            @{AVSampleRateKey: @(44100),
                                              AVNumberOfChannelsKey: @(1),
-                                             AVEncoderAudioQualityKey: @(AVAudioQualityMedium)
-                                             };
+                                             }];
+            if (isWav)  {
+                audioSettings[AVFormatIDKey]=@(kAudioFormatLinearPCM);
+                audioSettings[AVLinearPCMBitDepthKey]=@(16);
+                audioSettings[AVLinearPCMIsBigEndianKey]=@(false);
+                audioSettings[AVLinearPCMIsFloatKey]=@(false);
+            } else {
+                audioSettings[AVFormatIDKey]=@(kAudioFormatMPEG4AAC);
+                audioSettings[AVEncoderAudioQualityKey]=@(AVAudioQualityMedium);
+            }
             audioFile.recorder = [[CDVAudioRecorder alloc] initWithURL:audioFile.resourceURL settings:audioSettings error:&error];
 
             bool recordingSuccess = NO;
