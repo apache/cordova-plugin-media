@@ -910,6 +910,35 @@
     self.statusCallbackId = command.callbackId;
 }
 
+- (void)getDurationAudio:(CDVInvokedUrlCommand*)command
+{
+    NSString* mediaId = [command argumentAtIndex:0];
+    NSString* resourcePath = [command argumentAtIndex:1];
+    bool bError=false;
+    double duration=-1;
+    CDVAudioFile* audioFile = [self audioFileForResource:resourcePath withId:mediaId doValidation:YES forRecording:NO];
+    if ((audioFile == nil) || (audioFile.resourceURL == nil)) {
+        //status has been send
+        return;
+    } else if (audioFile.player == nil) {
+        bError = [self prepareToPlay:audioFile withId:mediaId];
+    }
+    if (!bError && avPlayer && avPlayer.currentItem && avPlayer.currentItem.asset) {
+        CMTime time = avPlayer.currentItem.asset.duration;
+        duration = CMTimeGetSeconds(time);
+    } else if (!bError && audioFile.player!=nil) {
+        duration = audioFile.player.duration;
+    }
+    if (isnan(duration)) {
+        duration = -1;
+    }
+    CDVPluginResult* result = [CDVPluginResult
+                               resultWithStatus:CDVCommandStatus_OK
+                               messageAsDouble:duration];
+    [self.commandDelegate sendPluginResult:result
+                                callbackId:command.callbackId];
+}
+
 - (void)onStatus:(CDVMediaMsg)what mediaId:(NSString*)mediaId param:(NSObject*)param
 {
     if (self.statusCallbackId!=nil) { //new way, android,windows compatible
