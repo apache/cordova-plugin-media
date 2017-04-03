@@ -22,6 +22,7 @@
 /* global qnx, PluginResult */
 
 var audioObjects = {},
+    _ids = [],
     mediaErrorsHandled = false;
 
 // There is a bug in the webplatform handling of media error
@@ -80,6 +81,7 @@ module.exports = {
         }
 
         id = JSON.parse(decodeURIComponent(args[0]));
+        _ids.push(id);
 
         audio = audioObjects[id];
 
@@ -235,5 +237,16 @@ module.exports = {
         }
 
         result.ok();
+    },
+    
+    reset: function () {
+        _ids.forEach(function (id) {
+            if (audioObjects.hasOwnProperty(id)) {
+                audioObjects[id].pause();
+                audioObjects[id].currentTime = 0;
+            }
+        });
+        _ids = [];
+        audioObjects = {};
     }
 };
