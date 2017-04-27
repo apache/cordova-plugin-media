@@ -20,6 +20,11 @@
 -->
 # Release Notes
 
+### 3.0.1 (Apr 27, 2017)
+* [CB-12542](https://issues.apache.org/jira/browse/CB-12542) (ios) Fix wav file recording, add m4a extension. make **iOS** status handling compatible with **Android**/Windows
+* [CB-12622](https://issues.apache.org/jira/browse/CB-12622) Added **Android 6.0** build badges to `README`
+* [CB-12685](https://issues.apache.org/jira/browse/CB-12685) added `package.json` to tests folder
+
 ### 3.0.0 (Feb 28, 2017)
 * **Android:** fix `NullPointerException` in `AudioPlayer.readyPlayer`
 * **Android:** fix `java.lang.NullPointerException` on `resumeAllGainedFocus`
