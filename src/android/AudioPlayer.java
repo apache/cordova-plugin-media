@@ -96,6 +96,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     private boolean prepareOnly = true;     // playback after file prepare flag
     private int seekOnPrepared = 0;     // seek to this location once media is prepared
 
+    private boolean isCompressed = true;
     private int channels = 2;
     private int sampleRate = 8000;
     private int sampleSize = 16;
@@ -104,6 +105,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
 
     private int framePeriod;
     private int bufferSize;
+    private int cAmplitude= 0;
 
     private byte[] buffer;
     // File writer (only in uncompressed mode)
@@ -174,6 +176,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * @param isCompressed      State of audio file compression - false for raw.
      */
     public void startRecording(String file, boolean isCompressed) {
+        this.isCompressed = isCompressed;
         switch (this.mode) {
             case PLAY:
                 LOG.d(LOG_TAG, "AudioPlayer Error: Can't record in play mode.");
@@ -903,5 +906,15 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             }
         }
         return 0;
+    }
+
+    /*
+     *
+     * Converts a byte[2] to a short, in LITTLE_ENDIAN format
+     *
+     */
+    private short getShort(byte argB1, byte argB2)
+    {
+        return (short)(argB1 | (argB2 << 8));
     }
 }
