@@ -41,6 +41,7 @@ import java.io.OutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.io.RandomAccessFile;
+import java.io.IOException;
 
 /**
  * This class implements the audio playback and recording capabilities used by Cordova.
