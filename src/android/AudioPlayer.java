@@ -97,15 +97,16 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     private int seekOnPrepared = 0;     // seek to this location once media is prepared
 
     private boolean isCompressed = true;
-    private int channels = 2;
+    private short channels = 2;
     private int sampleRate = 8000;
-    private int sampleSize = 16;
+    private short sampleSize = 16;
     private int channelConfig = AudioFormat.CHANNEL_CONFIGURATION_MONO;
     private int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
 
     private int framePeriod;
     private int bufferSize;
     private int cAmplitude= 0;
+    private int payloadSize;
 
     private byte[] buffer;
     // File writer (only in uncompressed mode)
@@ -160,7 +161,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             }
             catch (IOException e)
             {
-                Log.e(LOG_TAG, "I/O exception occured while closing output file");
+                LOG.e(LOG_TAG, "I/O exception occured while closing output file");
             }
             (new File(this.tempFile)).delete();
             this.audioRecord.release();
@@ -238,6 +239,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
 
                     this.tempFile = generateTempFile();
                     randomAccessWriter = new RandomAccessFile(this.tempFile, "rw");
+
+                    payloadSize = 0;
 
                     randomAccessWriter.setLength(0); // Set file length to 0, to prevent unexpected behavior in case the file already existed
                     randomAccessWriter.writeBytes("RIFF");
@@ -406,8 +409,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                 }
                 catch(IOException e)
                 {
-                    Log.e(LOG_TAG, "I/O exception occured while closing output file");
-                    state = State.ERROR;
+                    LOG.e(LOG_TAG, "I/O exception occured while closing output file");
                 }
                 if(stop) {
                     LOG.d(LOG_TAG, "stopping audio recording");
@@ -443,7 +445,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             {
                 randomAccessWriter.write(buffer); // Write buffer to file
                 payloadSize += buffer.length;
-                if (bSamples == 16)
+                if (sampleSize == 16)
                 {
                     for (int i=0; i<buffer.length/2; i++)
                     { // 16bit sample size
@@ -467,7 +469,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             }
             catch (IOException e)
             {
-                Log.e(LOG.d, "Error occured in updateListener, recording is aborted");
+                LOG.e(LOG_TAG, "Error occured in updateListener, recording is aborted");
             }
         }
 
