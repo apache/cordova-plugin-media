@@ -71,6 +71,7 @@ public class AudioHandler extends CordovaPlugin {
 
     private String recordId;
     private String fileUriStr;
+    private bool isCompressed = true;
 
     /**
      * Constructor.
@@ -109,6 +110,7 @@ public class AudioHandler extends CordovaPlugin {
         if (action.equals("startRecordingAudio")) {
             recordId = args.getString(0);
             String target = args.getString(1);
+            isCompressed = args.getBoolean(2);
             try {
                 Uri targetUri = resourceApi.remapUri(Uri.parse(target));
                 fileUriStr = targetUri.toString();
@@ -146,11 +148,11 @@ public class AudioHandler extends CordovaPlugin {
         else if (action.equals("stopPlayingAudio")) {
             this.stopPlayingAudio(args.getString(0));
         } else if (action.equals("setVolume")) {
-           try {
-               this.setVolume(args.getString(0), Float.parseFloat(args.getString(1)));
-           } catch (NumberFormatException nfe) {
-               //no-op
-           }
+            try {
+                this.setVolume(args.getString(0), Float.parseFloat(args.getString(1)));
+            } catch (NumberFormatException nfe) {
+                //no-op
+            }
         } else if (action.equals("getCurrentPositionAudio")) {
             float f = this.getCurrentPositionAudio(args.getString(0));
             callbackContext.sendPluginResult(new PluginResult(status, f));
@@ -281,10 +283,11 @@ public class AudioHandler extends CordovaPlugin {
      * Start recording and save the specified file.
      * @param id				The id of the audio player
      * @param file				The name of the file
+     * @param isCompressed      State of audio file compression - false for raw.
      */
-    public void startRecordingAudio(String id, String file) {
+    public void startRecordingAudio(String id, String file, boolean isCompressed) {
         AudioPlayer audio = getOrCreatePlayer(id, file);
-        audio.startRecording(file);
+        audio.startRecording(file, isCompressed);
     }
 
     /**
@@ -396,7 +399,7 @@ public class AudioHandler extends CordovaPlugin {
             audiMgr.setRouting(AudioManager.MODE_NORMAL, AudioManager.ROUTE_EARPIECE, AudioManager.ROUTE_ALL);
         }
         else {
-             LOG.e(TAG1," Unknown output device");
+            LOG.e(TAG1," Unknown output device");
         }
     }
 
@@ -420,8 +423,8 @@ public class AudioHandler extends CordovaPlugin {
      * Get the the audio focus
      */
     private OnAudioFocusChangeListener focusChangeListener = new OnAudioFocusChangeListener() {
-            public void onAudioFocusChange(int focusChange) {
-                switch (focusChange) {
+        public void onAudioFocusChange(int focusChange) {
+            switch (focusChange) {
                 case (AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) :
                 case (AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) :
                 case (AudioManager.AUDIOFOCUS_LOSS) :
@@ -432,17 +435,17 @@ public class AudioHandler extends CordovaPlugin {
                     break;
                 default:
                     break;
-                }
             }
-        };
+        }
+    };
 
     public void getAudioFocus() {
         String TAG2 = "AudioHandler.getAudioFocus(): Error : ";
 
         AudioManager am = (AudioManager) this.cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
         int result = am.requestAudioFocus(focusChangeListener,
-                                          AudioManager.STREAM_MUSIC,
-                                          AudioManager.AUDIOFOCUS_GAIN);
+                AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN);
 
         if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             LOG.e(TAG2,result + " instead of " + AudioManager.AUDIOFOCUS_REQUEST_GRANTED);
@@ -483,7 +486,7 @@ public class AudioHandler extends CordovaPlugin {
         if (audio != null) {
             audio.setVolume(volume);
         } else {
-          LOG.e(TAG3,"Unknown Audio Player " + id);
+            LOG.e(TAG3,"Unknown Audio Player " + id);
         }
     }
 
@@ -540,7 +543,7 @@ public class AudioHandler extends CordovaPlugin {
     {
         if(PermissionHelper.hasPermission(this, permissions[WRITE_EXTERNAL_STORAGE])  &&
                 PermissionHelper.hasPermission(this, permissions[RECORD_AUDIO])) {
-            this.startRecordingAudio(recordId, FileHelper.stripFileProtocol(fileUriStr));
+            this.startRecordingAudio(recordId, FileHelper.stripFileProtocol(fileUriStr), this.isCompressed);
         }
         else if(PermissionHelper.hasPermission(this, permissions[RECORD_AUDIO]))
         {

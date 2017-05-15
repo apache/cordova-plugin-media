@@ -47,6 +47,7 @@ var Media = function(src, successCallback, errorCallback, statusCallback) {
     this.statusCallback = statusCallback;
     this._duration = -1;
     this._position = -1;
+    this.isCompressed = true; // default true for compression enabling
     exec(null, this.errorCallback, "Media", "create", [this.id, this.src]);
 };
 
@@ -128,7 +129,7 @@ Media.prototype.getCurrentPosition = function(success, fail) {
  * Start recording audio file.
  */
 Media.prototype.startRecord = function() {
-    exec(null, this.errorCallback, "Media", "startRecordingAudio", [this.id, this.src]);
+    exec(null, this.errorCallback, "Media", "startRecordingAudio", [this.id, this.src, this.isCompressed]);
 };
 
 /**
