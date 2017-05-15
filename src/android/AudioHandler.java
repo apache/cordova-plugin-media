@@ -71,7 +71,7 @@ public class AudioHandler extends CordovaPlugin {
 
     private String recordId;
     private String fileUriStr;
-    private bool isCompressed = true;
+    private boolean isCompressed = true;
 
     /**
      * Constructor.

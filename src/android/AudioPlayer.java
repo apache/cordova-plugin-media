@@ -208,7 +208,6 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                             bufferSize
                     );
                     this.tempFile = generateTempFile();
-                    this.audioRecord.setOutputFile(this.tempFile);
                     try {
                         this.audioRecord.startRecording();
                         this.setState(STATE.MEDIA_RUNNING);
@@ -343,14 +342,14 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     private void stopAudioRecording(boolean stop) {
         if(this.audioRecord != null) {
             try{
-                if(this.state == STATE.MEDIA) {
+                if(this.state == STATE.MEDIA_RUNNING) {
                     this.audioRecord.stop();
                 }
                 if(this.tempFiles.contains(this.tempFile)) {
                     this.tempFiles.add(this.tempFile);
                 }
                 if(stop) {
-                    LOG.D(LOG_TAG, "stopping audio recording");
+                    LOG.d(LOG_TAG, "stopping audio recording");
                     this.setState(STATE.MEDIA_STOPPED);
                     this.moveFile(this.audioFile);
                 } else {
@@ -368,7 +367,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * Resume recording and save to the file specified when recording started.
      */
     public void resumeRecording() {
-        startRecording(this.audioFile);
+        startRecording(this.audioFile, this.isCompressed);
     }
 
     //==========================================================================
