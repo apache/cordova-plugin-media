@@ -96,6 +96,19 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     private boolean prepareOnly = true;     // playback after file prepare flag
     private int seekOnPrepared = 0;     // seek to this location once media is prepared
 
+    private int channels = 2;
+    private int sampleRate = 8000;
+    private int sampleSize = 16;
+    private int channelConfig = AudioFormat.CHANNEL_CONFIGURATION_MONO;
+    private int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
+
+    private int framePeriod;
+    private int bufferSize;
+
+    private byte[] buffer;
+    // File writer (only in uncompressed mode)
+    private RandomAccessFile randomAccessWriter;
+
     /**
      * Constructor.
      *
@@ -139,9 +152,19 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         }
         if(this.audioRecord != null) {
             this.stopRecording(true);
+            try
+            {
+                randomAccessWriter.close(); // Remove prepared file
+            }
+            catch (IOException e)
+            {
+                Log.e(LOG_TAG, "I/O exception occured while closing output file");
+            }
+            (new File(this.tempFile)).delete();
             this.audioRecord.release();
             this.audioRecord = null;
         }
+
     }
 
     /**
@@ -177,11 +200,11 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                     }
                 } else {
                     // TODO: customization possibilities for sample rate/channels etc...
-                    int channels = 2;
-                    int sampleRate = 8000;
-                    int sampleSize = 16;
-                    int channelConfig = AudioFormat.CHANNEL_CONFIGURATION_MONO;
-                    int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
+//                    int channels = 2;
+//                    int sampleRate = 8000;
+//                    int sampleSize = 16;
+//                    int channelConfig = AudioFormat.CHANNEL_CONFIGURATION_MONO;
+//                    int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
 
                     if (channelConfig == AudioFormat.CHANNEL_CONFIGURATION_MONO)
                     {
@@ -192,8 +215,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                         channels = 2;
                     }
 
-                    int framePeriod = sampleRate * 60 / 1000; // we're assuming recorders are generally never longer than 60seconds
-                    int bufferSize = framePeriod * sampleSize * channels / 4;
+                    framePeriod = sampleRate * 60 / 1000; // we're assuming recorders are generally never longer than 60seconds
+                    bufferSize = framePeriod * sampleSize * channels / 4;
                     // see if buffersize is at least minimum
                     if (bufferSize < AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat))
                     {
@@ -207,9 +230,32 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                             AudioFormat.ENCODING_PCM_16BIT,
                             bufferSize
                     );
+                    audioRecord.setRecordPositionUpdateListener(updateListener);
+                    audioRecord.setPositionNotificationPeriod(framePeriod);
+
                     this.tempFile = generateTempFile();
+                    randomAccessWriter = new RandomAccessFile(this.tempFile, "rw");
+
+                    randomAccessWriter.setLength(0); // Set file length to 0, to prevent unexpected behavior in case the file already existed
+                    randomAccessWriter.writeBytes("RIFF");
+                    randomAccessWriter.writeInt(0); // Final file size not known yet, write 0
+                    randomAccessWriter.writeBytes("WAVE");
+                    randomAccessWriter.writeBytes("fmt ");
+                    randomAccessWriter.writeInt(Integer.reverseBytes(16)); // Sub-chunk size, 16 for PCM
+                    randomAccessWriter.writeShort(Short.reverseBytes((short) 1)); // AudioFormat, 1 for PCM
+                    randomAccessWriter.writeShort(Short.reverseBytes(channels));// Number of channels, 1 for mono, 2 for stereo
+                    randomAccessWriter.writeInt(Integer.reverseBytes(sampleRate)); // Sample rate
+                    randomAccessWriter.writeInt(Integer.reverseBytes(sampleRate*sampleSize*channels/8)); // Byte rate, SampleRate*NumberOfChannels*BitsPerSample/8
+                    randomAccessWriter.writeShort(Short.reverseBytes((short)(channels*sampleSize/8))); // Block align, NumberOfChannels*BitsPerSample/8
+                    randomAccessWriter.writeShort(Short.reverseBytes(sampleSize)); // Bits per sample
+                    randomAccessWriter.writeBytes("data");
+                    randomAccessWriter.writeInt(0); // Data chunk size not known yet, write 0
+
+                    buffer = new byte[framePeriod*sampleSize/8*channels];
+
                     try {
                         this.audioRecord.startRecording();
+                        this.audioRecord.read(buffer, 0, buffer.length);
                         this.setState(STATE.MEDIA_RUNNING);
                     } catch(Exception e) {
                         e.printStackTrace();
@@ -345,8 +391,20 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                 if(this.state == STATE.MEDIA_RUNNING) {
                     this.audioRecord.stop();
                 }
-                if(this.tempFiles.contains(this.tempFile)) {
-                    this.tempFiles.add(this.tempFile);
+                try
+                {
+                    randomAccessWriter.seek(4); // Write size to RIFF header
+                    randomAccessWriter.writeInt(Integer.reverseBytes(36+payloadSize));
+
+                    randomAccessWriter.seek(40); // Write size to Subchunk2Size field
+                    randomAccessWriter.writeInt(Integer.reverseBytes(payloadSize));
+
+                    randomAccessWriter.close();
+                }
+                catch(IOException e)
+                {
+                    Log.e(LOG_TAG, "I/O exception occured while closing output file");
+                    state = State.ERROR;
                 }
                 if(stop) {
                     LOG.d(LOG_TAG, "stopping audio recording");
@@ -369,6 +427,52 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     public void resumeRecording() {
         startRecording(this.audioFile, this.isCompressed);
     }
+
+    /**
+     * Listener for recording raw data.
+     */
+    private AudioRecord.OnRecordPositionUpdateListener updateListener = new AudioRecord.OnRecordPositionUpdateListener()
+    {
+        public void onPeriodicNotification(AudioRecord recorder)
+        {
+            audioRecord.read(buffer, 0, buffer.length); // Fill buffer
+            try
+            {
+                randomAccessWriter.write(buffer); // Write buffer to file
+                payloadSize += buffer.length;
+                if (bSamples == 16)
+                {
+                    for (int i=0; i<buffer.length/2; i++)
+                    { // 16bit sample size
+                        short curSample = getShort(buffer[i*2], buffer[i*2+1]);
+                        if (curSample > cAmplitude)
+                        { // Check amplitude
+                            cAmplitude = curSample;
+                        }
+                    }
+                }
+                else
+                { // 8bit sample size
+                    for (int i=0; i<buffer.length; i++)
+                    {
+                        if (buffer[i] > cAmplitude)
+                        { // Check amplitude
+                            cAmplitude = buffer[i];
+                        }
+                    }
+                }
+            }
+            catch (IOException e)
+            {
+                Log.e(LOG.d, "Error occured in updateListener, recording is aborted");
+            }
+        }
+
+        public void onMarkerReached(AudioRecord recorder)
+        {
+            // NOT USED
+        }
+    };
 
     //==========================================================================
     // Playback
