@@ -239,6 +239,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                     audioRecord.setPositionNotificationPeriod(framePeriod);
 
                     this.tempFile = generateTempFile();
+                    try {
                     randomAccessWriter = new RandomAccessFile(this.tempFile, "rw");
 
                     payloadSize = 0;
@@ -260,11 +261,18 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
 
                     buffer = new byte[framePeriod*sampleSize/8*channels];
 
-                    try {
+
                         this.audioRecord.startRecording();
                         this.audioRecord.read(buffer, 0, buffer.length);
                         this.setState(STATE.MEDIA_RUNNING);
-                    } catch(Exception e) {
+                    }
+                    catch(FileNotFoundException e){
+                        e.printStackTrace();
+                    }
+                    catch(IOException e) {
+                        e.printStackTrace();
+                    }
+                    catch(Exception e) {
                         e.printStackTrace();
                     }
                 }
