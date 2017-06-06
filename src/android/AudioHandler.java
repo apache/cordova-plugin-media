@@ -18,6 +18,9 @@
 */
 package org.apache.cordova.media;
 
+import org.apache.cordova.PermissionHelper;
+import java.security.Permission;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
