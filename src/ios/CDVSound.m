@@ -27,7 +27,18 @@
 
 @implementation CDVSound
 
+BOOL keepAvAudioSessionAlwaysActive = NO;
+
 @synthesize soundCache, avSession, currMediaId, statusCallbackId;
+
+-(void) pluginInitialize
+{
+    NSDictionary* settings = self.commandDelegate.settings;
+    keepAvAudioSessionAlwaysActive = [[settings objectForKey:[@"KeepAVAudioSessionAlwaysActive" lowercaseString]] boolValue];
+    if (keepAvAudioSessionAlwaysActive) {
+        [self hasAudioSession];
+    }
+}
 
 // Maps a url for a resource path for recording
 - (NSURL*)urlForRecording:(NSString*)resourcePath
@@ -469,7 +480,7 @@
     if (playerError != nil) {
         NSLog(@"Failed to initialize AVAudioPlayer: %@\n", [playerError localizedDescription]);
         audioFile.player = nil;
-        if (self.avSession && ! [self isPlayingOrRecording]) {
+        if (! keepAvAudioSessionAlwaysActive && self.avSession && ! [self isPlayingOrRecording]) {
             [self.avSession setActive:NO error:nil];
         }
         bError = YES;
@@ -600,7 +611,7 @@
                 [avPlayer pause];
                 avPlayer = nil;
             }
-            if (self.avSession && ! [self isPlayingOrRecording]) {
+            if (! keepAvAudioSessionAlwaysActive && self.avSession && ! [self isPlayingOrRecording]) {
                 [self.avSession setActive:NO error:nil];
                 self.avSession = nil;
             }
@@ -705,7 +716,7 @@
                     errorMsg = @"Failed to start recording using AVAudioRecorder";
                 }
                 audioFile.recorder = nil;
-                if (weakSelf.avSession && ! [self isPlayingOrRecording]) {
+                if (! keepAvAudioSessionAlwaysActive && weakSelf.avSession && ! [self isPlayingOrRecording]) {
                     [weakSelf.avSession setActive:NO error:nil];
                 }
                 [weakSelf onStatus:MEDIA_ERROR mediaId:mediaId param:
@@ -725,7 +736,7 @@
                     NSString* msg = @"Error creating audio session, microphone permission denied.";
                     NSLog(@"%@", msg);
                     audioFile.recorder = nil;
-                    if (weakSelf.avSession && ! [self isPlayingOrRecording]) {
+                    if (! keepAvAudioSessionAlwaysActive && weakSelf.avSession && ! [self isPlayingOrRecording]) {
                         [weakSelf.avSession setActive:NO error:nil];
                     }
                     [weakSelf onStatus:MEDIA_ERROR mediaId:mediaId param:
@@ -773,7 +784,7 @@
         [self onStatus:MEDIA_ERROR mediaId:mediaId param:
           [self createMediaErrorWithCode:MEDIA_ERR_DECODE message:nil]];
     }
-    if (self.avSession && ! [self isPlayingOrRecording]) {
+    if (! keepAvAudioSessionAlwaysActive && self.avSession && ! [self isPlayingOrRecording]) {
         [self.avSession setActive:NO error:nil];
     }
 }
@@ -795,7 +806,7 @@
         [self onStatus:MEDIA_ERROR mediaId:mediaId param:
             [self createMediaErrorWithCode:MEDIA_ERR_DECODE message:nil]];
     }
-     if (self.avSession && ! [self isPlayingOrRecording]) {
+     if (! keepAvAudioSessionAlwaysActive && self.avSession && ! [self isPlayingOrRecording]) {
          [self.avSession setActive:NO error:nil];
      }
 }
@@ -804,7 +815,7 @@
     // Will be called when AVPlayer finishes playing playerItem
     NSString* mediaId = self.currMediaId;
 
-     if (self.avSession && ! [self isPlayingOrRecording]) {
+     if (! keepAvAudioSessionAlwaysActive && self.avSession && ! [self isPlayingOrRecording]) {
          [self.avSession setActive:NO error:nil];
      }
     [self onStatus:MEDIA_STATE mediaId:mediaId param:@(MEDIA_STOPPED)];

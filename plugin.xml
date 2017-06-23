@@ -103,6 +103,7 @@ id="cordova-plugin-media"
         <config-file target="config.xml" parent="/*">
             <feature name="Media">
                 <param name="ios-package" value="CDVSound" />
+                <param name="onload" value="true"/>
             </feature>
         </config-file>
         <header-file src="src/ios/CDVSound.h" />
@@ -111,6 +112,7 @@ id="cordova-plugin-media"
         <config-file target="*-Info.plist" parent="NSMicrophoneUsageDescription">
             <string>$MICROPHONE_USAGE_DESCRIPTION</string>
         </config-file>
+        <preference name="KeepAVAudioSessionAlwaysActive" default="NO" />
     </platform>
 
     <!-- blackberry10 -->
