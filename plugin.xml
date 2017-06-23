@@ -113,6 +113,11 @@ id="cordova-plugin-media"
             <string>$MICROPHONE_USAGE_DESCRIPTION</string>
         </config-file>
         <preference name="KEEP_AVAUDIOSESSION_ALWAYS_ACTIVE" default="NO" />
+        <config-file target="config.xml" parent="/*">
+            <preference
+              name="KeepAVAudioSessionAlwaysActive"
+              value="$KEEP_AVAUDIOSESSION_ALWAYS_ACTIVE" />
+        </config-file>
     </platform>
 
     <!-- blackberry10 -->

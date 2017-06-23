@@ -34,7 +34,7 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
 -(void) pluginInitialize
 {
     NSDictionary* settings = self.commandDelegate.settings;
-    keepAvAudioSessionAlwaysActive = [[settings objectForKey:[@"KEEP_AVAUDIOSESSION_ALWAYS_ACTIVE" lowercaseString]] boolValue];
+    keepAvAudioSessionAlwaysActive = [[settings objectForKey:[@"KeepAVAudioSessionAlwaysActive" lowercaseString]] boolValue];
     if (keepAvAudioSessionAlwaysActive) {
         [self hasAudioSession];
     }
