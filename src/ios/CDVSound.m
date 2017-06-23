@@ -36,7 +36,12 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
     NSDictionary* settings = self.commandDelegate.settings;
     keepAvAudioSessionAlwaysActive = [[settings objectForKey:[@"KeepAVAudioSessionAlwaysActive" lowercaseString]] boolValue];
     if (keepAvAudioSessionAlwaysActive) {
-        [self hasAudioSession];
+        if ([self hasAudioSession]) {
+            NSError* error = nil;
+            if(![self.avSession setActive:YES error:&error]) {
+                NSLog(@"Unable to activate session: %@", [error localizedFailureReason]);
+            }
+        }
     }
 }
 
