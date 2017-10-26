@@ -542,6 +542,24 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     }
 
     /**
+     * Set the playback rate for the player (ignored on API < 23)
+     *
+     * @param volume
+     */
+    public void setRate(float rate) {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
+            LOG.d(LOG_TAG, "AudioPlayer Warning: Request to set playback rate not supported on current OS version");
+            return;
+        }
+        if (this.player != null) {
+            this.player.setPlaybackParams (this.player.getPlaybackParams().setSpeed(rate));
+        } else {
+            LOG.d(LOG_TAG, "AudioPlayer Error: Cannot set playback rate until the audio file is initialized.");
+            sendErrorStatus(MEDIA_ERR_NONE_ACTIVE);
+        }
+    }
+
+    /**
      * attempts to put the player in play mode
      * @return true if in playmode, false otherwise
      */
