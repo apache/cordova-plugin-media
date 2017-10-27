@@ -92,6 +92,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     private MediaPlayer player = null;      // Audio player object
     private boolean prepareOnly = true;     // playback after file prepare flag
     private int seekOnPrepared = 0;     // seek to this location once media is prepared
+    private float setRateOnPrepared = -1;
 
     /**
      * Constructor.
@@ -446,6 +447,9 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         this.player.setOnCompletionListener(this);
         // seek to any location received while not prepared
         this.seekToPlaying(this.seekOnPrepared);
+        // apply any playback rate received while not prepared
+        if (setRateOnPrepared >= 0)
+            this.player.setPlaybackParams (this.player.getPlaybackParams().setSpeed(setRateOnPrepared));
         // If start playing after prepared
         if (!this.prepareOnly) {
             this.player.start();
@@ -554,8 +558,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         if (this.player != null) {
             this.player.setPlaybackParams (this.player.getPlaybackParams().setSpeed(rate));
         } else {
-            LOG.d(LOG_TAG, "AudioPlayer Error: Cannot set playback rate until the audio file is initialized.");
-            sendErrorStatus(MEDIA_ERR_NONE_ACTIVE);
+            setRateOnPrepared = rate;
         }
     }
 
