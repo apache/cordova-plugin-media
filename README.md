@@ -23,36 +23,25 @@ description: Record and play audio on the device.
 
 |AppVeyor|Travis CI|
 |:-:|:-:|
-|[![Build status](https://ci.appveyor.com/api/projects/status/github/apache/cordova-plugin-media?branch=master)](https://ci.appveyor.com/project/ApacheSoftwareFoundation/cordova-plugin-media)|[![Build Status](https://travis-ci.org/apache/cordova-plugin-media.svg?branch=master)](https://travis-ci.org/apache/cordova-plugin-media)|
+|[![Build status](https://ci.appveyor.com/api/projects/status/github/apache/cordova-plugin-media?branch=master)](https://ci.appveyor.com/project/ApacheSoftwareFoundation/cordova-plugin-media)|[![Build Status](https://travis-ci.org/jh3141/cordova-plugin-media.svg?branch=master)](https://travis-ci.org/jh3141/cordova-plugin-media)|
 
 # cordova-plugin-media
 
 
-This plugin provides the ability to record and play back audio files on a device.
+This is a forked version of the cordova-plugin-media plugin, which provides the ability to record
+and play back audio files on a device.  This fork adds the following changes:
 
-__NOTE__: The current implementation does not adhere to a W3C
-specification for media capture, and is provided for convenience only.
-A future implementation will adhere to the latest W3C specification
-and may deprecate the current APIs.
+* Support the `setRate` API under Android
+* Fix broken tests
 
-This plugin defines a global `Media` Constructor.
-
-Although in the global scope, it is not available until after the `deviceready` event.
-
-```js
-document.addEventListener("deviceready", onDeviceReady, false);
-function onDeviceReady() {
-    console.log(Media);
-}
-```
-
-Report issues with this plugin on the [Apache Cordova issue tracker](https://issues.apache.org/jira/issues/?jql=project%20%3D%20CB%20AND%20status%20in%20(Open%2C%20%22In%20Progress%22%2C%20Reopened)%20AND%20resolution%20%3D%20Unresolved%20AND%20component%20%3D%20%22cordova-plugin-media%22%20ORDER%20BY%20priority%20DESC%2C%20summary%20ASC%2C%20updatedDate%20DESC)
-
+Additional updates are planned for better handling of background playing, and supporting background
+application use.  If they aren't available here yet, there may be development versions in branches
+that haven't been merged yet; have a look at those if you're interested.
 
 ## Installation
 
 ```bash
-cordova plugin add cordova-plugin-media
+cordova plugin add https://github.com/jh3141/cordova-plugin-media
 ```
 
 ## Supported Platforms
@@ -322,8 +311,12 @@ function recordAudio() {
 Starts or resumes playing an audio file.
 
 ```js
-media.play();
+media.play(options);
 ```
+
+* Options specifies optional settings for player behaviour, and may be omitted if
+  the defaults are to be used.  See the platform-specific descriptions below for
+  available options.
 
 ### Quick Example
 
