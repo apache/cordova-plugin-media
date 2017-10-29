@@ -27,7 +27,7 @@
 var ACTUAL_PLAYBACK_TEST_TIMEOUT = 2 * 60 * 1000;
 
 var WEB_MP3_FILE = 'https://cordova.apache.org/downloads/BlueZedEx.mp3';
-var WEB_MP3_STREAM = 'http://c22033-l.i.core.cdn.streamfarm.net/22033mdr/live/3087mdr_figaro/ch_classic_128.mp3';
+var WEB_MP3_STREAM = 'http://forever.fm/all.mp3';
 
 var isWindows = cordova.platformId === 'windows8' || cordova.platformId === 'windows';
 var isBrowser = cordova.platformId === 'browser';
