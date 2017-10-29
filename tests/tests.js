@@ -39,6 +39,15 @@ var isAudioSupported = isWindows
         ? !window.SAUCELABS_ENV
         : true;
 
+// Detect OS version when running on Android
+var androidVersion = null;
+if (cordova.platformId === 'android') {
+    var ua = navigator.userAgent;
+    var androidStart = ua.indexOf('Android ');
+    var versionString = ua.substring(androidStart + 8, ua.indexOf(';', androidStart));
+    androidVersion = versionString.split('.').map(function (x) { return x / 1; });
+}
+
 exports.defineAutoTests = function () {
     var failed = function (done, msg, context) {
         if (context && context.done) return;
@@ -440,61 +449,60 @@ exports.defineAutoTests = function () {
             media1.release();
         });
 
-        it(
-            'media.spec.24 playback rate should be set properly using setRate',
-            function (done) {
-                if (cordova.platformId !== 'ios') {
-                    expect(true).toFailWithMessage('Platform does not supported this feature');
-                    pending();
+        it('media.spec.24 playback rate should be set properly using setRate', function (done) {
+            if (
+                cordova.platformId !== 'ios' &&
+                (cordova.platformId !== 'android' || androidVersion[0] <= 6)
+            ) {
+                expect(true).toFailWithMessage('Platform does not supported this feature');
+                pending();
+            }
+
+            // no audio hardware available
+            if (!isAudioSupported) {
+                pending();
+            }
+
+            var mediaFile = WEB_MP3_FILE;
+            var successCallback;
+            var context = this;
+            var flag = true;
+            var statusChange = function (statusCode) {
+                console.log('status code: ' + statusCode);
+                if (statusCode === Media.MEDIA_RUNNING && flag) {
+                    // flag variable used to ensure an extra security statement to ensure that the callback is processed only once,
+                    // in case for some reason the statusChange callback is reached more than one time with the same status code.
+                    // Some information about this kind of behavior it can be found at JIRA: CB-7099
+                    flag = false;
+                    setTimeout(function () {
+                        media1.getCurrentPosition(
+                            function (position) {
+                                // in four seconds expect position to be between 4 & 10. Here, the values are chosen to give
+                                // a large enough buffer range for the position to fall in and are not based on any calculation.
+                                expect(position).not.toBeLessThan(4);
+                                expect(position).toBeLessThan(10);
+                                media1.stop();
+                                media1.release();
+                                context.done = true;
+                                done();
+                            },
+                            failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position'),
+                            context
+                        );
+                    }, 4000);
                 }
+            };
 
-                // no audio hardware available
-                if (!isAudioSupported) {
-                    pending();
-                }
-
-                var mediaFile = WEB_MP3_FILE;
-                var successCallback;
-                var context = this;
-                var flag = true;
-                var statusChange = function (statusCode) {
-                    console.log('status code: ' + statusCode);
-                    if (statusCode === Media.MEDIA_RUNNING && flag) {
-                        // flag variable used to ensure an extra security statement to ensure that the callback is processed only once,
-                        // in case for some reason the statusChange callback is reached more than one time with the same status code.
-                        // Some information about this kind of behavior it can be found at JIRA: CB-7099
-                        flag = false;
-                        setTimeout(function () {
-                            media1.getCurrentPosition(
-                                function (position) {
-                                    // in four seconds expect position to be between 4 & 10. Here, the values are chosen to give
-                                    // a large enough buffer range for the position to fall in and are not based on any calculation.
-                                    expect(position).not.toBeLessThan(4);
-                                    expect(position).toBeLessThan(10);
-                                    media1.stop();
-                                    media1.release();
-                                    context.done = true;
-                                    done();
-                                },
-                                failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position'),
-                                context
-                            );
-                        }, 4000);
-                    }
-                };
-
-                var media1 = new Media(
-                    mediaFile,
-                    successCallback,
-                    failed.bind(null, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context),
-                    statusChange
-                );
-                // make audio playback two times faster
-                media1.setRate(2);
-                media1.play();
-            },
-            ACTUAL_PLAYBACK_TEST_TIMEOUT
-        );
+            var media1 = new Media(
+                mediaFile,
+                successCallback,
+                failed.bind(null, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context),
+                statusChange
+            );
+            // make audio playback two times faster
+            media1.setRate(2);
+            media1.play();
+        }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
 
         it(
             'media.spec.25 should be able to play an audio stream',
