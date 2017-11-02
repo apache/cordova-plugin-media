@@ -93,6 +93,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     private boolean prepareOnly = true;     // playback after file prepare flag
     private int seekOnPrepared = 0;     // seek to this location once media is prepared
     private float setRateOnPrepared = -1;
+    private boolean ignoreFocusLost = false;
 
     /**
      * Constructor.
@@ -739,5 +740,23 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             }
         }
         return 0;
+    }
+
+    /**
+     * Sets the flag controlling whether this player should be paused whenever
+     * audio focus is lost.  Default false => pause is performed.
+     */
+    public void setIgnoreFocusLost (boolean ignoreFocusLost)
+    {
+        this.ignoreFocusLost = ignoreFocusLost;
+    }
+
+    /**
+     * Gets the flag controlling whether this player should be paused whenever
+     * audio focus is lost.  Default false => pause is performed.
+     */
+    public boolean getIgnoreLostFocus ()
+    {
+        return ignoreFocusLost;
     }
 }
