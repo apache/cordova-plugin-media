@@ -104,7 +104,7 @@ The following constants are reported as the only parameter to the
 
 ### Methods
 
-- `media.getCurrentAmplitude`: Returns the current position within an audio file.
+- `media.getCurrentAmplitude`: Returns the current amplitude within an audio file.
 
 - `media.getCurrentPosition`: Returns the current position within an audio file.
 
@@ -140,7 +140,7 @@ The following constants are reported as the only parameter to the
 
 ## media.getCurrentAmplitude
 
-Returns the current amplitude of the current recording.
+Returns the current amplitude within an audio file.
 
     media.getCurrentAmplitude(mediaSuccess, [mediaError]);
 
