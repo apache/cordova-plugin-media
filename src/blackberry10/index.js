@@ -23,6 +23,8 @@
 
 var audioObjects = {},
     mediaErrorsHandled = false;
+	
+var MEDIA_DURATION = 2;
 
 // There is a bug in the webplatform handling of media error
 // dialogs prior to 10.2. This function needs to be run once
@@ -42,6 +44,23 @@ function handleMediaErrors() {
         };
         mediaErrorsHandled = true;
     }
+}
+
+function setDuration(id, env) {
+	var counter = 0;
+	var interval = 100;
+	var timerDuration = setInterval(function() {
+		counter += interval;
+		if (counter > 2000) {
+			clearInterval(timerDuration);
+		}
+		var duration = audioObjects[id].duration;
+		if (isFinite(duration)) {
+			clearInterval(timerDuration);
+			var executeString = "Media.onStatus('" + id + "', " + MEDIA_DURATION + ", '" + duration +  "');";
+			env.webview.executeJavaScript(executeString);
+		}
+	}, interval);
 }
 
 module.exports = {
@@ -64,7 +83,9 @@ module.exports = {
         }
 
         handleMediaErrors();
-
+		
+		setDuration(id, env);
+		
         result.ok();
     },
 
@@ -181,26 +202,6 @@ module.exports = {
         }
 
         result.ok(audio.currentTime);
-    },
-
-    getDuration: function (success, fail, args, env) {
-
-        var audio,
-            result = new PluginResult(args, env);
-
-        if (!args[0]) {
-            result.error("Media Object id was not sent in arguments");
-            return;
-        }
-
-        audio = audioObjects[JSON.parse(decodeURIComponent(args[0]))];
-
-        if (!audio) {
-            result.error("Audio Object has not been initialized");
-            return;
-        }
-
-        result.ok(audio.duration);
     },
 
     startRecordingAudio: function (success, fail, args, env) {
