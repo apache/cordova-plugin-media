@@ -36,8 +36,10 @@ var mediaObjects = {};
  *                                  errorCallback(int errorCode) - OPTIONAL
  * @param statusCallback        The callback to be called when media status has changed.
  *                                  statusCallback(int statusCode) - OPTIONAL
+ * @param infoCallback          The callback to be called when playback information is received.
+ *                                  statusCallback(int infoCode) - OPTIONAL
  */
-var Media = function(src, successCallback, errorCallback, statusCallback) {
+var Media = function(src, successCallback, errorCallback, statusCallback, infoCallback) {
     argscheck.checkArgs('sFFF', 'Media', arguments);
     this.id = utils.createUUID();
     mediaObjects[this.id] = this;
@@ -45,6 +47,7 @@ var Media = function(src, successCallback, errorCallback, statusCallback) {
     this.successCallback = successCallback;
     this.errorCallback = errorCallback;
     this.statusCallback = statusCallback;
+    this.infoCallback = infoCallback;
     this._duration = -1;
     this._position = -1;
     exec(null, this.errorCallback, "Media", "create", [this.id, this.src]);
@@ -54,6 +57,7 @@ var Media = function(src, successCallback, errorCallback, statusCallback) {
 Media.MEDIA_STATE = 1;
 Media.MEDIA_DURATION = 2;
 Media.MEDIA_POSITION = 3;
+Media.MEDIA_INFO = 4;
 Media.MEDIA_ERROR = 9;
 
 // Media states
@@ -63,6 +67,10 @@ Media.MEDIA_RUNNING = 2;
 Media.MEDIA_PAUSED = 3;
 Media.MEDIA_STOPPED = 4;
 Media.MEDIA_MSG = ["None", "Starting", "Running", "Paused", "Stopped"];
+
+// Media informations
+Media.MEDIA_BUFFERING_START = 0;
+Media.MEDIA_BUFFERING_END = 1;
 
 // "static" function to return existing objs.
 Media.get = function(id) {
@@ -220,6 +228,11 @@ Media.onStatus = function(id, msgType, value) {
                 break;
             case Media.MEDIA_POSITION :
                 media._position = Number(value);
+                break;
+            case Media.MEDIA_INFO:
+                if (media.infoCallback) {
+                    media.infoCallback(value);
+                }
                 break;
             default :
                 if (console.error) {
