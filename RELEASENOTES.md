@@ -20,6 +20,9 @@
 -->
 # Release Notes
 
+### 5.0.0 (Dec 15, 2017)
+* [CB-13678](https://issues.apache.org/jira/browse/CB-13678) Remove deprecated platforms
+
 ### 4.0.0 (Nov 06, 2017)
 * [CB-12264](https://issues.apache.org/jira/browse/CB-12264) (README): fix `media.getCurrentAmplitude` definition
 * [CB-13265](https://issues.apache.org/jira/browse/CB-13265) Remove **iOS** usage description from media plugin
