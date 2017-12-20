@@ -108,7 +108,9 @@ Media.MEDIA_STARTING = 1;
 Media.MEDIA_RUNNING = 2;
 Media.MEDIA_PAUSED = 3;
 Media.MEDIA_STOPPED = 4;
-Media.MEDIA_MSG = ["None", "Starting", "Running", "Paused", "Stopped"];
+Media.MEDIA_CHANGED = 5;
+
+Media.MEDIA_MSG = ["None", "Starting", "Running", "Paused", "Stopped", "Changed"];
 
 /**
  * Start or resume playing audio file.
@@ -186,6 +188,21 @@ Media.prototype.getCurrentPosition = function(success, fail) {
 };
 
 /**
+* Change src of audio
+*/
+Media.prototype.changeSrc = function(src){
+    if(this.node){
+        try{
+            this.node.pause();
+            this.node.src = src;
+            Media.onStatus(this.id, Media.MEDIA_STATE, Media.MEDIA_CHANGED);
+        }catch(err){
+            Media.onStatus(this.id, Media.MEDIA_ERROR, err);
+        }
+    }
+}
+
+/**
  * Start recording audio file.
  */
 Media.prototype.startRecord = function() {
@@ -232,6 +249,7 @@ Media.prototype.setRate = function() {
  */
 Media.prototype.release = function() {
     try {
+        this.node.src = "";
         delete this.node;
     } catch (err) {
         Media.onStatus(this.id, Media.MEDIA_ERROR, err);
