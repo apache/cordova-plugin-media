@@ -601,6 +601,7 @@
                 avPlayer = nil;
             }
             if (self.avSession) {
+                [self.avSession setCategory:AVAudioSessionCategorySoloAmbient error:nil];
                 [self.avSession setActive:NO error:nil];
                 self.avSession = nil;
             }
