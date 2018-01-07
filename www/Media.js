@@ -233,6 +233,19 @@ Media.onStatus = function(id, msgType, value) {
 
 };
 
+/**
+ * Define if the plugin should release its resources automatically when a memory warning is received (iOS only)
+ */
+Media.shouldReleaseOnMemoryWarning = function(value) {
+    if (cordova.platformId === 'ios'){
+        exec(null, function () {
+            console.warn('Unable to set memory warning auto-release flag');
+        }, "Media", "shouldReleaseOnMemoryWarning", [value]);
+    } else {
+        console.warn('Media.shouldReleaseOnMemoryWarning method is currently not supported for', cordova.platformId, 'platform.');
+    }
+};
+
 module.exports = Media;
 
 function onMessageFromNative(msg) {

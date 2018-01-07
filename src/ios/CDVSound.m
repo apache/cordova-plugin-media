@@ -29,6 +29,13 @@
 
 @synthesize soundCache, avSession, currMediaId, statusCallbackId;
 
+static BOOL releaseOnMemoryWarning;
+
+- (void)pluginInitialize
+{
+    releaseOnMemoryWarning = false;
+}
+
 // Maps a url for a resource path for recording
 - (NSURL*)urlForRecording:(NSString*)resourcePath
 {
@@ -580,6 +587,10 @@
     }
 }
 
+- (void)shouldReleaseOnMemoryWarning:(CDVInvokedUrlCommand*)command
+{
+    releaseOnMemoryWarning = [[command argumentAtIndex:0] boolValue];
+}
 
 - (void)release:(CDVInvokedUrlCommand*)command
 {
@@ -817,9 +828,11 @@
 
 - (void)onMemoryWarning
 {
-    [[self soundCache] removeAllObjects];
-    [self setSoundCache:nil];
-    [self setAvSession:nil];
+    if (releaseOnMemoryWarning) {
+        [[self soundCache] removeAllObjects];
+        [self setSoundCache:nil];
+        [self setAvSession:nil];
+    }
 
     [super onMemoryWarning];
 }
