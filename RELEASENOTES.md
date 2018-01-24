@@ -20,6 +20,11 @@
 -->
 # Release Notes
 
+### 5.0.2 (Jan 24, 2018)
+* [CB-13751](https://issues.apache.org/jira/browse/CB-13751) Add build-tools-26.0.2 to travis (#163)
+* Fix for [CB-11513](https://issues.apache.org/jira/browse/CB-11513)
+* [CB-7684](https://issues.apache.org/jira/browse/CB-7684) (#143)
+
 ### 5.0.1 (Dec 27, 2017)
 * [CB-13706](https://issues.apache.org/jira/browse/CB-13706) Fix to allow 5.0.0 version install (#160)
 * Bump cordova-plugin-file dependency to 6.0.0
