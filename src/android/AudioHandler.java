@@ -129,13 +129,20 @@ public class AudioHandler extends CordovaPlugin {
         else if (action.equals("startPlayingAudio")) {
             String target = args.getString(1);
             String fileUriStr;
+            boolean ignoreFocusLost;
             try {
                 Uri targetUri = resourceApi.remapUri(Uri.parse(target));
                 fileUriStr = targetUri.toString();
             } catch (IllegalArgumentException e) {
                 fileUriStr = target;
             }
-            this.startPlayingAudio(args.getString(0), FileHelper.stripFileProtocol(fileUriStr));
+            try {
+                ignoreFocusLost = args.getJSONObject(2).getBoolean("ignoreFocusLost");
+            } catch (JSONException ignored) {
+                ignoreFocusLost = false;
+            }
+
+            this.startPlayingAudio(args.getString(0), FileHelper.stripFileProtocol(fileUriStr), ignoreFocusLost);
         }
         else if (action.equals("seekToAudio")) {
             this.seekToAudio(args.getString(0), args.getInt(1));
@@ -178,6 +185,12 @@ public class AudioHandler extends CordovaPlugin {
             float f = this.getCurrentAmplitudeAudio(args.getString(0));
             callbackContext.sendPluginResult(new PluginResult(status, f));
             return true;
+        } else if (action.equals("setRate")) {
+            try {
+                this.setRate(args.getString(0), Float.parseFloat(args.getString(1)));
+            } catch (NumberFormatException nfe) {
+                //no-op
+            }
         }
         else { // Unrecognized action.
             return false;
@@ -314,9 +327,11 @@ public class AudioHandler extends CordovaPlugin {
      * Start or resume playing audio file.
      * @param id				The id of the audio player
      * @param file				The name of the audio file.
+     * @param ignoreFocusLost   If true, do not suspend playback when focus is lost
      */
-    public void startPlayingAudio(String id, String file) {
+    public void startPlayingAudio(String id, String file, boolean ignoreFocusLost) {
         AudioPlayer audio = getOrCreatePlayer(id, file);
+        audio.setIgnoreFocusLost (ignoreFocusLost)
         audio.startPlaying(file);
         getAudioFocus();
     }
@@ -402,7 +417,7 @@ public class AudioHandler extends CordovaPlugin {
 
     public void pauseAllLostFocus() {
         for (AudioPlayer audio : this.players.values()) {
-            if (audio.getState() == AudioPlayer.STATE.MEDIA_RUNNING.ordinal()) {
+            if (audio.getState() == AudioPlayer.STATE.MEDIA_RUNNING.ordinal() && !audio.getIgnoreLostFocus()) {
                 this.pausedForFocus.add(audio);
                 audio.pausePlaying();
             }
@@ -484,6 +499,23 @@ public class AudioHandler extends CordovaPlugin {
             audio.setVolume(volume);
         } else {
           LOG.e(TAG3,"Unknown Audio Player " + id);
+        }
+    }
+
+    /**
+     * Set the playback rate for an audio player
+     *
+     * @param id				The id of the audio player
+     * @param rate              Playback rate (where 1.0 is normal speed)
+     */
+    public void setRate(String id, float rate) {
+        String TAG4 = "AudioHandler.setRate(): Error : ";
+
+        AudioPlayer audio = this.players.get(id);
+        if (audio != null) {
+            audio.setRate(rate);
+        } else {
+          LOG.e(TAG4,"Unknown Audio Player " + id);
         }
     }
 

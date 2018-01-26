@@ -27,7 +27,7 @@
 var ACTUAL_PLAYBACK_TEST_TIMEOUT = 2 * 60 * 1000;
 
 var WEB_MP3_FILE = 'https://cordova.apache.org/downloads/BlueZedEx.mp3';
-var WEB_MP3_STREAM = 'http://c22033-l.i.core.cdn.streamfarm.net/22033mdr/live/3087mdr_figaro/ch_classic_128.mp3';
+var WEB_MP3_STREAM = 'http://forever.fm/all.mp3';
 
 var isWindows = cordova.platformId === 'windows8' || cordova.platformId === 'windows';
 var isBrowser = cordova.platformId === 'browser';
@@ -36,6 +36,14 @@ var isBrowser = cordova.platformId === 'browser';
 // the case for Sauce Labs emulators - see CB-11430)
 var isAudioSupported = isWindows ? !!Windows.Media.Devices.MediaDevice.getDefaultAudioRenderId(Windows.Media.Devices.AudioDeviceRole.default) :
     cordova.platformId === 'ios' ? !window.SAUCELABS_ENV : true;
+// Detect OS version when running on Android
+var androidVersion = null;
+if (cordova.platformId === 'android') {
+    var ua = navigator.userAgent;
+    var androidStart = ua.indexOf('Android ');
+    var versionString = ua.substring(androidStart + 8, ua.indexOf(';', androidStart));
+    androidVersion = versionString.split(".").map(function(x) { return x/1; });
+}
 
 exports.defineAutoTests = function () {
     var failed = function (done, msg, context) {
@@ -376,7 +384,9 @@ exports.defineAutoTests = function () {
         });
 
         it("media.spec.24 playback rate should be set properly using setRate", function (done) {
-            if (cordova.platformId !== 'ios') {
+            if (cordova.platformId !== 'ios' &&
+                (cordova.platformId !== 'android' || androidVersion[0] <= 6))
+            {
                 expect(true).toFailWithMessage('Platform does not supported this feature');
                 pending();
             }

@@ -92,6 +92,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     private MediaPlayer player = null;      // Audio player object
     private boolean prepareOnly = true;     // playback after file prepare flag
     private int seekOnPrepared = 0;     // seek to this location once media is prepared
+    private float setRateOnPrepared = -1;
+    private boolean ignoreFocusLost = false;
 
     /**
      * Constructor.
@@ -446,6 +448,9 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         this.player.setOnCompletionListener(this);
         // seek to any location received while not prepared
         this.seekToPlaying(this.seekOnPrepared);
+        // apply any playback rate received while not prepared
+        if (setRateOnPrepared >= 0)
+            this.player.setPlaybackParams (this.player.getPlaybackParams().setSpeed(setRateOnPrepared));
         // If start playing after prepared
         if (!this.prepareOnly) {
             this.player.start();
@@ -538,6 +543,23 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         } else {
             LOG.d(LOG_TAG, "AudioPlayer Error: Cannot set volume until the audio file is initialized.");
             sendErrorStatus(MEDIA_ERR_NONE_ACTIVE);
+        }
+    }
+
+    /**
+     * Set the playback rate for the player (ignored on API < 23)
+     *
+     * @param volume
+     */
+    public void setRate(float rate) {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
+            LOG.d(LOG_TAG, "AudioPlayer Warning: Request to set playback rate not supported on current OS version");
+            return;
+        }
+        if (this.player != null) {
+            this.player.setPlaybackParams (this.player.getPlaybackParams().setSpeed(rate));
+        } else {
+            setRateOnPrepared = rate;
         }
     }
 
@@ -718,5 +740,23 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             }
         }
         return 0;
+    }
+
+    /**
+     * Sets the flag controlling whether this player should be paused whenever
+     * audio focus is lost.  Default false => pause is performed.
+     */
+    public void setIgnoreFocusLost (boolean ignoreFocusLost)
+    {
+        this.ignoreFocusLost = ignoreFocusLost;
+    }
+
+    /**
+     * Gets the flag controlling whether this player should be paused whenever
+     * audio focus is lost.  Default false => pause is performed.
+     */
+    public boolean getIgnoreLostFocus ()
+    {
+        return ignoreFocusLost;
     }
 }
