@@ -643,6 +643,10 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
        position = CMTimeGetSeconds(time);
     }
 
+    if (isnan(position)){
+        position = -1;
+    }
+
     CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:position];
 
     [self onStatus:MEDIA_POSITION mediaId:mediaId param:@(position)];
