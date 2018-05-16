@@ -27,7 +27,7 @@
 var ACTUAL_PLAYBACK_TEST_TIMEOUT = 2 * 60 * 1000;
 
 var WEB_MP3_FILE = 'https://cordova.apache.org/downloads/BlueZedEx.mp3';
-var WEB_MP3_STREAM = 'http://c22033-l.i.core.cdn.streamfarm.net/22033mdr/live/3087mdr_figaro/ch_classic_128.mp3';
+var WEB_MP3_STREAM = 'https://monaca.mobi/cordova_test/mozart_serenade4_01.mp3';
 
 var isWindows = cordova.platformId === 'windows8' || cordova.platformId === 'windows';
 var isBrowser = cordova.platformId === 'browser';
@@ -233,7 +233,7 @@ exports.defineAutoTests = function () {
 
             it("media.spec.19 position should be set properly", function (done) {
                 // no audio hardware available
-                if (!isAudioSupported) {
+                if (!isAudioSupported || isBrowser) {
                     pending();
                 }
 
@@ -262,7 +262,7 @@ exports.defineAutoTests = function () {
             }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
 
             it("media.spec.20 duration should be set properly", function (done) {
-                if (!isAudioSupported || cordova.platformId === 'blackberry10') {
+                if (!isAudioSupported || cordova.platformId === 'blackberry10' || isBrowser) {
                     pending();
                 }
 
