@@ -26,8 +26,8 @@
 // some emulators can be REALLY slow at this, so two minutes
 var ACTUAL_PLAYBACK_TEST_TIMEOUT = 2 * 60 * 1000;
 
-var WEB_MP3_FILE = 'https://cordova.apache.org/downloads/BlueZedEx.mp3';
-var WEB_MP3_STREAM = 'https://monaca.mobi/cordova_test/mozart_serenade4_01.mp3';
+var WEB_MP3_FILE = 'https://cordova-develop.github.io/cordova-plugin-media/res/BlueZedEx.mp3';
+var WEB_MP3_STREAM = 'https://cordova-develop.github.io/cordova-plugin-media/res/mozart_serenade4_01.mp3';
 
 var isWindows = cordova.platformId === 'windows8' || cordova.platformId === 'windows';
 var isBrowser = cordova.platformId === 'browser';
