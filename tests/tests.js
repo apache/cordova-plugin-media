@@ -37,7 +37,7 @@ var isBrowser = cordova.platformId === 'browser';
 var isAudioSupported = isWindows ? !!Windows.Media.Devices.MediaDevice.getDefaultAudioRenderId(Windows.Media.Devices.AudioDeviceRole.default) :
     cordova.platformId === 'ios' ? !window.SAUCELABS_ENV : true;
 
-var isKitKat = cordova.platformId === 'android' && /Android\s4\.4/.test(window.navigator.userAgent)
+var isKitKat = cordova.platformId === 'android' && /Android\s4\.4/.test(window.navigator.userAgent);
 
 exports.defineAutoTests = function () {
     var failed = function (done, msg, context) {
