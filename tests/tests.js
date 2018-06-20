@@ -27,7 +27,7 @@
 var ACTUAL_PLAYBACK_TEST_TIMEOUT = 2 * 60 * 1000;
 
 var WEB_MP3_FILE = 'https://cordova.apache.org/downloads/BlueZedEx.mp3';
-var WEB_MP3_STREAM = 'https://cordova-develop.github.io/cordova-plugin-media/res/ch_classic_128.mp3';
+var WEB_MP3_STREAM = 'https://cordova.apache.org/downloads/BlueZedEx.mp3';
 
 var isWindows = cordova.platformId === 'windows8' || cordova.platformId === 'windows';
 var isBrowser = cordova.platformId === 'browser';
