@@ -380,8 +380,14 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
             }
             if (!bError) {
                 NSLog(@"Playing audio sample '%@'", audioFile.resourcePath);
+
+                BOOL isLocalFile = [audioFile.resourceURL isFileURL] || [resourcePath hasPrefix:CDVFILE_PREFIX] || [resourcePath hasPrefix:DOCUMENTS_SCHEME_PREFIX];
+
                 double duration = 0;
-                if (avPlayer.currentItem && avPlayer.currentItem.asset) {
+                //avoid play a file:// or a cdvfile:// with the incorrect player (if before we played a remote sound)
+                //it can happen when we alternate between local & remote URLS.
+                //as a consequence we don´t hear the sounds.  
+                if (avPlayer.currentItem && avPlayer.currentItem.asset && !isLocalFile) {
                     CMTime time = avPlayer.currentItem.asset.duration;
                     duration = CMTimeGetSeconds(time);
                     if (isnan(duration)) {
@@ -459,6 +465,9 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
     // create the player
     NSURL* resourceURL = audioFile.resourceURL;
 
+    //check if the file is local or over network
+    BOOL isLocalFile = [resourceURL isFileURL] || [resourceURL.absoluteString hasPrefix:CDVFILE_PREFIX] || [resourceURL.absoluteString hasPrefix:DOCUMENTS_SCHEME_PREFIX];
+
     if ([resourceURL isFileURL]) {
         audioFile.player = [[CDVAudioPlayer alloc] initWithContentsOfURL:resourceURL error:&playerError];
     } else {
@@ -496,8 +505,14 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
     } else {
         audioFile.player.mediaId = mediaId;
         audioFile.player.delegate = self;
-        if (avPlayer == nil)
-            bError = ![audioFile.player prepareToPlay];
+        //if (avPlayer == nil) ??
+        //one should not be related with the other, what matters is the player that we are going to use & the resource location
+        //without this check if we previously played a remote sound we have a avPlayer instance with an currentItem, therefore the
+        //prepareToPlay above would not be called, and the current sound could end up on the wrong player 
+        if(isLocalFile) {
+           bError = ![audioFile.player prepareToPlay];
+        }
+            
     }
     return bError;
 }
