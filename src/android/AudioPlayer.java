@@ -25,14 +25,19 @@ import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.media.MediaRecorder;
 import android.os.Environment;
-import android.util.Log;
+
+import org.apache.cordova.LOG;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.IOException;
+import java.util.LinkedList;
 
 /**
  * This class implements the audio playback and recording capabilities used by Cordova.
@@ -81,7 +86,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     private float duration = -1;            // Duration of audio
 
     private MediaRecorder recorder = null;  // Audio recording object
-    private String tempFile = null;         // Temporary recording file name
+    private LinkedList<String> tempFiles = null; // Temporary recording file name
+    private String tempFile = null;
 
     private MediaPlayer player = null;      // Audio player object
     private boolean prepareOnly = true;     // playback after file prepare flag
@@ -97,14 +103,17 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         this.handler = handler;
         this.id = id;
         this.audioFile = file;
-        this.recorder = new MediaRecorder();
+        this.tempFiles = new LinkedList<String>();
+    }
 
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            this.tempFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmprecording.3gp";
-        } else {
-            this.tempFile = "/data/data/" + handler.cordova.getActivity().getPackageName() + "/cache/tmprecording.3gp";
-        }
-
+    private String generateTempFile() {
+      String tempFileName = null;
+      if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+          tempFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmprecording-" + System.currentTimeMillis() + ".3gp";
+      } else {
+          tempFileName = "/data/data/" + handler.cordova.getActivity().getPackageName() + "/cache/tmprecording-" + System.currentTimeMillis() + ".3gp";
+      }
+      return tempFileName;
     }
 
     /**
@@ -121,7 +130,9 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             this.player = null;
         }
         if (this.recorder != null) {
-            this.stopRecording();
+            if (this.state != STATE.MEDIA_STOPPED) {
+                this.stopRecording(true);
+            }
             this.recorder.release();
             this.recorder = null;
         }
@@ -135,14 +146,16 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     public void startRecording(String file) {
         switch (this.mode) {
         case PLAY:
-            Log.d(LOG_TAG, "AudioPlayer Error: Can't record in play mode.");
+            LOG.d(LOG_TAG, "AudioPlayer Error: Can't record in play mode.");
             sendErrorStatus(MEDIA_ERR_ABORTED);
             break;
         case NONE:
             this.audioFile = file;
+            this.recorder = new MediaRecorder();
             this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            this.recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT); // THREE_GPP);
-            this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT); //AMR_NB);
+            this.recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS); // RAW_AMR);
+            this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC); //AMR_NB);
+            this.tempFile = generateTempFile();
             this.recorder.setOutputFile(this.tempFile);
             try {
                 this.recorder.prepare();
@@ -158,7 +171,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             sendErrorStatus(MEDIA_ERR_ABORTED);
             break;
         case RECORD:
-            Log.d(LOG_TAG, "AudioPlayer Error: Already recording.");
+            LOG.d(LOG_TAG, "AudioPlayer Error: Already recording.");
             sendErrorStatus(MEDIA_ERR_ABORTED);
         }
     }
@@ -170,7 +183,6 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      */
     public void moveFile(String file) {
         /* this is a hack to save the file as the specified name */
-        File f = new File(this.tempFile);
 
         if (!file.startsWith("/")) {
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
@@ -180,28 +192,139 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             }
         }
 
-        String logMsg = "renaming " + this.tempFile + " to " + file;
-        Log.d(LOG_TAG, logMsg);
-        if (!f.renameTo(new File(file))) Log.e(LOG_TAG, "FAILED " + logMsg);
+        int size = this.tempFiles.size();
+        LOG.d(LOG_TAG, "size = " + size);
+
+        // only one file so just copy it
+        if (size == 1) {
+            String logMsg = "renaming " + this.tempFile + " to " + file;
+            LOG.d(LOG_TAG, logMsg);
+
+            File f = new File(this.tempFile);
+            if (!f.renameTo(new File(file))) {
+
+                FileOutputStream outputStream = null;
+                File outputFile = null;
+                try {
+                    outputFile = new File(file);
+                    outputStream = new FileOutputStream(outputFile);
+                    FileInputStream inputStream = null;
+                    File inputFile = null;
+                    try {
+                        inputFile = new File(this.tempFile);
+                        LOG.d(LOG_TAG,  "INPUT FILE LENGTH: " + String.valueOf(inputFile.length()) );
+                        inputStream = new FileInputStream(inputFile);
+                        copy(inputStream, outputStream, false);
+                    } catch (Exception e) {
+                        LOG.e(LOG_TAG, e.getLocalizedMessage(), e);
+                   } finally {
+                        if (inputStream != null) try {
+                            inputStream.close();
+                            inputFile.delete();
+                            inputFile = null;
+                        } catch (Exception e) {
+                            LOG.e(LOG_TAG, e.getLocalizedMessage(), e);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if (outputStream != null) try {
+                        outputStream.close();
+                        LOG.d(LOG_TAG, "OUTPUT FILE LENGTH: " + String.valueOf(outputFile.length()) );
+                    } catch (Exception e) {
+                        LOG.e(LOG_TAG, e.getLocalizedMessage(), e);
+                    }
+                }
+            }
+        }
+        // more than one file so the user must have pause recording. We'll need to concat files.
+        else {
+          FileOutputStream outputStream = null;
+          try {
+              outputStream = new FileOutputStream(new File(file));
+              FileInputStream inputStream = null;
+              File inputFile = null;
+              for (int i = 0; i < size; i++) {
+                  try {
+                      inputFile = new File(this.tempFiles.get(i));
+                      inputStream = new FileInputStream(inputFile);
+                      copy(inputStream, outputStream, (i>0));
+                  } catch(Exception e) {
+                      LOG.e(LOG_TAG, e.getLocalizedMessage(), e);
+                  } finally {
+                      if (inputStream != null) try {
+                          inputStream.close();
+                          inputFile.delete();
+                          inputFile = null;
+                      } catch (Exception e) {
+                          LOG.e(LOG_TAG, e.getLocalizedMessage(), e);
+                      }
+                  }
+              }
+          } catch(Exception e) {
+              e.printStackTrace();
+          } finally {
+              if (outputStream != null) try {
+                  outputStream.close();
+              } catch (Exception e) {
+                  LOG.e(LOG_TAG, e.getLocalizedMessage(), e);
+              }
+          }
+        }
+    }
+
+    private static long copy(InputStream from, OutputStream to, boolean skipHeader)
+                throws IOException {
+        byte[] buf = new byte[8096];
+        long total = 0;
+        if (skipHeader) {
+            from.skip(6);
+        }
+        while (true) {
+            int r = from.read(buf);
+            if (r == -1) {
+                break;
+            }
+            to.write(buf, 0, r);
+            total += r;
+        }
+        return total;
     }
 
     /**
-     * Stop recording and save to the file specified when recording started.
+     * Stop/Pause recording and save to the file specified when recording started.
      */
-    public void stopRecording() {
+    public void stopRecording(boolean stop) {
         if (this.recorder != null) {
             try{
                 if (this.state == STATE.MEDIA_RUNNING) {
                     this.recorder.stop();
-                    this.setState(STATE.MEDIA_STOPPED);
                 }
                 this.recorder.reset();
-                this.moveFile(this.audioFile);
+                if (!this.tempFiles.contains(this.tempFile)) {
+                    this.tempFiles.add(this.tempFile);
+                }
+                if (stop) {
+                    LOG.d(LOG_TAG, "stopping recording");
+                    this.setState(STATE.MEDIA_STOPPED);
+                    this.moveFile(this.audioFile);
+                } else {
+                    LOG.d(LOG_TAG, "pause recording");
+                    this.setState(STATE.MEDIA_PAUSED);
+                }
             }
             catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * Resume recording and save to the file specified when recording started.
+     */
+    public void resumeRecording() {
+        startRecording(this.audioFile);
     }
 
     //==========================================================================
@@ -228,8 +351,10 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      */
     public void seekToPlaying(int milliseconds) {
         if (this.readyPlayer(this.audioFile)) {
-            this.player.seekTo(milliseconds);
-            Log.d(LOG_TAG, "Send a onStatus update for the new seek");
+            if (milliseconds > 0) {
+                this.player.seekTo(milliseconds);
+            }
+            LOG.d(LOG_TAG, "Send a onStatus update for the new seek");
             sendStatusChange(MEDIA_POSITION, null, (milliseconds / 1000.0f));
         }
         else {
@@ -248,7 +373,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             this.setState(STATE.MEDIA_PAUSED);
         }
         else {
-            Log.d(LOG_TAG, "AudioPlayer Error: pausePlaying() called during invalid state: " + this.state.ordinal());
+            LOG.d(LOG_TAG, "AudioPlayer Error: pausePlaying() called during invalid state: " + this.state.ordinal());
             sendErrorStatus(MEDIA_ERR_NONE_ACTIVE);
         }
     }
@@ -260,13 +385,20 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         if ((this.state == STATE.MEDIA_RUNNING) || (this.state == STATE.MEDIA_PAUSED)) {
             this.player.pause();
             this.player.seekTo(0);
-            Log.d(LOG_TAG, "stopPlaying is calling stopped");
+            LOG.d(LOG_TAG, "stopPlaying is calling stopped");
             this.setState(STATE.MEDIA_STOPPED);
         }
         else {
-            Log.d(LOG_TAG, "AudioPlayer Error: stopPlaying() called during invalid state: " + this.state.ordinal());
+            LOG.d(LOG_TAG, "AudioPlayer Error: stopPlaying() called during invalid state: " + this.state.ordinal());
             sendErrorStatus(MEDIA_ERR_NONE_ACTIVE);
         }
+    }
+
+    /**
+     * Resume playing.
+     */
+    public void resumePlaying() {
+    	this.startPlaying(this.audioFile);
     }
 
     /**
@@ -275,7 +407,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * @param player           The MediaPlayer that reached the end of the file
      */
     public void onCompletion(MediaPlayer player) {
-        Log.d(LOG_TAG, "on completion is calling stopped");
+        LOG.d(LOG_TAG, "on completion is calling stopped");
         this.setState(STATE.MEDIA_STOPPED);
     }
 
@@ -303,7 +435,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * @return                  T=streaming, F=local
      */
     public boolean isStreaming(String file) {
-        if (file.contains("http://") || file.contains("https://")) {
+        if (file.contains("http://") || file.contains("https://") || file.contains("rtsp://")) {
             return true;
         }
         else {
@@ -387,14 +519,15 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * @param arg2              an extra code, specific to the error.
      */
     public boolean onError(MediaPlayer player, int arg1, int arg2) {
-        Log.d(LOG_TAG, "AudioPlayer.onError(" + arg1 + ", " + arg2 + ")");
+        LOG.d(LOG_TAG, "AudioPlayer.onError(" + arg1 + ", " + arg2 + ")");
 
-        // TODO: Not sure if this needs to be sent?
-        this.player.stop();
-        this.player.release();
-
+        // we don't want to send success callback
+        // so we don't call setState() here
+        this.state = STATE.MEDIA_STOPPED;
+        this.destroy();
         // Send error notification to JavaScript
         sendErrorStatus(arg1);
+
         return false;
     }
 
@@ -438,7 +571,12 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * @param volume
      */
     public void setVolume(float volume) {
-        this.player.setVolume(volume, volume);
+        if (this.player != null) {
+            this.player.setVolume(volume, volume);
+        } else {
+            LOG.d(LOG_TAG, "AudioPlayer Error: Cannot set volume until the audio file is initialized.");
+            sendErrorStatus(MEDIA_ERR_NONE_ACTIVE);
+        }
     }
 
     /**
@@ -453,7 +591,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         case PLAY:
             break;
         case RECORD:
-            Log.d(LOG_TAG, "AudioPlayer Error: Can't play in record mode.");
+            LOG.d(LOG_TAG, "AudioPlayer Error: Can't play in record mode.");
             sendErrorStatus(MEDIA_ERR_ABORTED);
             return false; //player is not ready
         }
@@ -471,6 +609,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                 case MEDIA_NONE:
                     if (this.player == null) {
                         this.player = new MediaPlayer();
+                        this.player.setOnErrorListener(this);
                     }
                     try {
                         this.loadAudioFile(file);
@@ -480,7 +619,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                     return false;
                 case MEDIA_LOADING:
                     //cordova js is not aware of MEDIA_LOADING, so we send MEDIA_STARTING instead
-                    Log.d(LOG_TAG, "AudioPlayer Loading: startPlaying() called during media preparation: " + STATE.MEDIA_STARTING.ordinal());
+                    LOG.d(LOG_TAG, "AudioPlayer Loading: startPlaying() called during media preparation: " + STATE.MEDIA_STARTING.ordinal());
                     this.prepareOnly = false;
                     return false;
                 case MEDIA_STARTING:
@@ -489,10 +628,11 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                     return true;
                 case MEDIA_STOPPED:
                     //if we are readying the same file
-                    if (this.audioFile.compareTo(file) == 0) {
+                    if (file!=null && this.audioFile.compareTo(file) == 0) {
                         //maybe it was recording?
-                        if(this.recorder!=null && player==null) {
+                        if (player == null) {
                             this.player = new MediaPlayer();
+                            this.player.setOnErrorListener(this);
                             this.prepareOnly = false;
 
                             try {
@@ -501,13 +641,13 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                                 sendErrorStatus(MEDIA_ERR_ABORTED);
                             }
                             return false;//we´re not ready yet
-                        } 
+                        }
                         else {
                            //reset the audio file
                             player.seekTo(0);
                             player.pause();
-                            return true; 
-                        } 
+                            return true;
+                        }
                     } else {
                         //reset the player
                         this.player.reset();
@@ -520,7 +660,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                         return false;
                     }
                 default:
-                    Log.d(LOG_TAG, "AudioPlayer Error: startPlaying() called during invalid state: " + this.state);
+                    LOG.d(LOG_TAG, "AudioPlayer Error: startPlaying() called during invalid state: " + this.state);
                     sendErrorStatus(MEDIA_ERR_ABORTED);
             }
         }
@@ -593,9 +733,28 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                 statusDetails.put("value", value.floatValue());
             }
         } catch (JSONException e) {
-            Log.e(LOG_TAG, "Failed to create status details", e);
+            LOG.e(LOG_TAG, "Failed to create status details", e);
         }
 
         this.handler.sendEventMessage("status", statusDetails);
+    }
+
+    /**
+     * Get current amplitude of recording.
+     *
+     * @return amplitude or 0 if not recording
+     */
+    public float getCurrentAmplitude() {
+        if (this.recorder != null) {
+            try{
+                if (this.state == STATE.MEDIA_RUNNING) {
+                    return (float) this.recorder.getMaxAmplitude() / 32762;
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return 0;
     }
 }
