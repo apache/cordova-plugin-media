@@ -20,6 +20,29 @@
 -->
 # Release Notes
 
+### 5.0.2 (Jan 24, 2018)
+* [CB-13751](https://issues.apache.org/jira/browse/CB-13751) Add build-tools-26.0.2 to travis (#163)
+* Fix for [CB-11513](https://issues.apache.org/jira/browse/CB-11513)
+* [CB-7684](https://issues.apache.org/jira/browse/CB-7684) (#143)
+
+### 5.0.1 (Dec 27, 2017)
+* [CB-13706](https://issues.apache.org/jira/browse/CB-13706) Fix to allow 5.0.0 version install (#160)
+* Bump cordova-plugin-file dependency to 6.0.0
+
+### 5.0.0 (Dec 15, 2017)
+* [CB-13678](https://issues.apache.org/jira/browse/CB-13678) Remove deprecated platforms
+
+### 4.0.0 (Nov 06, 2017)
+* [CB-12264](https://issues.apache.org/jira/browse/CB-12264) (README): fix `media.getCurrentAmplitude` definition
+* [CB-13265](https://issues.apache.org/jira/browse/CB-13265) Remove **iOS** usage description from media plugin
+* [CB-13517](https://issues.apache.org/jira/browse/CB-13517)  (all): Add 'protective' entry to `cordovaDependencies`
+* [CB-13473](https://issues.apache.org/jira/browse/CB-13473) (CI) Removed **Browser** builds from AppVeyor
+* [CB-13294](https://issues.apache.org/jira/browse/CB-13294) Remove `cordova-plugin-compat`
+* [CB-13299](https://issues.apache.org/jira/browse/CB-13299) (CI) Fix **Android** builds
+* [CB-13028](https://issues.apache.org/jira/browse/CB-13028) (CI) **Browser** builds on Travis and AppVeyor
+* [CB-12671](https://issues.apache.org/jira/browse/CB-12671) **iOS**: Fix auto-test with stopping media that is in starting state
+* [CB-12847](https://issues.apache.org/jira/browse/CB-12847) added `bugs` entry to `package.json`.
+
 ### 3.0.1 (Apr 27, 2017)
 * [CB-12542](https://issues.apache.org/jira/browse/CB-12542) (ios) Fix wav file recording, add m4a extension. make **iOS** status handling compatible with **Android**/Windows
 * [CB-12622](https://issues.apache.org/jira/browse/CB-12622) Added **Android 6.0** build badges to `README`

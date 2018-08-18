@@ -1,21 +1,15 @@
 {
   "name": "cordova-plugin-media",
-  "version": "3.0.2-dev",
+  "version": "5.0.3-dev",
   "description": "Cordova Media Plugin",
   "types": "./types/index.d.ts",
   "cordova": {
     "id": "cordova-plugin-media",
     "platforms": [
       "android",
-      "amazon-fireos",
-      "ubuntu",
+      "browser",
       "ios",
-      "blackberry10",
-      "wp7",
-      "wp8",
-      "windows8",
-      "windows",
-      "tizen"
+      "windows"
     ]
   },
   "repository": {
@@ -30,15 +24,9 @@
     "media",
     "ecosystem:cordova",
     "cordova-android",
-    "cordova-amazon-fireos",
-    "cordova-ubuntu",
+    "cordova-browser",
     "cordova-ios",
-    "cordova-blackberry10",
-    "cordova-wp7",
-    "cordova-wp8",
-    "cordova-windows8",
-    "cordova-windows",
-    "cordova-tizen"
+    "cordova-windows"
   ],
   "scripts": {
     "test": "npm run jshint",
@@ -48,11 +36,14 @@
   "license": "Apache-2.0",
   "engines": {
     "cordovaDependencies": {
-      "4.0.0": {
-        "cordova": ">100"
-      },
       "3.0.0": {
         "cordova-android": ">=6.1.0"
+      },
+      "4.0.0": {
+        "cordova-android": ">=6.3.0"
+      },
+      "6.0.0": {
+        "cordova": ">100"
       }
     }
   },
