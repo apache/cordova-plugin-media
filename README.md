@@ -74,9 +74,9 @@ var media = new Media(src, mediaSuccess, [mediaError], [mediaStatus]);
 
 - __mediaSuccess__: (Optional) The callback that executes after a `Media` object has completed the current play, record, or stop action. _(Function)_
 
-- __mediaError__: (Optional) The callback that executes if an error occurs. _(Function)_
+- __mediaError__: (Optional) The callback that executes if an error occurs. It takes an integer error code. _(Function)_
 
-- __mediaStatus__: (Optional) The callback that executes to indicate status changes. _(Function)_
+- __mediaStatus__: (Optional) The callback that executes to indicate status changes. It takes a integer status code. _(Function)_
 
 __NOTE__: `cdvfile` path is supported as `src` parameter:
 ```javascript
