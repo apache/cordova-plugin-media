@@ -122,6 +122,8 @@ The following constants are reported as the only parameter to the
 
 - `media.stop`: Stop playing an audio file.
 
+- `media.setRate`: Set the playback rate for the audio file.
+
 ### Additional ReadOnly Parameters
 
 - __position__: The position within the audio playback, in seconds.
@@ -648,6 +650,34 @@ function recordAudio() {
         mediaRec.stopRecord();
     }, 10000);
 }
+```
+
+## media.setRate
+
+Stops recording an audio file.
+
+    media.setRate(rate);
+
+### Supported Platforms
+
+- iOS
+
+### Parameters
+
+- __rate__: The rate to set for playback.
+
+### Quick Example
+
+```js
+// Audio player
+//
+var my_media = new Media(src, onSuccess, onError);
+    my_media.play();
+
+// Set playback rate to 2.0x after 10 seconds
+setTimeout(function() {
+    my_media.setRate(2.0);
+}, 5000);
 ```
 
 ## MediaError
