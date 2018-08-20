@@ -528,7 +528,7 @@ public class AudioHandler extends CordovaPlugin {
                 return;
             }
         }
-        promptForRecord();
+        //promptForRecord();
     }
 
     /*
