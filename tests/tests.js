@@ -1,4 +1,4 @@
-﻿/*
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -26,9 +26,18 @@
 // some emulators can be REALLY slow at this, so two minutes
 var ACTUAL_PLAYBACK_TEST_TIMEOUT = 2 * 60 * 1000;
 
-var isWindows = cordova.platformId == 'windows8' || cordova.platformId == 'windows';
-// detect whether audio hardware is available and enabled
-var isAudioSupported = isWindows ? Windows.Media.Devices.MediaDevice.getDefaultAudioRenderId(Windows.Media.Devices.AudioDeviceRole.default) : true;
+var WEB_MP3_FILE = 'https://cordova.apache.org/downloads/BlueZedEx.mp3';
+var WEB_MP3_STREAM = 'https://cordova.apache.org/downloads/BlueZedEx.mp3';
+
+var isWindows = cordova.platformId === 'windows8' || cordova.platformId === 'windows';
+var isBrowser = cordova.platformId === 'browser';
+// Detect whether audio hardware is available and enabled. For iOS playing audio is
+// not supported on emulators w/out sound device connected to host PC but (which is
+// the case for Sauce Labs emulators - see CB-11430)
+var isAudioSupported = isWindows ? !!Windows.Media.Devices.MediaDevice.getDefaultAudioRenderId(Windows.Media.Devices.AudioDeviceRole.default) :
+    cordova.platformId === 'ios' ? !window.SAUCELABS_ENV : true;
+
+var isKitKat = cordova.platformId === 'android' && /Android\s4\.4/.test(window.navigator.userAgent);
 
 exports.defineAutoTests = function () {
     var failed = function (done, msg, context) {
@@ -226,7 +235,7 @@ exports.defineAutoTests = function () {
 
             it("media.spec.19 position should be set properly", function (done) {
                 // no audio hardware available
-                if (!isAudioSupported) {
+                if (!isAudioSupported || isBrowser || isKitKat) {
                     pending();
                 }
 
@@ -234,7 +243,7 @@ exports.defineAutoTests = function () {
                 //in case the statusChange callback is reached more than one time with the same status code.
                 //Some information about this kind of behaviour can be found at JIRA: CB-7099.
                 var context = this,
-                    mediaFile = 'https://cordova.apache.org/downloads/BlueZedEx.mp3',
+                    mediaFile = WEB_MP3_FILE,
                     successCallback = function () { },
                     statusChange = function (statusCode) {
                         if (!context.done && statusCode == Media.MEDIA_RUNNING) {
@@ -255,7 +264,7 @@ exports.defineAutoTests = function () {
             }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
 
             it("media.spec.20 duration should be set properly", function (done) {
-                if (!isAudioSupported || cordova.platformId === 'blackberry10') {
+                if (!isAudioSupported || cordova.platformId === 'blackberry10' || isBrowser || isKitKat) {
                     pending();
                 }
 
@@ -263,7 +272,7 @@ exports.defineAutoTests = function () {
                 //in case the statusChange callback is reached more than one time with the same status code.
                 //Some information about this kind of behaviour can be found at JIRA: CB-7099.
                 var context = this,
-                    mediaFile = 'https://cordova.apache.org/downloads/BlueZedEx.mp3',
+                    mediaFile = WEB_MP3_FILE,
                     successCallback = function () { },
                     statusChange = function (statusCode) {
                         if (!context.done && statusCode == Media.MEDIA_RUNNING) {
@@ -284,7 +293,7 @@ exports.defineAutoTests = function () {
             }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
 
             it("media.spec.21 should be able to resume playback after pause", function (done) {
-                if (!isAudioSupported || cordova.platformId === 'blackberry10') {
+                if (!isAudioSupported || cordova.platformId === 'blackberry10' || isKitKat) {
                     pending();
                 }
 
@@ -293,7 +302,7 @@ exports.defineAutoTests = function () {
                 //Some information about this kind of behaviour can be found at JIRA: CB-7099.
                 var context = this;
                 var resumed = false;
-                var mediaFile = 'https://cordova.apache.org/downloads/BlueZedEx.mp3';
+                var mediaFile = WEB_MP3_FILE;
                 var successCallback = function () { };
                 var statusChange = function (statusCode) {
                     if (context.done) return;
@@ -306,7 +315,8 @@ exports.defineAutoTests = function () {
                         }
 
                         media.getCurrentPosition(function (position) {
-                            expect(position).toBeCloseTo(20, 0);
+                            expect(position).toBeGreaterThan(19);
+                            expect(position).toBeLessThan(21);
                             context.done = true;
                             done();
                         }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position', context));
@@ -327,7 +337,7 @@ exports.defineAutoTests = function () {
             }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
 
             it("media.spec.22 should be able to seek through file", function (done) {
-                if (!isAudioSupported || cordova.platformId === 'blackberry10') {
+                if (!isAudioSupported || cordova.platformId === 'blackberry10' || isKitKat) {
                     pending();
                 }
 
@@ -335,7 +345,7 @@ exports.defineAutoTests = function () {
                 //in case the statusChange callback is reached more than one time with the same status code.
                 //Some information about this kind of behaviour can be found at JIRA: CB-7099.
                 var context = this;
-                var mediaFile = 'https://cordova.apache.org/downloads/BlueZedEx.mp3';
+                var mediaFile = WEB_MP3_FILE;
                 var successCallback = function () { };
                 var statusChange = function (statusCode) {
                     if (!context.done && statusCode == Media.MEDIA_RUNNING) {
@@ -371,9 +381,14 @@ exports.defineAutoTests = function () {
             if (cordova.platformId !== 'ios') {
                 expect(true).toFailWithMessage('Platform does not supported this feature');
                 pending();
-                return;
             }
-            var mediaFile = 'https://cordova.apache.org/downloads/BlueZedEx.mp3',
+
+            // no audio hardware available
+            if (!isAudioSupported) {
+                pending();
+            }
+
+            var mediaFile = WEB_MP3_FILE,
                 successCallback,
                 context = this,
                 flag = true,
@@ -388,9 +403,11 @@ exports.defineAutoTests = function () {
                             media1.getCurrentPosition(function (position) {
                                 //in four seconds expect position to be between 4 & 10. Here, the values are chosen to give
                                 //a large enough buffer range for the position to fall in and are not based on any calculation.
-                                expect(position >= 4 && position < 10).toBeTruthy();
+                                expect(position).not.toBeLessThan(4);
+                                expect(position).toBeLessThan(10);
                                 media1.stop();
                                 media1.release();
+                                context.done = true;
                                 done();
                             }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position'),context);
                         }, 4000);
@@ -402,6 +419,105 @@ exports.defineAutoTests = function () {
             media1.setRate(2);
             media1.play();
         }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
+
+        it("media.spec.25 should be able to play an audio stream", function (done) {
+            // no audio hardware available, OR
+            // O_o Safari can't play the stream, so we're skipping this test on all browsers o_O
+            if (!isAudioSupported || isBrowser || isKitKat) {
+                pending();
+            }
+
+            // The link below points to an infinite mp3 stream
+            var mediaFile = WEB_MP3_STREAM,
+                successCallback,
+                context = this,
+                flag = true,
+                statusChange = function (statusCode) {
+                    console.log("status code: " + statusCode);
+                    if (statusCode == Media.MEDIA_RUNNING && flag) {
+                        //flag variable used to ensure an extra security statement to ensure that the callback is processed only once,
+                        //in case for some reason the statusChange callback is reached more than one time with the same status code.
+                        //Some information about this kind of behavior it can be found at JIRA: CB-7099
+                        flag = false;
+                        expect(true).toBe(true);
+                        media1.stop();
+                        media1.release();
+                        context.done = true;
+                        done();
+                    }
+                };
+
+            var media1 = new Media(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange); // jshint ignore:line
+            media1.play();
+        }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
+
+        it("media.spec.26 should not crash or throw when setting the volume right after creating the media", function (done) {
+            //bb10 dialog pops up, preventing tests from running
+            if (cordova.platformId === 'blackberry10') {
+                pending();
+            }
+
+            var mediaFile = WEB_MP3_FILE;
+            var media = null;
+
+            expect(function () {
+                media = new Media(mediaFile);
+                media.setVolume('0.5');
+            }).not.toThrow();
+
+            // if there is no exception or crash in 3 seconds, the spec is completed
+            setTimeout(function () {
+                if (media) {
+                    media.release();
+                    done();
+                }
+            }, 3000);
+        });
+
+        it("media.spec.27 should call success or error when trying to stop a media that is in starting state", function (done) {
+            //bb10 dialog pops up, preventing tests from running
+            if (!isAudioSupported || cordova.platformId === 'blackberry10') {
+                pending();
+            }
+
+            var mediaFile = WEB_MP3_FILE;
+            var media = null;
+            var context = this;
+            var beenStarting = false;
+            var safeDone = function () {
+                if (!context.done) {
+                    media.release();
+                    context.done = true;
+                    done();
+                }
+            };
+
+            var errorCallback = jasmine.createSpy('errorCallback').and.callFake(function (e) {
+                expect(true).toBe(true);
+                safeDone();
+            });
+            var successCallback = function () {
+                expect(true).toBe(true);
+                safeDone();
+            };
+            var statusChange = function (s) {
+                if ((s == Media.MEDIA_STARTING) && !context.done) {
+                    beenStarting = true;
+                    media.stop();
+                } else if (s == Media.MEDIA_RUNNING) {
+                    // Some plugin implementations may skip "Starting" state
+                    // so we'll also try to call stop in "Running" state,
+                    // but in this case we should check that the "Starting" state wasn't really reached,
+                    // otherwise it would mean that the previous media.stop() call has been ignored
+                    expect(beenStarting).toBe(false);
+                    media.stop();
+                }
+            };
+
+            media = new Media(mediaFile, successCallback, errorCallback, statusChange);
+            media.play();
+        });
+
     });
 };
 
@@ -416,7 +532,7 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     var media1 = null;
     var media1Timer = null;
     var audioSrc = null;
-    var defaultaudio = "https://cordova.apache.org/downloads/BlueZedEx.mp3";
+    var defaultaudio = WEB_MP3_FILE;
 
     //Play audio function
     function playAudio(url) {
@@ -598,6 +714,15 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         });
     }
 
+    //set audio volume
+    function setVolume() {
+        console.log("setVolume()");
+        var volume = document.getElementById("volumeInput").value;
+        if (media1 !== null) {
+            media1.setVolume(volume);
+        }
+    }
+
     //for forced updates of position after a successful seek
 
     function updatePosition() {
@@ -622,15 +747,14 @@ exports.defineManualTests = function (contentEl, createActionButton) {
 
     //Record audio
     function recordAudio() {
-        console.log("recordAudio()");
+        console.log("recordAudio(), recording to " + recordSrc);
         console.log(" -- media=" + mediaRec);
 
         releaseAudio();
 
         if (!mediaRec) {
-            var src = recordSrc;
-            mediaRec = new Media(src,
-                    function () {
+            mediaRec = new Media(recordSrc,
+                function () {
                     console.log("recordAudio():Audio Success");
                 },
                     function (err) {
@@ -668,22 +792,16 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         playAudio(recordSrc);
     }
 
-    //Function to create a file for iOS recording
-
+    //Function to get a filename for iOS recording
+    //Ensures that file doesn't exist to test CB-11380
     function getRecordSrc() {
-        var fsFail = function (error) {
-            console.log("error creating file for iOS recording");
-        };
-        var gotFile = function (file) {
-            recordSrc = file.fullPath;
-            //console.log("recording Src: " + recordSrc);
-        };
-        var gotFS = function (fileSystem) {
-            fileSystem.root.getFile("iOSRecording.wav", {
-                create : true
-            }, gotFile, fsFail);
-        };
-        window.requestFileSystem(LocalFileSystem.TEMPORARY, 0, gotFS, fsFail);
+        var noop = function () {};
+        recordSrc = "cdvfile://localhost/temporary/iOSRecording.wav";
+        window.resolveLocalFileSystemURL(recordSrc, function (file) {
+            file.remove(function() {
+                console.log("Successfully removed " + recordSrc);
+            }, noop);
+        }, noop);
     }
 
     //Function to create a file for BB recording
@@ -866,6 +984,24 @@ exports.defineManualTests = function (contentEl, createActionButton) {
                 row:0,
                 cell:2
             }
+        },
+         {
+            id: "setVolumeBtn",
+            content: "",
+            tag: "div",
+            position: {
+                row: 3,
+                cell: 0
+            }
+        },
+        {
+            id: "volumeInput",
+            tag: "input",
+            type: "text",
+            position: {
+                row: 3,
+                cell: 1
+            }
         }
     ],
     elementsRecord =
@@ -918,7 +1054,7 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     div.setAttribute("align", "center");
     contentEl.appendChild(div);
     //Generate and add buttons table
-    contentEl.appendChild(generateTable('audioActions', 3, 3, elementsAudio));
+    contentEl.appendChild(generateTable('audioActions', 4, 3, elementsAudio));
     createActionButton('Play', function () {
         playAudio();
     }, 'playBtn');
@@ -951,6 +1087,9 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     createActionButton('Seek To', function () {
         seekAudio('to');
     }, 'seekToBtn');
+    createActionButton('Set volume', function() {
+        setVolume();
+    }, 'setVolumeBtn');
     //get Special path to record if iOS || Blackberry
     if (cordova.platformId === 'ios')
         getRecordSrc();

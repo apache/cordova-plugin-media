@@ -20,15 +20,93 @@
 -->
 # Release Notes
 
+### 5.0.2 (Jan 24, 2018)
+* [CB-13751](https://issues.apache.org/jira/browse/CB-13751) Add build-tools-26.0.2 to travis (#163)
+* Fix for [CB-11513](https://issues.apache.org/jira/browse/CB-11513)
+* [CB-7684](https://issues.apache.org/jira/browse/CB-7684) (#143)
+
+### 5.0.1 (Dec 27, 2017)
+* [CB-13706](https://issues.apache.org/jira/browse/CB-13706) Fix to allow 5.0.0 version install (#160)
+* Bump cordova-plugin-file dependency to 6.0.0
+
+### 5.0.0 (Dec 15, 2017)
+* [CB-13678](https://issues.apache.org/jira/browse/CB-13678) Remove deprecated platforms
+
+### 4.0.0 (Nov 06, 2017)
+* [CB-12264](https://issues.apache.org/jira/browse/CB-12264) (README): fix `media.getCurrentAmplitude` definition
+* [CB-13265](https://issues.apache.org/jira/browse/CB-13265) Remove **iOS** usage description from media plugin
+* [CB-13517](https://issues.apache.org/jira/browse/CB-13517)  (all): Add 'protective' entry to `cordovaDependencies`
+* [CB-13473](https://issues.apache.org/jira/browse/CB-13473) (CI) Removed **Browser** builds from AppVeyor
+* [CB-13294](https://issues.apache.org/jira/browse/CB-13294) Remove `cordova-plugin-compat`
+* [CB-13299](https://issues.apache.org/jira/browse/CB-13299) (CI) Fix **Android** builds
+* [CB-13028](https://issues.apache.org/jira/browse/CB-13028) (CI) **Browser** builds on Travis and AppVeyor
+* [CB-12671](https://issues.apache.org/jira/browse/CB-12671) **iOS**: Fix auto-test with stopping media that is in starting state
+* [CB-12847](https://issues.apache.org/jira/browse/CB-12847) added `bugs` entry to `package.json`.
+
+### 3.0.1 (Apr 27, 2017)
+* [CB-12542](https://issues.apache.org/jira/browse/CB-12542) (ios) Fix wav file recording, add m4a extension. make **iOS** status handling compatible with **Android**/Windows
+* [CB-12622](https://issues.apache.org/jira/browse/CB-12622) Added **Android 6.0** build badges to `README`
+* [CB-12685](https://issues.apache.org/jira/browse/CB-12685) added `package.json` to tests folder
+
+### 3.0.0 (Feb 28, 2017)
+* **Android:** fix `NullPointerException` in `AudioPlayer.readyPlayer`
+* **Android:** fix `java.lang.NullPointerException` on `resumeAllGainedFocus`
+* [CB-12493](https://issues.apache.org/jira/browse/CB-12493) (Tests) Fixed spec.21 flakyness
+* major version bump, added `cordovaDependencies` requirement for `cordova-android>=6.1.0`
+* Add engine tag for checking `cordova-android`
+* Make the output file of **Android** an `acc` file.
+* [CB-12422](https://issues.apache.org/jira/browse/CB-12422) **iOS:** Fix readme issue on background needed plist modification
+* [CB-12434](https://issues.apache.org/jira/browse/CB-12434) **Android:** fix Stoping a Paused Recording throws exception
+* [CB-12411](https://issues.apache.org/jira/browse/CB-12411) Stoping a Paused Recording throws illegal state exception
+* [CB-1187](https://issues.apache.org/jira/browse/CB-1187) **iOS:** Fix unused recording settings
+* [CB-12353](https://issues.apache.org/jira/browse/CB-12353) Corrected merges usage in `plugin.xml`
+* [CB-12369](https://issues.apache.org/jira/browse/CB-12369) Add plugin typings from DefinitelyTyped
+* [CB-12363](https://issues.apache.org/jira/browse/CB-12363) Added build badges for **iOS 9.3** and **iOS 10.0** 
+* [CB-12230](https://issues.apache.org/jira/browse/CB-12230) Removed **Windows 8.1** build badges
+
+### 2.4.1 (Dec 07, 2016)
+* [CB-12224](https://issues.apache.org/jira/browse/CB-12224) Updated version and RELEASENOTES.md for release 2.4.1
+* [CB-12034](https://issues.apache.org/jira/browse/CB-12034) (ios) Add mandatory iOS 10 privacy description
+* [CB-11917](https://issues.apache.org/jira/browse/CB-11917) - Remove pull request template checklist item: "iCLA has been submitted…"
+* [CB-11529](https://issues.apache.org/jira/browse/CB-11529) ios: Make available setting volume for player on ios device
+* [CB-11832](https://issues.apache.org/jira/browse/CB-11832) Incremented plugin version.
+
+### 2.4.0 (Sep 08, 2016)
+* [CB-11795](https://issues.apache.org/jira/browse/CB-11795) Add 'protective' entry to cordovaDependencies
+* [CB-11793](https://issues.apache.org/jira/browse/CB-11793) fixed **android** build issue with last commit
+* [CB-11085](https://issues.apache.org/jira/browse/CB-11085) Fix error output using `println` to `LOG.e`
+* [CB-11757](https://issues.apache.org/jira/browse/CB-11757) (**ios**) Error out if trying to stop playback while in a wrong state
+* [CB-11380](https://issues.apache.org/jira/browse/CB-11380) (**ios**) Overloaded `audioFileForResource` method instead of modifying its signature
+* [CB-11380](https://issues.apache.org/jira/browse/CB-11380) (**ios**) Updated modified method signature in the .h file
+* [CB-11380](https://issues.apache.org/jira/browse/CB-11380) (**ios**) Fixed an unexpected error callback when initializing Media with file that doesn't exist
+* [CB-10849](https://issues.apache.org/jira/browse/CB-10849) (ios) Fixed a crash when playing soundfiles consecutively
+* [CB-11754](https://issues.apache.org/jira/browse/CB-11754) (**Android**) Fixed the build error
+* [CB-11086](https://issues.apache.org/jira/browse/CB-11086) (**Android**) Fixed a crash when `setVolume()` is called on unitialized audio This closes #93
+* Plugin uses `Android Log class` and not `Cordova LOG class`
+* [CB-11655](https://issues.apache.org/jira/browse/CB-11655) (**Android**) Enabled asynchronous error handling
+* [CB-11430](https://issues.apache.org/jira/browse/CB-11430) Report duration NaN value to JS properly
+* [CB-11429](https://issues.apache.org/jira/browse/CB-11429) Update test stream URL
+* [CB-11430](https://issues.apache.org/jira/browse/CB-11430) Skip audio playback tests on Saucelabs
+* [CB-11458](https://issues.apache.org/jira/browse/CB-11458) - `media.spec.25` 'should be able to play an audio stream' fails on **iOS** platform
+* Add badges for paramedic builds on Jenkins
+* [CB-11313](https://issues.apache.org/jira/browse/CB-11313) Can't start media streaming on **Android 6.0**
+* Add pull request template.
+* Readme: Add fenced code blocks with langauage hints
+* [CB-11165](https://issues.apache.org/jira/browse/CB-11165) removed peer dependency
+* [CB-10776](https://issues.apache.org/jira/browse/CB-10776) Add the ability to pause and resume an audio recording (**Android**)
+* [CB-10776](https://issues.apache.org/jira/browse/CB-10776) Add the ability to pause and resume an audio recording (**iOS**)
+* [CB-9487](https://issues.apache.org/jira/browse/CB-9487) Don't update position when getting amplitude
+* [CB-10996](https://issues.apache.org/jira/browse/CB-10996) Adding front matter to README.md
+
 ### 2.3.0 (Apr 15, 2016)
 * Request audio focus when playing; Pause audio when audio focus is lost; resume playing when audio focus is granted again.
 * Replace `PermissionHelper.java` with `cordova-plugin-compat`
-* CB-10783 Modify expected position to be in a proper range.
-* CB-9487 Support getting amplitude for recording
+* [CB-10783](https://issues.apache.org/jira/browse/CB-10783) Modify expected position to be in a proper range.
+* [CB-9487](https://issues.apache.org/jira/browse/CB-9487) Support getting amplitude for recording
 * **iOS** audio should handle naked local file sources
-* CB-10720 Fixing README for display on Cordova website
-* CB-10636 Add `JSHint` for plugins
-* CB-10535 Fix CI crash caused by media plugin
+* [CB-10720](https://issues.apache.org/jira/browse/CB-10720) Fixing README for display on Cordova website
+* [CB-10636](https://issues.apache.org/jira/browse/CB-10636) Add `JSHint` for plugins
+* [CB-10535](https://issues.apache.org/jira/browse/CB-10535) Fix CI crash caused by media plugin
 
 ### 2.2.0 (Feb 09, 2016)
 * [CB-10476](https://issues.apache.org/jira/browse/CB-10476) Fix problem where callbacks were not invoked on android due to messageChannel being overridden by callbackContext in every execute() call
@@ -39,10 +117,10 @@
 
 ### 2.1.0 (Jan 15, 2016)
 * Fixed example referencing non-existent variable
-* CB-9452: Treat `RTSP streams` as `remote URLs`
+* [CB-9452](https://issues.apache.org/jira/browse/CB-9452) Treat `RTSP streams` as `remote URLs`
 * add JIRA issue tracker link
-* fix CB-9884 & CB-9885
-* CB-10100 updated file dependency to not grab new majors
+* fix [CB-9884](https://issues.apache.org/jira/browse/CB-9884) & [CB-9885](https://issues.apache.org/jira/browse/CB-9885)
+* [CB-10100](https://issues.apache.org/jira/browse/CB-10100) updated file dependency to not grab new majors
 * Fix block usage of self
 
 ### 2.0.0 (Nov 18, 2015)

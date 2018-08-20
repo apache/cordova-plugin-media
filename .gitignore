@@ -14,7 +14,10 @@ Thumbs.db
 
 node_modules
 
-
+#eclipse
+bin
+.project
+.classpath
 
 
 

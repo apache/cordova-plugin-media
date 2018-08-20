@@ -49,8 +49,6 @@ var Media = function(src, successCallback, errorCallback, statusCallback) {
     this._duration = -1;
     this._position = -1;
 
-    Media.onStatus(this.id, Media.MEDIA_STATE, Media.MEDIA_STARTING);
-    
     try {
         this.node = createNode(this);
     } catch (err) {
@@ -66,7 +64,7 @@ var Media = function(src, successCallback, errorCallback, statusCallback) {
 function createNode (media) {
     var node = new Audio();
 
-    node.onloadstart = function () {
+    node.onplay = function () {
         Media.onStatus(media.id, Media.MEDIA_STATE, Media.MEDIA_STARTING);
     };
 
@@ -198,6 +196,34 @@ Media.prototype.startRecord = function() {
  * Stop recording audio file.
  */
 Media.prototype.stopRecord = function() {
+    Media.onStatus(this.id, Media.MEDIA_ERROR, "Not supported");
+};
+
+/**
+ * Pause recording audio file.
+ */
+Media.prototype.pauseRecord = function() {
+    Media.onStatus(this.id, Media.MEDIA_ERROR, "Not supported");
+};
+
+/**
+ * Returns the current amplitude of the current recording.
+ */
+Media.prototype.getCurrentAmplitude = function() {
+    Media.onStatus(this.id, Media.MEDIA_ERROR, "Not supported");
+};
+
+/**
+ * Resume recording an audio file.
+ */
+Media.prototype.resumeRecord = function() {
+    Media.onStatus(this.id, Media.MEDIA_ERROR, "Not supported");
+};
+
+/**
+ * Set rate of an autio file.
+ */
+Media.prototype.setRate = function() {
     Media.onStatus(this.id, Media.MEDIA_ERROR, "Not supported");
 };
 
