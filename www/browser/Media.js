@@ -200,7 +200,7 @@ Media.prototype.changeSrc = function(src){
             Media.onStatus(this.id, Media.MEDIA_ERROR, err);
         }
     }
-}
+};ad
 
 /**
  * Start recording audio file.
