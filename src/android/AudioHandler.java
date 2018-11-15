@@ -196,7 +196,7 @@ public class AudioHandler extends CordovaPlugin {
             onLastPlayerReleased();
         }
         for (AudioPlayer audio : this.players.values()) {
-            audio.onActivityDestroyed();
+            audio.onHandlerDestroyed();
         }
         this.players.clear();
     }
