@@ -238,7 +238,7 @@ var timerDur = setInterval(function() {
 ```
 
 #### Android Quirk
-Newer versions of android have aggressive routines that limit background processing. If you are trying to get duration while your app is in the background longer than roughly 5 minutes, you will get more consistent results by using the `mediaDurationUpdate` callback. 
+Newer versions of Android have aggressive routines that limit background processing. If you are trying to get the duration while your app is in the background longer than roughly 5 minutes, you will get more consistent results by using the [`mediaDurationUpdate` callback of the constructor](#parameters). 
 
 ## media.pause
 
