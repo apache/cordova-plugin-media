@@ -64,7 +64,8 @@ Media.MEDIA_STARTING = 1;
 Media.MEDIA_RUNNING = 2;
 Media.MEDIA_PAUSED = 3;
 Media.MEDIA_STOPPED = 4;
-Media.MEDIA_MSG = ['None', 'Starting', 'Running', 'Paused', 'Stopped'];
+Media.MEDIA_FINISHED = 5;
+Media.MEDIA_MSG = ["None", "Starting", "Running", "Paused", "Stopped", "Finished"];
 
 // "static" function to return existing objs.
 Media.get = function (id) {
