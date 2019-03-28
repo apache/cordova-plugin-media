@@ -35,7 +35,8 @@ enum CDVMediaStates {
     MEDIA_STARTING = 1,
     MEDIA_RUNNING = 2,
     MEDIA_PAUSED = 3,
-    MEDIA_STOPPED = 4
+    MEDIA_STOPPED = 4,
+    MEDIA_FINISHED = 6
 };
 typedef NSUInteger CDVMediaStates;
 
@@ -102,6 +103,7 @@ typedef NSUInteger CDVMediaMsg;
 - (void)getCurrentPositionAudio:(CDVInvokedUrlCommand*)command;
 - (void)resumeRecordingAudio:(CDVInvokedUrlCommand*)command;
 - (void)pauseRecordingAudio:(CDVInvokedUrlCommand*)command;
+- (void)stopAll:(CDVInvokedUrlCommand*)command;
 
 - (BOOL)hasAudioSession;
 

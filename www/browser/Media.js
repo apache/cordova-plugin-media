@@ -86,7 +86,7 @@ function createNode (media) {
     };
 
     node.onended = function () {
-        Media.onStatus(media.id, Media.MEDIA_STATE, Media.MEDIA_STOPPED);
+        Media.onStatus(media.id, Media.MEDIA_STATE, Media.MEDIA_FINISHED);
     };
 
     if (media.src) {
@@ -108,7 +108,8 @@ Media.MEDIA_STARTING = 1;
 Media.MEDIA_RUNNING = 2;
 Media.MEDIA_PAUSED = 3;
 Media.MEDIA_STOPPED = 4;
-Media.MEDIA_MSG = ['None', 'Starting', 'Running', 'Paused', 'Stopped'];
+Media.MEDIA_FINISHED = 6;
+Media.MEDIA_MSG = ["None", "Starting", "Running", "Paused", "Stopped", "android-Loading", "Finished"];
 
 /**
  * Start or resume playing audio file.

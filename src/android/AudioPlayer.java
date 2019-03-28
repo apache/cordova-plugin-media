@@ -59,7 +59,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                         MEDIA_RUNNING,
                         MEDIA_PAUSED,
                         MEDIA_STOPPED,
-                        MEDIA_LOADING
+                        MEDIA_LOADING,
+                        MEDIA_FINISHED
                       };
 
     private static final String LOG_TAG = "AudioPlayer";
@@ -408,7 +409,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      */
     public void onCompletion(MediaPlayer player) {
         LOG.d(LOG_TAG, "on completion is calling stopped");
-        this.setState(STATE.MEDIA_STOPPED);
+        this.setState(STATE.MEDIA_FINISHED);
     }
 
     /**

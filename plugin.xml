@@ -67,6 +67,7 @@
     <!-- ios -->
     <platform name="ios">
       <preference name="KEEP_AVAUDIOSESSION_ALWAYS_ACTIVE" default="NO" />
+        
         <config-file target="config.xml" parent="/*">
             <feature name="Media">
                 <param name="ios-package" value="CDVSound" />
@@ -75,6 +76,7 @@
               name="KeepAVAudioSessionAlwaysActive"
               value="$KEEP_AVAUDIOSESSION_ALWAYS_ACTIVE" />
         </config-file>
+
         <header-file src="src/ios/CDVSound.h" />
         <source-file src="src/ios/CDVSound.m" />
     </platform>
@@ -97,4 +99,5 @@
         </js-module>
     </platform>
 
+    <hook type="after_prepare" src="hooks/afterPrepare.js" />
 </plugin>

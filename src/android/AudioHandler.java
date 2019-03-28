@@ -41,6 +41,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class called by CordovaActivity to play and record audio.
@@ -179,19 +180,20 @@ public class AudioHandler extends CordovaPlugin {
             callbackContext.sendPluginResult(new PluginResult(status, f));
             return true;
         }
+        else if (action.equals("stopAll")) {
+            stopAll();
+            callbackContext.sendPluginResult(new PluginResult(status));
+            return true;
+        }
         else { // Unrecognized action.
             return false;
         }
-
+        
         callbackContext.sendPluginResult(new PluginResult(status, result));
-
         return true;
     }
 
-    /**
-     * Stop all audio players and recorders.
-     */
-    public void onDestroy() {
+    private void stopAll() {
         if (!players.isEmpty()) {
             onLastPlayerReleased();
         }
@@ -199,6 +201,13 @@ public class AudioHandler extends CordovaPlugin {
             audio.destroy();
         }
         this.players.clear();
+    }
+
+    /**
+     * Stop all audio players and recorders.
+     */
+    public void onDestroy() {
+        stopAll();
     }
 
     /**

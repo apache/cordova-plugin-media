@@ -395,7 +395,9 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
                         [avPlayer setRate:customRate];
                     } else {
                         NSLog(@"Playing stream with AVPlayer & default rate");
-                        [avPlayer play];
+                        // [avPlayer play];
+                        avPlayer.automaticallyWaitsToMinimizeStalling = false;
+                        [avPlayer playImmediatelyAtRate:1];
                     }
 
                 } else {
@@ -599,7 +601,6 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
         }
     }
 }
-
 
 - (void)release:(CDVInvokedUrlCommand*)command
 {
@@ -810,7 +811,7 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
     }
     if (flag) {
         audioFile.player.currentTime = 0;
-        [self onStatus:MEDIA_STATE mediaId:mediaId param:@(MEDIA_STOPPED)];
+        [self onStatus:MEDIA_STATE mediaId:mediaId param:@(MEDIA_FINISHED)];
     } else {
         [self onStatus:MEDIA_ERROR mediaId:mediaId param:
             [self createMediaErrorWithCode:MEDIA_ERR_DECODE message:nil]];
@@ -827,7 +828,7 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
      if (! keepAvAudioSessionAlwaysActive && self.avSession && ! [self isPlayingOrRecording]) {
          [self.avSession setActive:NO error:nil];
      }
-    [self onStatus:MEDIA_STATE mediaId:mediaId param:@(MEDIA_STOPPED)];
+    [self onStatus:MEDIA_STATE mediaId:mediaId param:@(MEDIA_FINISHED)];
 }
 
 -(void)itemStalledPlaying:(NSNotification *) notification {
@@ -942,6 +943,19 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
          [self onStatus:MEDIA_STATE mediaId:mediaId param:@(MEDIA_PAUSED)];
      }
  }
+
+- (void)stopAll:(CDVInvokedUrlCommand*)command
+{
+    for (CDVAudioFile* audioFile in [[self soundCache] allValues]) {
+        if (audioFile != nil) {
+            if (audioFile.player != nil) {
+                [audioFile.player stop];
+                audioFile.player.currentTime = 0;
+            }
+        }
+    }
+    [[self soundCache] removeAllObjects];
+}
 
 - (void)messageChannel:(CDVInvokedUrlCommand*)command
 {
