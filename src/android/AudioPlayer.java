@@ -48,31 +48,24 @@ import java.io.FileNotFoundException;
  * This class implements the audio playback and recording capabilities used by Cordova.
  * It is called by the AudioHandler Cordova class.
  * Only one file can be played or recorded per class instance.
- * <p>
+ *
  * Local audio files must reside in one of two places:
- * android_asset:      file name must start with /android_asset/sound.mp3
- * sdcard:             file name is just sound.mp3
+ *      android_asset:      file name must start with /android_asset/sound.mp3
+ *      sdcard:             file name is just sound.mp3
  */
 public class AudioPlayer implements OnCompletionListener, OnPreparedListener, OnErrorListener {
 
     // AudioPlayer modes
-    public enum MODE {
-        NONE, PLAY, RECORD
-    }
-
-    ;
+    public enum MODE { NONE, PLAY, RECORD };
 
     // AudioPlayer states
-    public enum STATE {
-        MEDIA_NONE,
-        MEDIA_STARTING,
-        MEDIA_RUNNING,
-        MEDIA_PAUSED,
-        MEDIA_STOPPED,
-        MEDIA_LOADING
-    }
-
-    ;
+    public enum STATE { MEDIA_NONE,
+                        MEDIA_STARTING,
+                        MEDIA_RUNNING,
+                        MEDIA_PAUSED,
+                        MEDIA_STOPPED,
+                        MEDIA_LOADING
+                      };
 
     private static final String LOG_TAG = "AudioPlayer";
 
@@ -83,8 +76,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     private static int MEDIA_ERROR = 9;
 
     // Media error codes
-    private static int MEDIA_ERR_NONE_ACTIVE = 0;
-    private static int MEDIA_ERR_ABORTED = 1;
+    private static int MEDIA_ERR_NONE_ACTIVE    = 0;
+    private static int MEDIA_ERR_ABORTED        = 1;
 //    private static int MEDIA_ERR_NETWORK        = 2;
 //    private static int MEDIA_ERR_DECODE         = 3;
 //    private static int MEDIA_ERR_NONE_SUPPORTED = 4;
@@ -125,8 +118,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     /**
      * Constructor.
      *
-     * @param handler The audio handler object
-     * @param id      The id of this audio player
+     * @param handler           The audio handler object
+     * @param id                The id of this audio player
      */
     public AudioPlayer(AudioHandler handler, String id, String file) {
         this.handler = handler;
@@ -193,101 +186,101 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     /**
      * Start recording the specified file.
      *
-     * @param file         The name of the file
-     * @param isCompressed State of audio file compression - false for raw.
+     * @param file              The name of the file
+     * @param isCompressed      State of audio file compression - false for raw.
      */
     public void startRecording(String file, boolean isCompressed) {
-        this.isCompressed = isCompressed;
         switch (this.mode) {
-            case PLAY:
-                LOG.d(LOG_TAG, "AudioPlayer Error: Can't record in play mode.");
-                sendErrorStatus(MEDIA_ERR_ABORTED);
-                break;
-            case NONE:
-                this.audioFile = file;
-                if (isCompressed) {
-                    this.recorder = new MediaRecorder();
-                    this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                    this.recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS); // RAW_AMR);
-                    this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC); //AMR_NB);
-                    this.tempFile = generateTempFile();
-                    this.recorder.setOutputFile(this.tempFile);
-                    try {
-                        this.recorder.prepare();
-                        this.recorder.start();
-                        this.setState(STATE.MEDIA_RUNNING);
-                        return;
-                    } catch (IllegalStateException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+        case PLAY:
+            LOG.d(LOG_TAG, "AudioPlayer Error: Can't record in play mode.");
+            sendErrorStatus(MEDIA_ERR_ABORTED);
+            break;
+        case NONE:
+            this.audioFile = file;
+            if (isCompressed) {
+                this.recorder = new MediaRecorder();
+                this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                this.recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS); // RAW_AMR);
+                this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC); //AMR_NB);
+                this.tempFile = generateTempFile();
+                this.recorder.setOutputFile(this.tempFile);
+                try {
+                    this.recorder.prepare();
+                    this.recorder.start();
+                    this.setState(STATE.MEDIA_RUNNING);
+                    return;
+                } catch (IllegalStateException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                // TODO: customization possibilities for sample rate/channels etc...
+                if (channelConfig == AudioFormat.CHANNEL_CONFIGURATION_MONO) {
+                    channels = 1;
                 } else {
-                    // TODO: customization possibilities for sample rate/channels etc...
-                    if (channelConfig == AudioFormat.CHANNEL_CONFIGURATION_MONO) {
-                        channels = 1;
-                    } else {
-                        channels = 2;
-                    }
-
-                    framePeriod = sampleRate * 60 / 1000; // we're assuming recorders are generally never longer than 60seconds
-                    bufferSize = framePeriod * sampleSize * channels / 4;
-                    // see if buffersize is at least minimum
-                    if (bufferSize < AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)) {
-                        bufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
-                        framePeriod = bufferSize / (sampleSize * channels / 4);
-                    }
-
-                    this.audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC,
-                            sampleRate,
-                            AudioFormat.CHANNEL_CONFIGURATION_MONO,
-                            AudioFormat.ENCODING_PCM_16BIT,
-                            bufferSize
-                    );
-                    audioRecord.setRecordPositionUpdateListener(updateListener);
-                    audioRecord.setPositionNotificationPeriod(framePeriod);
-
-                    this.tempFile = generateTempFile();
-                    try {
-                        randomAccessWriter = new RandomAccessFile(this.tempFile, "rw");
-
-                        payloadSize = 0;
-
-                        randomAccessWriter.setLength(0); // Set file length to 0, to prevent unexpected behavior in case the file already existed
-                        randomAccessWriter.writeBytes("RIFF");
-                        randomAccessWriter.writeInt(0); // Final file size not known yet, write 0
-                        randomAccessWriter.writeBytes("WAVE");
-                        randomAccessWriter.writeBytes("fmt ");
-                        randomAccessWriter.writeInt(Integer.reverseBytes(16)); // Sub-chunk size, 16 for PCM
-                        randomAccessWriter.writeShort(Short.reverseBytes((short) 1)); // AudioFormat, 1 for PCM
-                        randomAccessWriter.writeShort(Short.reverseBytes(channels));// Number of channels, 1 for mono, 2 for stereo
-                        randomAccessWriter.writeInt(Integer.reverseBytes(sampleRate)); // Sample rate
-                        randomAccessWriter.writeInt(Integer.reverseBytes(sampleRate * sampleSize * channels / 8)); // Byte rate, SampleRate*NumberOfChannels*BitsPerSample/8
-                        randomAccessWriter.writeShort(Short.reverseBytes((short) (channels * sampleSize / 8))); // Block align, NumberOfChannels*BitsPerSample/8
-                        randomAccessWriter.writeShort(Short.reverseBytes(sampleSize)); // Bits per sample
-                        randomAccessWriter.writeBytes("data");
-                        randomAccessWriter.writeInt(0); // Data chunk size not known yet, write 0
-
-                        buffer = new byte[framePeriod * sampleSize / 8 * channels];
-
-
-                        this.audioRecord.startRecording();
-                        this.audioRecord.read(buffer, 0, buffer.length);
-                        this.setState(STATE.MEDIA_RUNNING);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    channels = 2;
                 }
 
-                sendErrorStatus(MEDIA_ERR_ABORTED);
-                break;
-            case RECORD:
-                LOG.d(LOG_TAG, "AudioPlayer Error: Already recording.");
-                sendErrorStatus(MEDIA_ERR_ABORTED);
+                framePeriod = sampleRate * 60 / 1000; // we're assuming recorders are generally never longer than 60seconds
+                bufferSize = framePeriod * sampleSize * channels / 4;
+                // see if buffersize is at least minimum
+                if (bufferSize < AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)) {
+                    bufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
+                    framePeriod = bufferSize / (sampleSize * channels / 4);
+                }
+
+                this.audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC,
+                        sampleRate,
+                        AudioFormat.CHANNEL_CONFIGURATION_MONO,
+                        AudioFormat.ENCODING_PCM_16BIT,
+                        bufferSize
+                );
+                audioRecord.setRecordPositionUpdateListener(updateListener);
+                audioRecord.setPositionNotificationPeriod(framePeriod);
+
+                this.tempFile = generateTempFile();
+                try {
+                    randomAccessWriter = new RandomAccessFile(this.tempFile, "rw");
+
+                    payloadSize = 0;
+
+                    randomAccessWriter.setLength(0); // Set file length to 0, to prevent unexpected behavior in case the file already existed
+                    randomAccessWriter.writeBytes("RIFF");
+                    randomAccessWriter.writeInt(0); // Final file size not known yet, write 0
+                    randomAccessWriter.writeBytes("WAVE");
+                    randomAccessWriter.writeBytes("fmt ");
+                    randomAccessWriter.writeInt(Integer.reverseBytes(16)); // Sub-chunk size, 16 for PCM
+                    randomAccessWriter.writeShort(Short.reverseBytes((short) 1)); // AudioFormat, 1 for PCM
+                    randomAccessWriter.writeShort(Short.reverseBytes(channels));// Number of channels, 1 for mono, 2 for stereo
+                    randomAccessWriter.writeInt(Integer.reverseBytes(sampleRate)); // Sample rate
+                    randomAccessWriter.writeInt(Integer.reverseBytes(sampleRate * sampleSize * channels / 8)); // Byte rate, SampleRate*NumberOfChannels*BitsPerSample/8
+                    randomAccessWriter.writeShort(Short.reverseBytes((short) (channels * sampleSize / 8))); // Block align, NumberOfChannels*BitsPerSample/8
+                    randomAccessWriter.writeShort(Short.reverseBytes(sampleSize)); // Bits per sample
+                    randomAccessWriter.writeBytes("data");
+                    randomAccessWriter.writeInt(0); // Data chunk size not known yet, write 0
+
+                    buffer = new byte[framePeriod * sampleSize / 8 * channels];
+
+
+                    this.audioRecord.startRecording();
+                    this.audioRecord.read(buffer, 0, buffer.length);
+                    this.setState(STATE.MEDIA_RUNNING);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            sendErrorStatus(MEDIA_ERR_ABORTED);
+            break;
+
+        case RECORD:
+            LOG.d(LOG_TAG, "AudioPlayer Error: Already recording.");
+            sendErrorStatus(MEDIA_ERR_ABORTED);
         }
     }
 
@@ -300,7 +293,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         try {
 
             if (this.isCompressed) {
-            /* this is a hack to save the file as the specified name */
+                /* this is a hack to save the file as the specified name */
 
                 if (!file.startsWith("/")) {
                     if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
@@ -375,7 +368,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     }
 
     private static long copy(InputStream from, OutputStream to, boolean skipHeader)
-            throws IOException {
+                throws IOException {
         byte[] buf = new byte[8096];
         long total = 0;
         if (skipHeader) {
@@ -397,7 +390,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      */
     public void stopRecording(boolean stop) {
         if (this.recorder != null) {
-            try {
+            try{
                 if (this.state == STATE.MEDIA_RUNNING) {
                     this.recorder.stop();
                 }
@@ -413,7 +406,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                     LOG.d(LOG_TAG, "pause recording");
                     this.setState(STATE.MEDIA_PAUSED);
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -513,7 +507,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     /**
      * Start or resume playing audio file.
      *
-     * @param file The name of the audio file.
+     * @param file              The name of the audio file.
      */
     public void startPlaying(String file) {
         if (this.readyPlayer(file) && this.player != null) {
@@ -535,7 +529,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             }
             LOG.d(LOG_TAG, "Send a onStatus update for the new seek");
             sendStatusChange(MEDIA_POSITION, null, (milliseconds / 1000.0f));
-        } else {
+        }
+        else {
             this.seekOnPrepared = milliseconds;
         }
     }
@@ -549,7 +544,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         if (this.state == STATE.MEDIA_RUNNING && this.player != null) {
             this.player.pause();
             this.setState(STATE.MEDIA_PAUSED);
-        } else {
+        }
+        else {
             LOG.d(LOG_TAG, "AudioPlayer Error: pausePlaying() called during invalid state: " + this.state.ordinal());
             sendErrorStatus(MEDIA_ERR_NONE_ACTIVE);
         }
@@ -564,7 +560,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             this.player.seekTo(0);
             LOG.d(LOG_TAG, "stopPlaying is calling stopped");
             this.setState(STATE.MEDIA_STOPPED);
-        } else {
+        }
+        else {
             LOG.d(LOG_TAG, "AudioPlayer Error: stopPlaying() called during invalid state: " + this.state.ordinal());
             sendErrorStatus(MEDIA_ERR_NONE_ACTIVE);
         }
@@ -574,13 +571,13 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * Resume playing.
      */
     public void resumePlaying() {
-        this.startPlaying(this.audioFile);
+      this.startPlaying(this.audioFile);
     }
 
     /**
      * Callback to be invoked when playback of a media source has completed.
      *
-     * @param player The MediaPlayer that reached the end of the file
+     * @param player           The MediaPlayer that reached the end of the file
      */
     public void onCompletion(MediaPlayer player) {
         LOG.d(LOG_TAG, "on completion is calling stopped");
@@ -590,14 +587,15 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     /**
      * Get current position of playback.
      *
-     * @return position in msec or -1 if not playing
+     * @return                  position in msec or -1 if not playing
      */
     public long getCurrentPosition() {
         if ((this.state == STATE.MEDIA_RUNNING) || (this.state == STATE.MEDIA_PAUSED)) {
             int curPos = this.player.getCurrentPosition();
             sendStatusChange(MEDIA_POSITION, null, (curPos / 1000.0f));
             return curPos;
-        } else {
+        }
+        else {
             return -1;
         }
     }
@@ -606,25 +604,26 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * Determine if playback file is streaming or local.
      * It is streaming if file name starts with "http://"
      *
-     * @param file The file name
-     * @return T=streaming, F=local
+     * @param file              The file name
+     * @return                  T=streaming, F=local
      */
     public boolean isStreaming(String file) {
         if (file.contains("http://") || file.contains("https://") || file.contains("rtsp://")) {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
 
     /**
-     * Get the duration of the audio file.
-     *
-     * @param file The name of the audio file.
-     * @return The duration in msec.
-     * -1=can't be determined
-     * -2=not allowed
-     */
+      * Get the duration of the audio file.
+      *
+      * @param file             The name of the audio file.
+      * @return                 The duration in msec.
+      *                             -1=can't be determined
+      *                             -2=not allowed
+      */
     public float getDuration(String file) {
 
         // Can't get duration of recording
@@ -651,7 +650,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     /**
      * Callback to be invoked when the media source is ready for playback.
      *
-     * @param player The MediaPlayer that is ready for playback
+     * @param player           The MediaPlayer that is ready for playback
      */
     public void onPrepared(MediaPlayer player) {
         // Listen for playback completion
@@ -686,11 +685,11 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
 
     /**
      * Callback to be invoked when there has been an error during an asynchronous operation
-     * (other errors will throw exceptions at method call time).
+     *  (other errors will throw exceptions at method call time).
      *
-     * @param player the MediaPlayer the error pertains to
-     * @param arg1   the type of error that has occurred: (MEDIA_ERROR_UNKNOWN, MEDIA_ERROR_SERVER_DIED)
-     * @param arg2   an extra code, specific to the error.
+     * @param player           the MediaPlayer the error pertains to
+     * @param arg1              the type of error that has occurred: (MEDIA_ERROR_UNKNOWN, MEDIA_ERROR_SERVER_DIED)
+     * @param arg2              an extra code, specific to the error.
      */
     public boolean onError(MediaPlayer player, int arg1, int arg2) {
         LOG.d(LOG_TAG, "AudioPlayer.onError(" + arg1 + ", " + arg2 + ")");
@@ -712,7 +711,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      */
     private void setState(STATE state) {
         if (this.state != state) {
-            sendStatusChange(MEDIA_STATE, null, (float) state.ordinal());
+            sendStatusChange(MEDIA_STATE, null, (float)state.ordinal());
         }
         this.state = state;
     }
@@ -755,27 +754,25 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
 
     /**
      * attempts to put the player in play mode
-     *
      * @return true if in playmode, false otherwise
      */
     private boolean playMode() {
-        switch (this.mode) {
-            case NONE:
-                this.setMode(MODE.PLAY);
-                break;
-            case PLAY:
-                break;
-            case RECORD:
-                LOG.d(LOG_TAG, "AudioPlayer Error: Can't play in record mode.");
-                sendErrorStatus(MEDIA_ERR_ABORTED);
-                return false; //player is not ready
+        switch(this.mode) {
+        case NONE:
+            this.setMode(MODE.PLAY);
+            break;
+        case PLAY:
+            break;
+        case RECORD:
+            LOG.d(LOG_TAG, "AudioPlayer Error: Can't play in record mode.");
+            sendErrorStatus(MEDIA_ERR_ABORTED);
+            return false; //player is not ready
         }
         return true;
     }
 
     /**
      * attempts to initialize the media player for playback
-     *
      * @param file the file to play
      * @return false if player not ready, reports if in wrong mode or state
      */
@@ -804,7 +801,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                     return true;
                 case MEDIA_STOPPED:
                     //if we are readying the same file
-                    if (file != null && this.audioFile.compareTo(file) == 0) {
+                    if (file!=null && this.audioFile.compareTo(file) == 0) {
                         //maybe it was recording?
                         if (player == null) {
                             this.player = new MediaPlayer();
@@ -817,8 +814,9 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                                 sendErrorStatus(MEDIA_ERR_ABORTED);
                             }
                             return false;//we´re not ready yet
-                        } else {
-                            //reset the audio file
+                        }
+                        else {
+                           //reset the audio file
                             player.seekTo(0);
                             player.pause();
                             return true;
@@ -844,7 +842,6 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
 
     /**
      * load audio file
-     *
      * @throws IOException
      * @throws IllegalStateException
      * @throws SecurityException
@@ -859,28 +856,31 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             this.setState(STATE.MEDIA_STARTING);
             this.player.setOnPreparedListener(this);
             this.player.prepareAsync();
-        } else {
+        }
+        else {
             if (file.startsWith("/android_asset/")) {
                 String f = file.substring(15);
                 android.content.res.AssetFileDescriptor fd = this.handler.cordova.getActivity().getAssets().openFd(f);
                 this.player.setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength());
-            } else {
+            }
+            else {
                 File fp = new File(file);
                 if (fp.exists()) {
                     FileInputStream fileInputStream = new FileInputStream(file);
                     this.player.setDataSource(fileInputStream.getFD());
                     fileInputStream.close();
-                } else {
+                }
+                else {
                     this.player.setDataSource(Environment.getExternalStorageDirectory().getPath() + "/" + file);
                 }
             }
-            this.setState(STATE.MEDIA_STARTING);
-            this.player.setOnPreparedListener(this);
-            this.player.prepare();
+                this.setState(STATE.MEDIA_STARTING);
+                this.player.setOnPreparedListener(this);
+                this.player.prepare();
 
-            // Get duration
-            this.duration = getDurationInSeconds();
-        }
+                // Get duration
+                this.duration = getDurationInSeconds();
+            }
     }
 
     private void sendErrorStatus(int errorCode) {
@@ -901,7 +901,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                 JSONObject code = new JSONObject();
                 code.put("code", additionalCode.intValue());
                 statusDetails.put("value", code);
-            } else if (value != null) {
+            }
+            else if (value != null) {
                 statusDetails.put("value", value.floatValue());
             }
         } catch (JSONException e) {
@@ -918,11 +919,12 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      */
     public float getCurrentAmplitude() {
         if (this.recorder != null) {
-            try {
+            try{
                 if (this.state == STATE.MEDIA_RUNNING) {
                     return (float) this.recorder.getMaxAmplitude() / 32762;
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 e.printStackTrace();
             }
         }
