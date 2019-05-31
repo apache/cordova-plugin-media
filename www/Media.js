@@ -77,6 +77,13 @@ Media.prototype.play = function(options) {
 };
 
 /**
+ * Start or resume playing audio file in a background thread.
+ */
+Media.prototype.playInBackground = function(options) {
+    exec(null, null, "Media", "startPlayingAudioInBackground", [this.id, this.src, options]);
+};
+
+/**
  * Stop playing audio file.
  */
 Media.prototype.stop = function() {
