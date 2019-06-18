@@ -1088,7 +1088,13 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         setVolume();
     }, 'setVolumeBtn');
     // get Special path to record if iOS || Blackberry
-    if (cordova.platformId === 'ios') { getRecordSrc(); } else if (cordova.platformId === 'blackberry') { getRecordSrcBB(); } else if (cordova.platformId === 'windows' || cordova.platformId === 'windows8') { getRecordSrcWin(); }
+    if (cordova.platformId === 'ios') {
+        getRecordSrc();
+    } else if (cordova.platformId === 'blackberry') {
+        getRecordSrcBB();
+    } else if (cordova.platformId === 'windows' || cordova.platformId === 'windows8') { 
+        getRecordSrcWin(); 
+    }
 
     // testing process and details
     function addItemToList (_list, _text) {
