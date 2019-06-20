@@ -101,6 +101,8 @@ The following constants are reported as the only parameter to the
 
 - `media.play`: Start or resume playing an audio file.
 
+- `media.playInBackground`: Start or resume playing an audio file in background.
+
 - `media.pause`: Pause playback of an audio file.
 
 - `media.pauseRecord`: Pause recording of an audio file.
@@ -364,6 +366,41 @@ function playAudio(url) {
         var myMedia = new Media("audio/beer.mp3")
         myMedia.play()  // first looks for file in www/audio/beer.mp3 then in <application>/documents/tmp/audio/beer.mp3
 
+## media.playInBackground
+
+Starts or resumes playing an audio file in background.
+
+```js
+media.playInBackground();
+```
+
+### Supported Platforms
+
+- Android
+- iOS
+
+### Quick Example
+
+```js
+// Play audio in background
+//
+function playAudioInBackground(url) {
+    // Play the audio file at url
+    var my_media = new Media(url,
+        // success callback
+        function () {
+            console.log("playAudioInBackground():Audio Success");
+        },
+        // error callback
+        function (err) {
+            console.log("playAudioInBackground():Audio Error: " + err);
+        }
+    );
+    // Play audio
+    my_media.playInBackground();
+}
+```
+
 ## media.release
 
 Releases the underlying operating system's audio resources.
@@ -556,7 +593,7 @@ function recordAudio() {
 
 This plugins requires the following usage description:
 
-* `NSMicrophoneUsageDescription` describes the reason that the app accesses the user's microphone. 
+* `NSMicrophoneUsageDescription` describes the reason that the app accesses the user's microphone.
 
 To add this entry into the `info.plist`, you can use the `edit-config` tag in the `config.xml` like this:
 
