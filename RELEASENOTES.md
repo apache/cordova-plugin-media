@@ -20,6 +20,23 @@
 -->
 # Release Notes
 
+### 5.0.3 (Jun 27, 2019)
+
+-   chore: fix repo and issue urls and license in package.json and plugin.xml ([`784ac7b`](https://github.com/apache/cordova-plugin-media/commit/784ac7b))
+-   build: add `.gitattributes` to force LF (instead of possible CRLF on Windows) ([`5244c4a`](https://github.com/apache/cordova-plugin-media/commit/5244c4a))
+-   build: add `.npmignore` to remove unneeded files from npm package ([`aa1586d`](https://github.com/apache/cordova-plugin-media/commit/aa1586d))
+-   ci(travis): Update Travis CI configuration for new paramedic ([#227](https://github.com/apache/cordova-plugin-media/issues/227)) ([`b0ed6bd`](https://github.com/apache/cordova-plugin-media/commit/b0ed6bd))
+-   chore(github): Add or update GitHub pull request and issue template ([`b1c1353`](https://github.com/apache/cordova-plugin-media/commit/b1c1353))
+-   docs: remove JIRA link ([`2acd3c2`](https://github.com/apache/cordova-plugin-media/commit/2acd3c2))
+-   ci(travis): also accept terms for android sdk `android-27` ([`74772c3`](https://github.com/apache/cordova-plugin-media/commit/74772c3))
+-   docs: remove outdated docs that haven't been updated for 3 years ([`a006da3`](https://github.com/apache/cordova-plugin-media/commit/a006da3))
+-   fix(types): add types for callback in constructor ([#90](https://github.com/apache/cordova-plugin-media/issues/90)) ([`7094582`](https://github.com/apache/cordova-plugin-media/commit/7094582))
+-   docs: (iOS) document setRate method ([#142](https://github.com/apache/cordova-plugin-media/issues/142)) ([`5f18902`](https://github.com/apache/cordova-plugin-media/commit/5f18902))
+-   fix(ios): CB-13445 (iOS) Streaming media can take up to 8-10 seconds to start ([#169](https://github.com/apache/cordova-plugin-media/issues/169)) ([`43d57ca`](https://github.com/apache/cordova-plugin-media/commit/43d57ca))
+-   fix(android): CB-12849: checking mediaState in destroy method, and moving file by stream when renameTo failing ([#168](https://github.com/apache/cordova-plugin-media/issues/168)) ([`86660dd`](https://github.com/apache/cordova-plugin-media/commit/86660dd))
+-   tests: CB-14091: fix tests code for stream url and remove browser ([#166](https://github.com/apache/cordova-plugin-media/issues/166)) ([`524c337`](https://github.com/apache/cordova-plugin-media/commit/524c337))
+
+
 ### 5.0.2 (Jan 24, 2018)
 * [CB-13751](https://issues.apache.org/jira/browse/CB-13751) Add build-tools-26.0.2 to travis (#163)
 * Fix for [CB-11513](https://issues.apache.org/jira/browse/CB-11513)
