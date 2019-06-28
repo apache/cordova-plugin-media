@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-media-tests",
-  "version": "3.0.1-dev",
+  "version": "5.0.4-dev",
   "description": "",
   "cordova": {
     "id": "cordova-plugin-media-tests",
@@ -10,5 +10,5 @@
     "ecosystem:cordova"
   ],
   "author": "",
-  "license": "Apache 2.0"
+  "license": "Apache-2.0"
 }
