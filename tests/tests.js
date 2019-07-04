@@ -1092,8 +1092,8 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         getRecordSrc();
     } else if (cordova.platformId === 'blackberry') {
         getRecordSrcBB();
-    } else if (cordova.platformId === 'windows' || cordova.platformId === 'windows8') { 
-        getRecordSrcWin(); 
+    } else if (cordova.platformId === 'windows' || cordova.platformId === 'windows8') {
+        getRecordSrcWin();
     }
 
     // testing process and details
