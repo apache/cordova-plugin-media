@@ -156,7 +156,10 @@ Media.prototype.resumeRecord = function() {
  * Release the resources.
  */
 Media.prototype.release = function() {
-    exec(null, this.errorCallback, "Media", "release", [this.id]);
+    var me = this;
+    exec(function() {
+      delete mediaObjects[me.id];
+    }, this.errorCallback, "Media", "release", [this.id]);
 };
 
 /**
