@@ -337,7 +337,9 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * @param file              The name of the audio file.
      */
     public void startPlaying(String file) {
-        if (this.readyPlayer(file) && this.player != null) {
+        //first we should check if the player is null, 
+        //otherwise it can crash the app under certain circunstances( reset() call, line 655 on readyPlayer())
+        if (this.player != null && this.readyPlayer(file) ) {
             this.player.start();
             this.setState(STATE.MEDIA_RUNNING);
             this.seekOnPrepared = 0; //insures this is always reset
