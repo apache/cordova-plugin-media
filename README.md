@@ -75,6 +75,8 @@ var media = new Media(src, mediaSuccess, [mediaError], [mediaStatus]);
 
 - __mediaStatus__: (Optional) The callback that executes to indicate status changes. It takes a integer status code. _(Function)_
 
+- __mediaDurationUpdate__: (Optional) the callback that executes when the file's duration updates and is available. _(Function)_
+
 __NOTE__: `cdvfile` path is supported as `src` parameter:
 ```javascript
 var my_media = new Media('cdvfile://localhost/temporary/recording.mp3', ...);
@@ -236,6 +238,9 @@ var timerDur = setInterval(function() {
     }
 }, 100);
 ```
+
+#### Android Quirk
+Newer versions of Android have aggressive routines that limit background processing. If you are trying to get the duration while your app is in the background longer than roughly 5 minutes, you will get more consistent results by using the [`mediaDurationUpdate` callback of the constructor](#parameters). 
 
 ## media.pause
 
