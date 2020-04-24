@@ -22,6 +22,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
+import android.media.MediaPlayer.OnInfoListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.media.MediaRecorder;
 import android.os.Environment;
@@ -48,7 +49,7 @@ import java.util.LinkedList;
  *      android_asset:      file name must start with /android_asset/sound.mp3
  *      sdcard:             file name is just sound.mp3
  */
-public class AudioPlayer implements OnCompletionListener, OnPreparedListener, OnErrorListener {
+public class AudioPlayer implements OnCompletionListener, OnPreparedListener, OnErrorListener, OnInfoListener {
 
     // AudioPlayer modes
     public enum MODE { NONE, PLAY, RECORD };
@@ -62,12 +63,18 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                         MEDIA_LOADING
                       };
 
+    // AudiorPlayer informations
+    public enum INFORMATION { MEDIA_BUFFERING_START,
+                              MEDIA_BUFFERING_END
+                            };
+
     private static final String LOG_TAG = "AudioPlayer";
 
     // AudioPlayer message ids
     private static int MEDIA_STATE = 1;
     private static int MEDIA_DURATION = 2;
     private static int MEDIA_POSITION = 3;
+    private static int MEDIA_INFO = 4;
     private static int MEDIA_ERROR = 9;
 
     // Media error codes
@@ -482,6 +489,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     public void onPrepared(MediaPlayer player) {
         // Listen for playback completion
         this.player.setOnCompletionListener(this);
+        // Listen for info aboutplayback
+        this.player.setOnInfoListener(this);
         // seek to any location received while not prepared
         this.seekToPlaying(this.seekOnPrepared);
         // If start playing after prepared
@@ -531,6 +540,20 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         return false;
     }
 
+    @Override
+    public boolean onInfo(MediaPlayer player, int what, int extra) {
+        LOG.d(LOG_TAG, "AudioPlayer.onInfo(" + what + ", " + extra + ")");
+        switch (what) {
+            case MediaPlayer.MEDIA_INFO_BUFFERING_START:
+                sendInfo(INFORMATION.MEDIA_BUFFERING_START);
+                break;
+            case MediaPlayer.MEDIA_INFO_BUFFERING_END:
+                sendInfo(INFORMATION.MEDIA_BUFFERING_END);
+                break;
+        }
+        return false;
+    }
+
     /**
      * Set the state and send it to JavaScript.
      *
@@ -541,6 +564,15 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             sendStatusChange(MEDIA_STATE, null, (float)state.ordinal());
         }
         this.state = state;
+    }
+
+    /**
+     * Send information to Javascript.
+     *
+     * @param info
+     */
+    private void sendInfo(INFORMATION info) {
+        sendStatusChange(MEDIA_INFO, null, (float)info.ordinal());
     }
 
     /**
