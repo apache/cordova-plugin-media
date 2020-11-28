@@ -18,6 +18,18 @@
 */
 package org.apache.cordova.media;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.LinkedList;
+
+import org.apache.cordova.LOG;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -25,19 +37,6 @@ import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.media.MediaRecorder;
 import android.os.Environment;
-
-import org.apache.cordova.LOG;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.IOException;
-import java.util.LinkedList;
 
 /**
  * This class implements the audio playback and recording capabilities used by Cordova.
@@ -93,17 +92,29 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     private boolean prepareOnly = true;     // playback after file prepare flag
     private int seekOnPrepared = 0;     // seek to this location once media is prepared
 
-    /**
+    private boolean playAudioWhenScreenIsLocked = true; // If set to false the playback will be paused when app is paused
+    
+    public boolean isPlayAudioWhenScreenIsLocked() {
+		return playAudioWhenScreenIsLocked;
+	}
+
+	public void setPlayAudioWhenScreenIsLocked(boolean playAudioWhenScreenIsLocked) {
+		this.playAudioWhenScreenIsLocked = playAudioWhenScreenIsLocked;
+	}
+
+	/**
      * Constructor.
      *
      * @param handler           The audio handler object
      * @param id                The id of this audio player
      */
-    public AudioPlayer(AudioHandler handler, String id, String file) {
+    public AudioPlayer(AudioHandler handler, String id, String file, boolean playAudioWhenScreenIsLocked) {
         this.handler = handler;
         this.id = id;
         this.audioFile = file;
         this.tempFiles = new LinkedList<String>();
+
+        this.playAudioWhenScreenIsLocked = playAudioWhenScreenIsLocked;
     }
 
     private String generateTempFile() {
