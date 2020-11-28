@@ -21,6 +21,7 @@ description: Record and play audio on the device.
 #         under the License.
 -->
 
+
 |AppVeyor|Travis CI|
 |:-:|:-:|
 |[![Build status](https://ci.appveyor.com/api/projects/status/github/apache/cordova-plugin-media?branch=master)](https://ci.appveyor.com/project/ApacheSoftwareFoundation/cordova-plugin-media)|[![Build Status](https://travis-ci.org/apache/cordova-plugin-media.svg?branch=master)](https://travis-ci.org/apache/cordova-plugin-media)|
@@ -658,6 +659,7 @@ Stops recording an audio file.
 ### Supported Platforms
 
 - iOS
+- Android
 
 ### Parameters
 
