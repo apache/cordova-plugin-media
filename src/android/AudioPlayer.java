@@ -118,13 +118,18 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
 
     /**
      * Destroy player and stop audio playing or recording.
+     * @param broadcastStateChange - if false, setting the state of this oject will not send a status change to the client.
      */
-    public void destroy() {
+    public void destroy(boolean broadcastStateChange) {
         // Stop any play or record
         if (this.player != null) {
             if ((this.state == STATE.MEDIA_RUNNING) || (this.state == STATE.MEDIA_PAUSED)) {
-                this.player.stop();
+                this.player.stop();             
+            }
+            if (broadcastStateChange) {
                 this.setState(STATE.MEDIA_STOPPED);
+            } else {    // Do not call the success callback.
+                this.state = STATE.MEDIA_STOPPED;
             }
             this.player.release();
             this.player = null;
@@ -522,9 +527,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         LOG.d(LOG_TAG, "AudioPlayer.onError(" + arg1 + ", " + arg2 + ")");
 
         // we don't want to send success callback
-        // so we don't call setState() here
-        this.state = STATE.MEDIA_STOPPED;
-        this.destroy();
+        this.destroy(false);
         // Send error notification to JavaScript
         sendErrorStatus(arg1);
 
@@ -532,9 +535,18 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     }
 
     /**
+     * Lifecyle method called by handler whenever it has been destroyed.
+     */
+    public void onHandlerDestroyed() {
+        destroy(false);
+        sendErrorStatus(MEDIA_ERR_ABORTED);        
+    }
+
+    /**
      * Set the state and send it to JavaScript.
      *
-     * @param state
+     * @param state - state to transition to
+
      */
     private void setState(STATE state) {
         if (this.state != state) {
