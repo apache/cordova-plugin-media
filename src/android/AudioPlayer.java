@@ -18,6 +18,7 @@
 */
 package org.apache.cordova.media;
 
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -38,6 +39,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
+
+final class Options {
+    Integer usage = AudioAttributes.USAGE_UNKNOWN;
+}
 
 /**
  * This class implements the audio playback and recording capabilities used by Cordova.
@@ -77,6 +82,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
 //    private static int MEDIA_ERR_DECODE         = 3;
 //    private static int MEDIA_ERR_NONE_SUPPORTED = 4;
 
+    private Options options = new Options();
+
     private AudioHandler handler;           // The AudioHandler object
     private String id;                      // The id of this player (used to identify Media object in JavaScript)
     private MODE mode = MODE.NONE;          // Playback or Recording mode
@@ -104,6 +111,10 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         this.id = id;
         this.audioFile = file;
         this.tempFiles = new LinkedList<String>();
+    }
+
+    public void  setOptions(Options options) {
+        this.options = options;
     }
 
     private String generateTempFile() {
@@ -609,6 +620,12 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                 case MEDIA_NONE:
                     if (this.player == null) {
                         this.player = new MediaPlayer();
+                        if(this.options.usage != AudioAttributes.USAGE_UNKNOWN) {
+                            this.player.setAudioAttributes(
+                                new AudioAttributes.Builder()
+                                    .setUsage(options.usage)
+                                    .build());
+                        }
                         this.player.setOnErrorListener(this);
                     }
                     try {
@@ -632,6 +649,12 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                         //maybe it was recording?
                         if (player == null) {
                             this.player = new MediaPlayer();
+                            if(this.options.usage != AudioAttributes.USAGE_UNKNOWN) {
+                                this.player.setAudioAttributes(
+                                    new AudioAttributes.Builder()
+                                        .setUsage(options.usage)
+                                        .build());
+                            }
                             this.player.setOnErrorListener(this);
                             this.prepareOnly = false;
 

@@ -38,18 +38,21 @@ var mediaObjects = {};
  *                                  errorCallback(int errorCode) - OPTIONAL
  * @param statusCallback        The callback to be called when media status has changed.
  *                                  statusCallback(int statusCode) - OPTIONAL
+ * @param options               The options object.
+ *                                  (android) { usage } - OPTIONAL
  */
-var Media = function (src, successCallback, errorCallback, statusCallback) {
-    argscheck.checkArgs('sFFF', 'Media', arguments);
+var Media = function (src, successCallback, errorCallback, statusCallback, options) {
+    argscheck.checkArgs('sFFFO', 'Media', arguments);
     this.id = utils.createUUID();
     mediaObjects[this.id] = this;
     this.src = src;
     this.successCallback = successCallback;
     this.errorCallback = errorCallback;
     this.statusCallback = statusCallback;
+    this.options = options;
     this._duration = -1;
     this._position = -1;
-    exec(null, this.errorCallback, 'Media', 'create', [this.id, this.src]);
+    exec(null, this.errorCallback, 'Media', 'create', [this.id, this.src, this.options]);
 };
 
 // Media messages
@@ -65,6 +68,11 @@ Media.MEDIA_RUNNING = 2;
 Media.MEDIA_PAUSED = 3;
 Media.MEDIA_STOPPED = 4;
 Media.MEDIA_MSG = ['None', 'Starting', 'Running', 'Paused', 'Stopped'];
+
+// Usage types
+Media.ANDROID_USAGE_UNKNOWN = 0;
+Media.ANDROID_USAGE_MEDIA = 1;
+Media.ANDROID_USAGE_VOICE_COMMUNICATION = 2;
 
 // "static" function to return existing objs.
 Media.get = function (id) {

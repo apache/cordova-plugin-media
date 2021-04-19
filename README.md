@@ -62,7 +62,7 @@ cordova plugin add cordova-plugin-media
 ## Media
 
 ```js
-var media = new Media(src, mediaSuccess, [mediaError], [mediaStatus]);
+var media = new Media(src, mediaSuccess, [mediaError], [mediaStatus], [options]);
 ```
 
 ### Parameters
@@ -75,12 +75,20 @@ var media = new Media(src, mediaSuccess, [mediaError], [mediaStatus]);
 
 - __mediaStatus__: (Optional) The callback that executes to indicate status changes. It takes a integer status code. _(Function)_
 
+- __options__: (Optional) The object to pass additional options to player instance. (Android) Supports only `usage` property atm. _(Object)_
+
 __NOTE__: `cdvfile` path is supported as `src` parameter:
 ```javascript
 var my_media = new Media('cdvfile://localhost/temporary/recording.mp3', ...);
 ```
 
 ### Constants
+
+(Android) Usage types:
+
+- `Media.ANDROID_USAGE_UNKNOWN`             = 0;
+- `Media.ANDROID_USAGE_MEDIA`               = 1;
+- `Media.ANDROID_USAGE_VOICE_COMMUNICATION` = 2;
 
 The following constants are reported as the only parameter to the
 `mediaStatus` callback:
