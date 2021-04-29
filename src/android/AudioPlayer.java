@@ -121,14 +121,13 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
               } else {
                 //otherwise we get a directory private to the app (scoped storage)
                 //new way
-                tempFileName = getExternalFilesDir(null).getAbsolutePath() + "/tmprecording-" + System.currentTimeMillis() + ".3gp";
+                tempFileName = this.handler.cordova.getActivity().getApplicationContext().getExternalFilesDir(null).getAbsolutePath() + "/tmprecording-" + System.currentTimeMillis() + ".3gp";
               }
 
           } else {
             //prior to sdk 29, we keep asking permissions as before so we write to the same place as before
             tempFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmprecording-" + System.currentTimeMillis() + ".3gp";
-          }
-          
+          } 
           
       } else {
           tempFileName = "/data/data/" + handler.cordova.getActivity().getPackageName() + "/cache/tmprecording-" + System.currentTimeMillis() + ".3gp";
@@ -213,7 +212,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                       file = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + file;
                     } else {
                       //new path
-                      file = getExternalFilesDir(null).getAbsolutePath() + File.separator + file;
+                      file = this.handler.cordova.getActivity().getApplicationContext().getExternalFilesDir(null).getAbsolutePath() + File.separator + file;
                     }
                 } else {
                   //same as before
@@ -743,14 +742,12 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                           this.player.setDataSource(Environment.getExternalStorageDirectory().getPath() + "/" + file);
                         } else {
                           //new way
-                          this.player.setDataSource(getExternalFilesDir(null).getPath() + "/" + file);
+                          this.player.setDataSource(this.handler.cordova.getActivity().getApplicationContext().getExternalFilesDir(null).getPath() + "/" + file);
                         }
 
                     } else {
-                      //as before
                       this.player.setDataSource(Environment.getExternalStorageDirectory().getPath() + "/" + file);
                     }
-
                     
                 }
             }
@@ -812,6 +809,6 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     }
 
     private boolean hasWritePermission() {
-        return PermissionHelper.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        return PermissionHelper.hasPermission(this.handler, Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 }
