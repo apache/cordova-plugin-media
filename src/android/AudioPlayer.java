@@ -113,7 +113,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
       String tempFileName = null;
       if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
 
-          if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { //deprecated after sdk 29,
+          if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) { //deprecated after sdk 29,
 
               //if we have storage write permission we keep doing it this way
               if(hasWritePermission()) {
@@ -206,7 +206,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         if (!file.startsWith("/")) {
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
 
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { //deprecated after sdk 29,
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) { //deprecated after sdk 29,
                     //if we have storage write permission we keep doing it this way
                     if(hasWritePermission()) {
                       file = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + file;
@@ -736,7 +736,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                 }
                 else {
 
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { //deprecated after sdk 29,
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) { //deprecated after sdk 29,
                         //if we have storage write permission we keep doing it this way
                         if(hasWritePermission()) {
                           this.player.setDataSource(Environment.getExternalStorageDirectory().getPath() + "/" + file);
