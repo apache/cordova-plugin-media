@@ -23,6 +23,8 @@ description: Record and play audio on the device.
 
 # cordova-plugin-media
 
+[![Android Testsuite](https://github.com/apache/cordova-plugin-media/actions/workflows/android.yml/badge.svg)](https://github.com/apache/cordova-plugin-media/actions/workflows/android.yml) [![Chrome Testsuite](https://github.com/apache/cordova-plugin-media/actions/workflows/chrome.yml/badge.svg)](https://github.com/apache/cordova-plugin-media/actions/workflows/chrome.yml) [![iOS Testsuite](https://github.com/apache/cordova-plugin-media/actions/workflows/ios.yml/badge.svg)](https://github.com/apache/cordova-plugin-media/actions/workflows/ios.yml) [![Lint Test](https://github.com/apache/cordova-plugin-media/actions/workflows/lint.yml/badge.svg)](https://github.com/apache/cordova-plugin-media/actions/workflows/lint.yml)
+
 
 This plugin provides the ability to record and play back audio files on a device.
 
