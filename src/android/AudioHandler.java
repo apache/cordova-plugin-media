@@ -81,6 +81,10 @@ public class AudioHandler extends CordovaPlugin {
         this.pausedForFocus = new ArrayList<AudioPlayer>();
     }
 
+    public Context getApplicationContext()
+    {
+        return this.cordova.getActivity().getApplicationContext();
+    }
 
     protected void getWritePermission(int requestCode)
     {
