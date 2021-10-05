@@ -114,7 +114,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * Creates an audio file path from the provided fileName or creates a new temporary file path.
      *
      * @param fileName the audio file name, if null a temporary 3gp file name is provided
-     * @return
+     * @return String
      */
     private String createAudioFilePath(String fileName) {
         File dir = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)
