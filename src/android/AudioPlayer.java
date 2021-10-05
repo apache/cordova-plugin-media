@@ -122,7 +122,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             : context.getCacheDir().getAbsolutePath();
 
         fileName = fileName.isEmpty()
-            ? String.format("tmprecording-%l.3gp", System.currentTimeMillis())
+            ? String.format("tmprecording-%d.3gp", System.currentTimeMillis())
             : fileName;
 
         return filePath + File.separator + fileName;
