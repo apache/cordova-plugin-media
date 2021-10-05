@@ -117,15 +117,15 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * @return
      */
     private String createAudioFilePath(String fileName) {
-        String filePath = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)
-            ? context.getExternalFilesDir(null).getAbsolutePath()
-            : context.getCacheDir().getAbsolutePath();
+        File dir = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)
+            ? context.getExternalFilesDir(null)
+            : context.getCacheDir();
 
         fileName = fileName.isEmpty()
             ? String.format("tmprecording-%d.3gp", System.currentTimeMillis())
             : fileName;
 
-        return filePath + File.separator + fileName;
+        return dir.getAbsolutePath() + File.separator + fileName;
     }
 
     /**
