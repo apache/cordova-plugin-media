@@ -321,7 +321,21 @@ exports.defineAutoTests = function () {
             it(
                 'media.spec.21 should be able to resume playback after pause',
                 function (done) {
-                    if (!isAudioSupported || cordova.platformId === 'blackberry10' || isKitKat) {
+                    if (!isAudioSupported || cordova.platformId === 'blackberry10' || isKitKat || isBrowser) {
+                        /**
+                         * Browser Error:
+                         * Uncaught (in promise) DOMException: play() failed because the user didn't interact with
+                         * the document first. https://goo.gl/xX8pDD
+                         *
+                         * The Autoplay Policy launched in Chrome 66 for audio and video elements and is effectively
+                         * blocking roughly half of unwanted media autoplays in Chrome. For the Web Audio API, the
+                         * autoplay policy launched in Chrome 71. This affects web games, some WebRTC applications,
+                         * and other web pages using audio features. More details can be found in the Web Audio API
+                         * section below.
+                         *
+                         * Due to the Chrome Policies, this test is disabled because it can not be run without user
+                         * interations.
+                         */
                         pending();
                     }
 
@@ -373,7 +387,21 @@ exports.defineAutoTests = function () {
             it(
                 'media.spec.22 should be able to seek through file',
                 function (done) {
-                    if (!isAudioSupported || cordova.platformId === 'blackberry10' || isKitKat) {
+                    if (!isAudioSupported || cordova.platformId === 'blackberry10' || isKitKat || isBrowser) {
+                        /**
+                         * Browser Error:
+                         * Uncaught (in promise) DOMException: play() failed because the user didn't interact with
+                         * the document first. https://goo.gl/xX8pDD
+                         *
+                         * The Autoplay Policy launched in Chrome 66 for audio and video elements and is effectively
+                         * blocking roughly half of unwanted media autoplays in Chrome. For the Web Audio API, the
+                         * autoplay policy launched in Chrome 71. This affects web games, some WebRTC applications,
+                         * and other web pages using audio features. More details can be found in the Web Audio API
+                         * section below.
+                         *
+                         * Due to the Chrome Policies, this test is disabled because it can not be run without user
+                         * interations.
+                         */
                         pending();
                     }
 
@@ -540,7 +568,21 @@ exports.defineAutoTests = function () {
 
         it('media.spec.27 should call success or error when trying to stop a media that is in starting state', function (done) {
             // bb10 dialog pops up, preventing tests from running
-            if (!isAudioSupported || cordova.platformId === 'blackberry10') {
+            if (!isAudioSupported || cordova.platformId === 'blackberry10' || isBrowser) {
+                /**
+                 * Browser Error:
+                 * Uncaught (in promise) DOMException: play() failed because the user didn't interact with
+                 * the document first. https://goo.gl/xX8pDD
+                 *
+                 * The Autoplay Policy launched in Chrome 66 for audio and video elements and is effectively
+                 * blocking roughly half of unwanted media autoplays in Chrome. For the Web Audio API, the
+                 * autoplay policy launched in Chrome 71. This affects web games, some WebRTC applications,
+                 * and other web pages using audio features. More details can be found in the Web Audio API
+                 * section below.
+                 *
+                 * Due to the Chrome Policies, this test is disabled because it can not be run without user
+                 * interations.
+                 */
                 pending();
             }
 
