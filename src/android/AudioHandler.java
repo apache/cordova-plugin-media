@@ -70,8 +70,6 @@ public class AudioHandler extends CordovaPlugin {
 
     public static final int PERMISSION_DENIED_ERROR = 20;
 
-    public static final SocketServer socketServer = new SocketServer();
-
     private String recordId;
     private String fileUriStr;
 
@@ -82,7 +80,6 @@ public class AudioHandler extends CordovaPlugin {
         this.players = new HashMap<String, AudioPlayer>();
         this.pausedForPhone = new ArrayList<AudioPlayer>();
         this.pausedForFocus = new ArrayList<AudioPlayer>();
-        this.socketServer.start();
     }
 
 

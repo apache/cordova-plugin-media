@@ -676,26 +676,17 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * @throws IllegalArgumentException
      */
     private void loadAudioFile(String file) throws IllegalArgumentException, SecurityException, IllegalStateException, IOException {
-        if (file.startsWith("kp://")) {
-          String path =  file.replace("kp:/", "");
-          this.player.setDataSource("http://127.0.0.1:8888" + path);
-          this.player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-          this.setMode(MODE.PLAY);
-          this.setState(STATE.MEDIA_STARTING);
-          this.player.setOnPreparedListener(this);
-          this.player.prepareAsync();
+        if (this.isStreaming(file)) {
+            this.player.setDataSource(file);
+            this.player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            //if it's a streaming file, play mode is implied
+            this.setMode(MODE.PLAY);
+            this.setState(STATE.MEDIA_STARTING);
+            this.player.setOnPreparedListener(this);
+            this.player.prepareAsync();
         }
         else {
-            if (this.isStreaming(file)) {
-                this.player.setDataSource(file);
-                this.player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                //if it's a streaming file, play mode is implied
-                this.setMode(MODE.PLAY);
-                this.setState(STATE.MEDIA_STARTING);
-                this.player.setOnPreparedListener(this);
-                this.player.prepareAsync();
-            }
-            else if (file.startsWith("/android_asset/")) {
+            if (file.startsWith("/android_asset/")) {
                 String f = file.substring(15);
                 android.content.res.AssetFileDescriptor fd = this.handler.cordova.getActivity().getAssets().openFd(f);
                 this.player.setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength());

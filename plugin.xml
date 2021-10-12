@@ -62,7 +62,6 @@
         <source-file src="src/android/AudioHandler.java" target-dir="src/org/apache/cordova/media" />
         <source-file src="src/android/AudioPlayer.java" target-dir="src/org/apache/cordova/media" />
         <source-file src="src/android/FileHelper.java" target-dir="src/org/apache/cordova/media" />
-        <source-file src="src/android/SocketServer.java" target-dir="src/org/apache/cordova/media" />
     </platform>
 
     <!-- ios -->
