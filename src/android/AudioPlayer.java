@@ -121,7 +121,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             ? context.getExternalFilesDir(null)
             : context.getCacheDir();
 
-        fileName = fileName.isEmpty()
+        fileName = (fileName == null || fileName.isEmpty())
             ? String.format("tmprecording-%d.3gp", System.currentTimeMillis())
             : fileName;
 
