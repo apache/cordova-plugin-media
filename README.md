@@ -336,6 +336,18 @@ function playAudio(url) {
 }
 ```
 
+### Parameters
+
+- __playAudioWhenScreenIsLocked__: Pass in this option to the `play`
+  method to specify whether you want to allow playback when the screen
+  is locked or the app is in Background(Android). The standard value is true.
+   e.g.:
+
+        var myMedia = new Media("http://audio.ibeat.org/content/p1rj1s/p1rj1s_-_rockGuitar.mp3");
+        myMedia.play({ playAudioWhenScreenIsLocked : true });
+        myMedia.setVolume('1.0');
+
+
 ### iOS Quirks
 
 - __numberOfLoops__: Pass this option to the `play` method to specify
@@ -344,15 +356,8 @@ function playAudio(url) {
         var myMedia = new Media("http://audio.ibeat.org/content/p1rj1s/p1rj1s_-_rockGuitar.mp3")
         myMedia.play({ numberOfLoops: 2 })
 
-- __playAudioWhenScreenIsLocked__: Pass in this option to the `play`
-  method to specify whether you want to allow playback when the screen
-  is locked.  If set to `true` (the default value), the state of the
-  hardware mute button is ignored, e.g.:
-
-        var myMedia = new Media("http://audio.ibeat.org/content/p1rj1s/p1rj1s_-_rockGuitar.mp3");
-        myMedia.play({ playAudioWhenScreenIsLocked : true });
-        myMedia.setVolume('1.0');
-
+- __playAudioWhenScreenIsLocked__: 
+ If set to `true`, the state of the hardware mute button is ignored.
 > Note: To allow playback with the screen locked or background audio you have to add `audio` to `UIBackgroundModes` in the `info.plist` file. See [Apple documentation](https://developer.apple.com/library/content/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/BackgroundExecution/BackgroundExecution.html#//apple_ref/doc/uid/TP40007072-CH4-SW23). Also note that the audio has to be started before going to background.
 
 - __order of file search__: When only a file name or simple path is
