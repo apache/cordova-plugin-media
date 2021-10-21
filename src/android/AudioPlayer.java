@@ -38,6 +38,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
+import org.apache.cordova.PermissionHelper;
+import android.Manifest;
+import android.os.Build;
 
 /**
  * This class implements the audio playback and recording capabilities used by Cordova.
@@ -109,7 +112,23 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     private String generateTempFile() {
       String tempFileName = null;
       if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-          tempFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmprecording-" + System.currentTimeMillis() + ".3gp";
+
+          if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { //deprecated after sdk 29,
+
+              //if we have storage write permission we keep doing it this way
+              if(hasWritePermission()) {
+                tempFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmprecording-" + System.currentTimeMillis() + ".3gp";
+              } else {
+                //otherwise we get a directory private to the app (scoped storage)
+                //new way
+                tempFileName = this.handler.cordova.getActivity().getApplicationContext().getExternalFilesDir(null).getAbsolutePath() + "/tmprecording-" + System.currentTimeMillis() + ".3gp";
+              }
+
+          } else {
+            //prior to sdk 29, we keep asking permissions as before so we write to the same place as before
+            tempFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmprecording-" + System.currentTimeMillis() + ".3gp";
+          } 
+          
       } else {
           tempFileName = "/data/data/" + handler.cordova.getActivity().getPackageName() + "/cache/tmprecording-" + System.currentTimeMillis() + ".3gp";
       }
@@ -186,10 +205,24 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
 
         if (!file.startsWith("/")) {
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                file = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + file;
+
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { //deprecated after sdk 29,
+                    //if we have storage write permission we keep doing it this way
+                    if(hasWritePermission()) {
+                      file = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + file;
+                    } else {
+                      //new path
+                      file = this.handler.cordova.getActivity().getApplicationContext().getExternalFilesDir(null).getAbsolutePath() + File.separator + file;
+                    }
+                } else {
+                  //same as before
+                  file = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + file;
+                }
+
             } else {
                 file = "/data/data/" + handler.cordova.getActivity().getPackageName() + "/cache/" + file;
             }
+
         }
 
         int size = this.tempFiles.size();
@@ -649,6 +682,10 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                             return true;
                         }
                     } else {
+                        if (this.player == null) {
+                          this.player = new MediaPlayer();
+                          this.player.setOnErrorListener(this);
+                        }
                         //reset the player
                         this.player.reset();
                         try {
@@ -698,7 +735,20 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                     fileInputStream.close();
                 }
                 else {
-                    this.player.setDataSource(Environment.getExternalStorageDirectory().getPath() + "/" + file);
+
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { //deprecated after sdk 29,
+                        //if we have storage write permission we keep doing it this way
+                        if(hasWritePermission()) {
+                          this.player.setDataSource(Environment.getExternalStorageDirectory().getPath() + "/" + file);
+                        } else {
+                          //new way
+                          this.player.setDataSource(this.handler.cordova.getActivity().getApplicationContext().getExternalFilesDir(null).getPath() + "/" + file);
+                        }
+
+                    } else {
+                      this.player.setDataSource(Environment.getExternalStorageDirectory().getPath() + "/" + file);
+                    }
+                    
                 }
             }
                 this.setState(STATE.MEDIA_STARTING);
@@ -756,5 +806,9 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             }
         }
         return 0;
+    }
+
+    private boolean hasWritePermission() {
+        return PermissionHelper.hasPermission(this.handler, Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 }
