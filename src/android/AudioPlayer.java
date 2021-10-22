@@ -18,6 +18,7 @@
 */
 package org.apache.cordova.media;
 
+import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -78,6 +79,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
 //    private static int MEDIA_ERR_NONE_SUPPORTED = 4;
 
     private AudioHandler handler;           // The AudioHandler object
+    private Context context;                // The Application Context object
     private String id;                      // The id of this player (used to identify Media object in JavaScript)
     private MODE mode = MODE.NONE;          // Playback or Recording mode
     private STATE state = STATE.MEDIA_NONE; // State of recording or playback
@@ -101,19 +103,29 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      */
     public AudioPlayer(AudioHandler handler, String id, String file) {
         this.handler = handler;
+        context = handler.getApplicationContext();
         this.id = id;
         this.audioFile = file;
         this.tempFiles = new LinkedList<String>();
+
     }
 
-    private String generateTempFile() {
-      String tempFileName = null;
-      if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-          tempFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmprecording-" + System.currentTimeMillis() + ".3gp";
-      } else {
-          tempFileName = "/data/data/" + handler.cordova.getActivity().getPackageName() + "/cache/tmprecording-" + System.currentTimeMillis() + ".3gp";
-      }
-      return tempFileName;
+    /**
+     * Creates an audio file path from the provided fileName or creates a new temporary file path.
+     *
+     * @param fileName the audio file name, if null a temporary 3gp file name is provided
+     * @return String
+     */
+    private String createAudioFilePath(String fileName) {
+        File dir = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)
+            ? context.getExternalFilesDir(null)
+            : context.getCacheDir();
+
+        fileName = (fileName == null || fileName.isEmpty())
+            ? String.format("tmprecording-%d.3gp", System.currentTimeMillis())
+            : fileName;
+
+        return dir.getAbsolutePath() + File.separator + fileName;
     }
 
     /**
@@ -155,7 +167,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             this.recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS); // RAW_AMR);
             this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC); //AMR_NB);
-            this.tempFile = generateTempFile();
+            this.tempFile = createAudioFilePath(null);
             this.recorder.setOutputFile(this.tempFile);
             try {
                 this.recorder.prepare();
@@ -185,11 +197,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         /* this is a hack to save the file as the specified name */
 
         if (!file.startsWith("/")) {
-            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                file = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + file;
-            } else {
-                file = "/data/data/" + handler.cordova.getActivity().getPackageName() + "/cache/" + file;
-            }
+            file = createAudioFilePath(file);
         }
 
         int size = this.tempFiles.size();
