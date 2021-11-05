@@ -62,6 +62,8 @@
         <source-file src="src/android/AudioHandler.java" target-dir="src/org/apache/cordova/media" />
         <source-file src="src/android/AudioPlayer.java" target-dir="src/org/apache/cordova/media" />
         <source-file src="src/android/FileHelper.java" target-dir="src/org/apache/cordova/media" />
+
+        <framework src="androidx.work:work-runtime:2.7.0" />
     </platform>
 
     <!-- ios -->
