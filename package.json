@@ -1,59 +1,48 @@
 {
   "name": "cordova-plugin-media",
-  "version": "3.0.1-dev",
+  "version": "5.0.4-dev",
   "description": "Cordova Media Plugin",
   "types": "./types/index.d.ts",
   "cordova": {
     "id": "cordova-plugin-media",
     "platforms": [
       "android",
-      "amazon-fireos",
-      "ubuntu",
+      "browser",
       "ios",
-      "blackberry10",
-      "wp7",
-      "wp8",
-      "windows8",
-      "windows",
-      "tizen"
+      "windows"
     ]
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/apache/cordova-plugin-media"
-  },
+  "repository": "github:apache/cordova-plugin-media",
+  "bugs": "https://github.com/apache/cordova-plugin-media/issues",
   "keywords": [
     "cordova",
     "media",
     "ecosystem:cordova",
     "cordova-android",
-    "cordova-amazon-fireos",
-    "cordova-ubuntu",
+    "cordova-browser",
     "cordova-ios",
-    "cordova-blackberry10",
-    "cordova-wp7",
-    "cordova-wp8",
-    "cordova-windows8",
-    "cordova-windows",
-    "cordova-tizen"
+    "cordova-windows"
   ],
   "scripts": {
-    "test": "npm run jshint",
-    "jshint": "jshint www && jshint src && jshint tests"
+    "test": "npm run lint",
+    "lint": "eslint ."
   },
   "author": "Apache Software Foundation",
   "license": "Apache-2.0",
   "engines": {
     "cordovaDependencies": {
-      "4.0.0": {
-        "cordova": ">100"
-      },
       "3.0.0": {
         "cordova-android": ">=6.1.0"
+      },
+      "4.0.0": {
+        "cordova-android": ">=6.3.0"
+      },
+      "6.0.0": {
+        "cordova": ">100"
       }
     }
   },
   "devDependencies": {
-    "jshint": "^2.6.0"
+    "@cordova/eslint-config": "^3.0.0"
   }
 }
