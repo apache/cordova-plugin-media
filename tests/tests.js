@@ -387,7 +387,7 @@ exports.defineAutoTests = function () {
             it(
                 'media.spec.22 should be able to seek through file',
                 function (done) {
-                    if (!isAudioSupported || cordova.platformId === 'blackberry10' || isKitKat || isBrowser) {
+                    if (!isAudioSupported || cordova.platformId === 'blackberry10' || isKitKat || isBrowser || cordova.platformId === 'ios') {
                         /**
                          * Browser Error:
                          * Uncaught (in promise) DOMException: play() failed because the user didn't interact with
