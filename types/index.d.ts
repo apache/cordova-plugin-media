@@ -28,6 +28,14 @@ declare var Media: {
  */
 interface Media {
     /**
+     * Returns the current amplitude within an audio file.
+     * @param mediaSuccess The callback that is passed the current amplitude (0.0 - 1.0).
+     * @param mediaError   The callback to execute if an error occurs.
+     */
+    getCurrentAmplitude(
+        mediaSuccess: (amplitude: number) => void,
+        mediaError?: (error: MediaError) => void): void;
+    /**
      * Returns the current position within an audio file. Also updates the Media object's position parameter.
      * @param mediaSuccess The callback that is passed the current position in seconds.
      * @param mediaError   The callback to execute if an error occurs.

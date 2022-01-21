@@ -265,7 +265,11 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
             // Pass the AVPlayerItem to a new player
             avPlayer = [[AVPlayer alloc] initWithPlayerItem:playerItem];
 
-            //avPlayer = [[AVPlayer alloc] initWithURL:resourceUrl];
+            // Avoid excessive buffering so streaming media can play instantly on iOS
+            // Removes preplay delay on ios 10+, makes consistent with ios9 behaviour
+            if ([NSProcessInfo.processInfo isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){10,0,0}]) {
+                avPlayer.automaticallyWaitsToMinimizeStalling = NO;
+            }
         }
 
         self.currMediaId = mediaId;
