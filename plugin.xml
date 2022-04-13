@@ -34,7 +34,7 @@
         <engine name="cordova-android" version=">=6.3.0" />
     </engines>
 
-    <dependency id="cordova-plugin-file" version="^6.0.0" />
+    <dependency id="cordova-plugin-file" version="^7.0.0" />
 
     <js-module src="www/MediaError.js" name="MediaError">
         <clobbers target="window.MediaError" />
