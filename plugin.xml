@@ -31,7 +31,7 @@
     <issue>https://github.com/apache/cordova-plugin-media/issues</issue>
 
     <engines>
-        <engine name="cordova-android" version=">=6.3.0" />
+        <engine name="cordova-android" version=">=10.0.0" />
     </engines>
 
     <dependency id="cordova-plugin-file" version="^7.0.0" />
