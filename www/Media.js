@@ -276,7 +276,7 @@ function onMessageFromNative (msg) {
     }
 }
 
-if (cordova.platformId === 'android' || cordova.platformId === 'amazon-fireos' || cordova.platformId === 'windowsphone') {
+if (cordova.platformId === 'android') {
     var channel = require('cordova/channel');
 
     channel.createSticky('onMediaPluginReady');
