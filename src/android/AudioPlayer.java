@@ -706,7 +706,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                     fileInputStream.close();
                 }
                 else {
-                    this.player.setDataSource(createAudioFilePath(file);
+                    this.player.setDataSource(createAudioFilePath(file));
                 }
             }
                 this.setState(STATE.MEDIA_STARTING);
