@@ -21,11 +21,9 @@ description: Record and play audio on the device.
 #         under the License.
 -->
 
-|AppVeyor|Travis CI|
-|:-:|:-:|
-|[![Build status](https://ci.appveyor.com/api/projects/status/github/apache/cordova-plugin-media?branch=master)](https://ci.appveyor.com/project/ApacheSoftwareFoundation/cordova-plugin-media)|[![Build Status](https://travis-ci.org/apache/cordova-plugin-media.svg?branch=master)](https://travis-ci.org/apache/cordova-plugin-media)|
-
 # cordova-plugin-media
+
+[![Android Testsuite](https://github.com/apache/cordova-plugin-media/actions/workflows/android.yml/badge.svg)](https://github.com/apache/cordova-plugin-media/actions/workflows/android.yml) [![Chrome Testsuite](https://github.com/apache/cordova-plugin-media/actions/workflows/chrome.yml/badge.svg)](https://github.com/apache/cordova-plugin-media/actions/workflows/chrome.yml) [![iOS Testsuite](https://github.com/apache/cordova-plugin-media/actions/workflows/ios.yml/badge.svg)](https://github.com/apache/cordova-plugin-media/actions/workflows/ios.yml) [![Lint Test](https://github.com/apache/cordova-plugin-media/actions/workflows/lint.yml/badge.svg)](https://github.com/apache/cordova-plugin-media/actions/workflows/lint.yml)
 
 
 This plugin provides the ability to record and play back audio files on a device.

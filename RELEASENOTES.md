@@ -20,6 +20,46 @@
 -->
 # Release Notes
 
+### 5.0.4 (Jan 21, 2022)
+
+* [GH-329](https://github.com/apache/cordova-plugin-media/pull/329) dep: bump `@cordova/eslint-config@4.0.0` w/ fix & `package-lock` rebuild
+* [GH-317](https://github.com/apache/cordova-plugin-media/pull/317) fix(android): get external files directory for **Android** 10+
+* [GH-320](https://github.com/apache/cordova-plugin-media/pull/320) ci(ios): update workflow w/ **iOS** 15
+* [GH-318](https://github.com/apache/cordova-plugin-media/pull/318) test(browser): disable test cases w/ play() due to Chrome's Autoplay Policy
+* [GH-313](https://github.com/apache/cordova-plugin-media/pull/313) ci: add action-badge
+* [GH-312](https://github.com/apache/cordova-plugin-media/pull/312) ci: remove travis & appveyor
+* [GH-311](https://github.com/apache/cordova-plugin-media/pull/311) ci: add gh-actions workflows
+* [GH-298](https://github.com/apache/cordova-plugin-media/pull/298) ci: add node-14.x to workflow
+* [GH-292](https://github.com/apache/cordova-plugin-media/pull/292) ci(travis): update osx xcode image
+* [GH-291](https://github.com/apache/cordova-plugin-media/pull/291) ci(travis): updates **Android** API level
+* [GH-284](https://github.com/apache/cordova-plugin-media/pull/284) chore: adds `package-lock` file
+* [GH-283](https://github.com/apache/cordova-plugin-media/pull/283) refactor(eslint): use `cordova-eslint` /w fix
+* [GH-282](https://github.com/apache/cordova-plugin-media/pull/282) chore(npm): use short notation in `package.json`
+* chore(asf): update git notification settings
+* Update CONTRIBUTING.md
+* [GH-249](https://github.com/apache/cordova-plugin-media/pull/249) Fix #248 delete javascript reference to released media
+* [GH-274](https://github.com/apache/cordova-plugin-media/pull/274) ci: updates Node.js versions
+* [GH-275](https://github.com/apache/cordova-plugin-media/pull/275) chore(npm): improve ignore list
+* ci(travis): upgrade to node8
+* [GH-241](https://github.com/apache/cordova-plugin-media/pull/241) fix(types): Add type definition for getCurrentAmplitude
+
+### 5.0.3 (Jun 27, 2019)
+
+-   chore: fix repo and issue urls and license in package.json and plugin.xml ([`784ac7b`](https://github.com/apache/cordova-plugin-media/commit/784ac7b))
+-   build: add `.gitattributes` to force LF (instead of possible CRLF on Windows) ([`5244c4a`](https://github.com/apache/cordova-plugin-media/commit/5244c4a))
+-   build: add `.npmignore` to remove unneeded files from npm package ([`aa1586d`](https://github.com/apache/cordova-plugin-media/commit/aa1586d))
+-   ci(travis): Update Travis CI configuration for new paramedic ([#227](https://github.com/apache/cordova-plugin-media/issues/227)) ([`b0ed6bd`](https://github.com/apache/cordova-plugin-media/commit/b0ed6bd))
+-   chore(github): Add or update GitHub pull request and issue template ([`b1c1353`](https://github.com/apache/cordova-plugin-media/commit/b1c1353))
+-   docs: remove JIRA link ([`2acd3c2`](https://github.com/apache/cordova-plugin-media/commit/2acd3c2))
+-   ci(travis): also accept terms for android sdk `android-27` ([`74772c3`](https://github.com/apache/cordova-plugin-media/commit/74772c3))
+-   docs: remove outdated docs that haven't been updated for 3 years ([`a006da3`](https://github.com/apache/cordova-plugin-media/commit/a006da3))
+-   fix(types): add types for callback in constructor ([#90](https://github.com/apache/cordova-plugin-media/issues/90)) ([`7094582`](https://github.com/apache/cordova-plugin-media/commit/7094582))
+-   docs: (iOS) document setRate method ([#142](https://github.com/apache/cordova-plugin-media/issues/142)) ([`5f18902`](https://github.com/apache/cordova-plugin-media/commit/5f18902))
+-   fix(ios): [CB-13445](https://issues.apache.org/jira/browse/CB-13445) (iOS) Streaming media can take up to 8-10 seconds to start ([#169](https://github.com/apache/cordova-plugin-media/issues/169)) ([`43d57ca`](https://github.com/apache/cordova-plugin-media/commit/43d57ca))
+-   fix(android): [CB-12849](https://issues.apache.org/jira/browse/CB-12849) checking mediaState in destroy method, and moving file by stream when renameTo failing ([#168](https://github.com/apache/cordova-plugin-media/issues/168)) ([`86660dd`](https://github.com/apache/cordova-plugin-media/commit/86660dd))
+-   tests: [CB-14091](https://issues.apache.org/jira/browse/CB-14091) fix tests code for stream url and remove browser ([#166](https://github.com/apache/cordova-plugin-media/issues/166)) ([`524c337`](https://github.com/apache/cordova-plugin-media/commit/524c337))
+
+
 ### 5.0.2 (Jan 24, 2018)
 * [CB-13751](https://issues.apache.org/jira/browse/CB-13751) Add build-tools-26.0.2 to travis (#163)
 * Fix for [CB-11513](https://issues.apache.org/jira/browse/CB-11513)
