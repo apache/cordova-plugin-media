@@ -38,10 +38,10 @@ var mediaObjects = {};
  *                                  errorCallback(int errorCode) - OPTIONAL
  * @param statusCallback        The callback to be called when media status has changed.
  *                                statusCallback(int statusCode) - OPTIONAL
- *  
+ *
  * @param durationUpdateCallback  The callback to be called when the duration updates.
  *                                durationUpdateCallback(float duration) - OPTIONAL
- * 
+ *
  */
 var Media = function (src, successCallback, errorCallback, statusCallback, durationUpdateCallback) {
     argscheck.checkArgs('sFFF', 'Media', arguments);
