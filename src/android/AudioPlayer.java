@@ -769,7 +769,10 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
 
     public void setRate(float speed) {
         // Check for API 23+
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+            this.readyPlayer(this.audioFile)
+        ) {
             try {
                 boolean wasPlaying = this.player.isPlaying();
                 this.player.setPlaybackParams(this.player.getPlaybackParams().setSpeed(speed));
