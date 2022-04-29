@@ -771,7 +771,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         // Check for API 23+
         if (
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-            this.readyPlayer(this.audioFile)
+            this.player != null
         ) {
             try {
                 boolean wasPlaying = this.player.isPlaying();
