@@ -507,7 +507,7 @@ public class AudioHandler extends CordovaPlugin {
             audio.setRate(rate);
         } else {
             LOG.e(TAG3, "Unknown Audio Player " + id);
-        }	        
+        }
     }
     
 
