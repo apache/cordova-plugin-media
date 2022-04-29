@@ -204,7 +204,7 @@ Media.prototype.setVolume = function (volume) {
  * Adjust the playback rate.
  */
 Media.prototype.setRate = function (rate) {
-    if (cordova.platformId === 'ios') {
+    if (cordova.platformId === 'ios' || cordova.platformId === 'android') {
         exec(null, null, 'Media', 'setRate', [this.id, rate]);
     } else {
         console.warn('media.setRate method is currently not supported for', cordova.platformId, 'platform.');

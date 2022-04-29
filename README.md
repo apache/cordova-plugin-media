@@ -662,6 +662,7 @@ Stops recording an audio file.
 ### Supported Platforms
 
 - iOS
+- Android (API 23+)
 
 ### Parameters
 
