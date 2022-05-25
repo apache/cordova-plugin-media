@@ -20,6 +20,21 @@
 -->
 # Release Notes
 
+### 6.0.0 (May 25, 2022)
+
+* [GH-344](https://github.com/apache/cordova-plugin-media/pull/344) feat(android): drop `WRITE_EXTERNAL_STORAGE` permission
+* [GH-195](https://github.com/apache/cordova-plugin-media/pull/195) feat(ios): Add error call for `stalled_playback`
+* [GH-341](https://github.com/apache/cordova-plugin-media/pull/341) feat(android): add `setRate`
+* [GH-340](https://github.com/apache/cordova-plugin-media/pull/340) fix(ios): set rate with current playback rate
+* [GH-197](https://github.com/apache/cordova-plugin-media/pull/197) feat: add `durationUpdate` callback
+* [GH-232](https://github.com/apache/cordova-plugin-media/pull/232) fix(android): remove `READ_PHONE_STATE` permission
+* [GH-285](https://github.com/apache/cordova-plugin-media/pull/285) fix: remove deprecated platform code snippets
+* [GH-338](https://github.com/apache/cordova-plugin-media/pull/338) fix: missing parenthesis from #328
+* [GH-328](https://github.com/apache/cordova-plugin-media/pull/328) fix(android): issue #325
+* [GH-334](https://github.com/apache/cordova-plugin-media/pull/334) dep!: bump `cordova-plugin-file@^7.0.0`
+* [GH-337](https://github.com/apache/cordova-plugin-media/pull/337) chore: bump `cordovaDependencies` next next major cordova requirement
+* [GH-336](https://github.com/apache/cordova-plugin-media/pull/336) chore: rebuilt `package-lock`
+
 ### 5.0.4 (Jan 21, 2022)
 
 * [GH-329](https://github.com/apache/cordova-plugin-media/pull/329) dep: bump `@cordova/eslint-config@4.0.0` w/ fix & `package-lock` rebuild
