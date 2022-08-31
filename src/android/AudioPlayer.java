@@ -183,7 +183,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                 e.printStackTrace();
             }
 
-            sendErrorStatus(MEDIA_ERR_ABORTED);
+            sendErrorStatus(MEDIA_ERR_ABORTED, null);
             break;
         case RECORD:
             errorMessage = "AudioPlayer Error: Already recording.";
@@ -366,7 +366,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                 this.player.seekTo(milliseconds);
             }
             LOG.d(LOG_TAG, "Send a onStatus update for the new seek");
-            sendStatusChange(MEDIA_POSITION, null, (milliseconds / 1000.0f));
+            sendStatusChange(MEDIA_POSITION, null, (milliseconds / 1000.0f), null);
         }
         else {
             this.seekOnPrepared = milliseconds;
@@ -430,7 +430,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     public long getCurrentPosition() {
         if ((this.state == STATE.MEDIA_RUNNING) || (this.state == STATE.MEDIA_PAUSED)) {
             int curPos = this.player.getCurrentPosition();
-            sendStatusChange(MEDIA_POSITION, null, (curPos / 1000.0f));
+            sendStatusChange(MEDIA_POSITION, null, (curPos / 1000.0f), null);
             return curPos;
         }
         else {
@@ -512,7 +512,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         this.prepareOnly = true;
 
         // Send status notification to JavaScript
-        sendStatusChange(MEDIA_DURATION, null, this.duration);
+        sendStatusChange(MEDIA_DURATION, null, this.duration, null);
     }
 
     /**
@@ -552,7 +552,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      */
     private void setState(STATE state) {
         if (this.state != state) {
-            sendStatusChange(MEDIA_STATE, null, (float)state.ordinal());
+            sendStatusChange(MEDIA_STATE, null, (float)state.ordinal(), null);
         }
         this.state = state;
     }
@@ -724,30 +724,17 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             }
     }
 
-    private void sendErrorStatus(int errorCode) {
-        sendStatusChange(MEDIA_ERROR, errorCode, null);
+    private void sendErrorStatus(int errorCode, String errorMessage) {
+        sendStatusChange(MEDIA_ERROR, errorCode, null, errorMessage);
     }
 
-    private void sendErrorStatus(Integer errorCode, String errorMessage) {
-        LOG.d(LOG_TAG, errorMessage);
-        JSONObject statusDetails = new JSONObject();
-        try {
-            statusDetails.put("id", this.id);
-            statusDetails.put("msgType", MEDIA_ERROR);
-            JSONObject code = new JSONObject();
-            error.put("code", errorCode);
-            error.put("message", errorMessage);
-            statusDetails.put("value", error);
-        } catch (JSONException e) {
-            LOG.e(LOG_TAG, "Failed to create status details", e);
-        }
-        this.handler.sendEventMessage("status", statusDetails);
-    }
-
-    private void sendStatusChange(int messageType, Integer additionalCode, Float value) {
-
+    private void sendStatusChange(int messageType, Integer additionalCode, Float value, String errorMessage) {
         if (additionalCode != null && value != null) {
             throw new IllegalArgumentException("Only one of additionalCode or value can be specified, not both");
+        }
+
+        if (errorMessage != null) {
+            LOG.d(LOG_TAG, errorMessage);
         }
 
         JSONObject statusDetails = new JSONObject();
@@ -757,6 +744,11 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             if (additionalCode != null) {
                 JSONObject code = new JSONObject();
                 code.put("code", additionalCode.intValue());
+
+                if (errorMessage != null) {
+                    code.put("message", errorMessage);
+                }
+
                 statusDetails.put("value", code);
             }
             else if (value != null) {
