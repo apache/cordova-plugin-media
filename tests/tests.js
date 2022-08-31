@@ -24,6 +24,7 @@
 // increased timeout for actual playback to give device chance to download and play mp3 file
 // some emulators can be REALLY slow at this, so two minutes
 var ACTUAL_PLAYBACK_TEST_TIMEOUT = 2 * 60 * 1000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = ACTUAL_PLAYBACK_TEST_TIMEOUT;
 
 var WEB_MP3_FILE = 'https://cordova.apache.org/static/downloads/BlueZedEx.mp3';
 var WEB_MP3_STREAM = 'https://cordova.apache.org/static/downloads/BlueZedEx.mp3';
@@ -234,14 +235,22 @@ exports.defineAutoTests = function () {
         describe('actual playback', function () {
             var checkInterval, media;
 
-            afterEach(function () {
-                clearInterval(checkInterval);
+            // Ensure interval and media is cleared out before and after each test
+            var safeDone = function () {
+                if (checkInterval) {
+                    clearInterval(checkInterval);
+                    checkInterval = null;
+                }
+
                 if (media) {
                     media.stop();
                     media.release();
                     media = null;
                 }
-            });
+            };
+
+            afterEach(function () { safeDone(); });
+            beforeEach(function () { safeDone(); });
 
             it(
                 'media.spec.19 position should be set properly',
@@ -256,7 +265,9 @@ exports.defineAutoTests = function () {
                     // Some information about this kind of behaviour can be found at JIRA: CB-7099.
                     var context = this;
                     var mediaFile = WEB_MP3_FILE;
-                    var successCallback = function () {};
+                    var successCallback = function () {
+                        done();
+                    };
                     var statusChange = function (statusCode) {
                         if (!context.done && statusCode === Media.MEDIA_RUNNING) {
                             checkInterval = setInterval(function () {
@@ -294,7 +305,9 @@ exports.defineAutoTests = function () {
                     // Some information about this kind of behaviour can be found at JIRA: CB-7099.
                     var context = this;
                     var mediaFile = WEB_MP3_FILE;
-                    var successCallback = function () {};
+                    var successCallback = function () {
+                        done();
+                    };
                     var statusChange = function (statusCode) {
                         if (!context.done && statusCode === Media.MEDIA_RUNNING) {
                             checkInterval = setInterval(function () {
@@ -347,7 +360,9 @@ exports.defineAutoTests = function () {
                     var context = this;
                     var resumed = false;
                     var mediaFile = WEB_MP3_FILE;
-                    var successCallback = function () {};
+                    var successCallback = function () {
+                        done();
+                    };
                     var statusChange = function (statusCode) {
                         if (context.done) return;
 
@@ -412,7 +427,9 @@ exports.defineAutoTests = function () {
                     // Some information about this kind of behaviour can be found at JIRA: CB-7099.
                     var context = this;
                     var mediaFile = WEB_MP3_FILE;
-                    var successCallback = function () {};
+                    var successCallback = function () {
+                        done();
+                    };
                     var statusChange = function (statusCode) {
                         if (!context.done && statusCode === Media.MEDIA_RUNNING) {
                             checkInterval = setInterval(function () {
