@@ -264,7 +264,9 @@ exports.defineAutoTests = function () {
                     // Some information about this kind of behaviour can be found at JIRA: CB-7099.
                     var context = this;
                     var mediaFile = WEB_MP3_FILE;
-                    var successCallback = function () {};
+                    var successCallback = function () {
+                        done();
+                    };
                     var statusChange = function (statusCode) {
                         if (!context.done && statusCode === Media.MEDIA_RUNNING) {
                             checkInterval = setInterval(function () {
@@ -302,7 +304,9 @@ exports.defineAutoTests = function () {
                     // Some information about this kind of behaviour can be found at JIRA: CB-7099.
                     var context = this;
                     var mediaFile = WEB_MP3_FILE;
-                    var successCallback = function () {};
+                    var successCallback = function () {
+                        done();
+                    };
                     var statusChange = function (statusCode) {
                         if (!context.done && statusCode === Media.MEDIA_RUNNING) {
                             checkInterval = setInterval(function () {
@@ -355,7 +359,9 @@ exports.defineAutoTests = function () {
                     var context = this;
                     var resumed = false;
                     var mediaFile = WEB_MP3_FILE;
-                    var successCallback = function () {};
+                    var successCallback = function () {
+                        done();
+                    };
                     var statusChange = function (statusCode) {
                         if (context.done) return;
 
@@ -420,7 +426,9 @@ exports.defineAutoTests = function () {
                     // Some information about this kind of behaviour can be found at JIRA: CB-7099.
                     var context = this;
                     var mediaFile = WEB_MP3_FILE;
-                    var successCallback = function () {};
+                    var successCallback = function () {
+                        done();
+                    };
                     var statusChange = function (statusCode) {
                         if (!context.done && statusCode === Media.MEDIA_RUNNING) {
                             checkInterval = setInterval(function () {
