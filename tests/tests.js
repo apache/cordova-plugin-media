@@ -234,14 +234,22 @@ exports.defineAutoTests = function () {
         describe('actual playback', function () {
             var checkInterval, media;
 
-            afterEach(function () {
-                clearInterval(checkInterval);
+            // Ensure interval and media is cleared out before and after each test
+            var safeDone = function () {
+                if (checkInterval) {
+                    clearInterval(checkInterval);
+                    checkInterval = null;
+                }
+
                 if (media) {
                     media.stop();
                     media.release();
                     media = null;
                 }
-            });
+            };
+
+            afterEach(function () { safeDone(); });
+            beforeEach(function () { safeDone(); });
 
             it(
                 'media.spec.19 position should be set properly',
