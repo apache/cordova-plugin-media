@@ -435,6 +435,7 @@ exports.defineAutoTests = function () {
                             checkInterval = setInterval(function () {
                                 if (context.done) return;
                                 media.seekTo(5000);
+                                media.pause(); // pause media before confirming if it seeked to 5 seconds against current position.
                                 media.getCurrentPosition(function (position) {
                                     expect(position).toBeCloseTo(5, 0);
                                     context.done = true;
