@@ -232,6 +232,23 @@ exports.defineAutoTests = function () {
             badMedia.play();
         });
 
+        it("media.spec.19 MediaError instance should contain 'code' and 'message' fields", function (done) {
+            var context = this;
+            var fileName = 'invalid.file.name';
+            var badMedia = new Media(fileName, succeed.bind(null, done, ' badMedia = new Media , Unexpected succees callback, it should not create Media object with invalid file name'), function (result) {
+                if (context.done) return;
+                context.done = true;
+                expect(result).toBeDefined();
+                expect(result.code).toBeDefined();
+                expect(result.message).toBeDefined();
+                if (badMedia) {
+                    badMedia.release();
+                }
+                done();
+            });
+            badMedia.play();
+        });
+
         describe('actual playback', function () {
             var checkInterval, media;
 
