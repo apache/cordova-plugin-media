@@ -20,6 +20,17 @@
 -->
 # Release Notes
 
+### 6.1.0 (Sep 06, 2022)
+
+* [GH-357](https://github.com/apache/cordova-plugin-media/pull/357) feat(android): add '`message`' field to media error [CB-11641](https://issues.apache.org/jira/browse/CB-11641)
+* [GH-352](https://github.com/apache/cordova-plugin-media/pull/352) feat(ios): support `file` scheme
+* [GH-354](https://github.com/apache/cordova-plugin-media/pull/354) fix(ios): Reset default audio session category when release ([CB-13243](https://issues.apache.org/jira/browse/CB-13243))
+* [GH-353](https://github.com/apache/cordova-plugin-media/pull/353) fix(ios): error on `getPosition` when time is `nan`
+* [GH-355](https://github.com/apache/cordova-plugin-media/pull/355) test(spec.22): pause media before calling `getCurrentPosition`
+* [GH-356](https://github.com/apache/cordova-plugin-media/pull/356) test(spec.timeout): try to improve against timeout failures
+* [GH-351](https://github.com/apache/cordova-plugin-media/pull/351) ci: sync workflow with paramedic
+* [GH-349](https://github.com/apache/cordova-plugin-media/pull/349) ci(android): update java requirement for `cordova-android@11`
+
 ### 6.0.0 (May 25, 2022)
 
 * [GH-344](https://github.com/apache/cordova-plugin-media/pull/344) feat(android): drop `WRITE_EXTERNAL_STORAGE` permission
