@@ -93,6 +93,67 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
     return resourceURL;
 }
 
+- (NSString*)getCdvCustomSchemeAssetPrefix {
+    NSDictionary* settings = self.commandDelegate.settings;
+    NSString *scheme = [settings objectForKey:[@"scheme" lowercaseString]];
+    // If scheme is file or nil, then default to file scheme
+    Boolean isCdvFileScheme = [scheme isEqualToString: @"file"] || scheme == nil;
+    NSString *hostname = @"";
+
+    if (!isCdvFileScheme) {
+        if (scheme == nil || [WKWebView handlesURLScheme:scheme]) {
+            scheme = @"app";
+        }
+
+        hostname = [settings objectForKey:[@"hostname" lowercaseString]];
+        if(hostname == nil){
+            hostname = @"localhost";
+        }
+
+        return [NSString stringWithFormat:@"%@://%@/", scheme, hostname];
+    }
+
+    return nil;
+}
+
+- (Boolean)isCdvCustomSchemeUrl:(NSString*)resourcePath
+{
+    NSString *assetUrl = [self getCdvCustomSchemeAssetPrefix];
+
+    if (assetUrl != nil) {
+        return [resourcePath hasPrefix:assetUrl];
+    }
+
+    return false;
+}
+
+// Attempts to find the file path in the "www" or "LocalFileSystem.TEMPORARY" directory.
+// Used for "file://" & "custom-scheme://hostname/" schemes and leading "/" directory paths.
+- (NSString*)attemptFindFilePath:(NSString*)resourcePath prefix:(NSString*)prefix
+{
+    resourcePath = [resourcePath substringFromIndex:[prefix length]];
+
+    NSString *filePath = [self.commandDelegate pathForResource:resourcePath];
+
+    if (filePath == nil) {
+        // see if this exists in the documents/temp directory from a previous recording
+        NSString* testPath = [NSString stringWithFormat:@"%@/%@", [NSTemporaryDirectory()stringByStandardizingPath], resourcePath];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:testPath]) {
+            // inefficient as existence will be checked again below but only way to determine if file exists from previous recording
+            filePath = testPath;
+            NSLog(@"Will attempt to use file resource from LocalFileSystem.TEMPORARY directory");
+        } else {
+            // attempt to use path provided
+            filePath = resourcePath;
+            NSLog(@"Will attempt to use file resource '%@'", filePath);
+        }
+    } else {
+        NSLog(@"Found resource '%@' in the web folder.", filePath);
+    }
+
+    return filePath;
+}
+
 // Maps a url for a resource path for playing
 // "Naked" resource paths are assumed to be from the www folder as its base
 - (NSURL*)urlForPlaying:(NSString*)resourcePath
@@ -100,8 +161,15 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
     NSURL* resourceURL = nil;
     NSString* filePath = nil;
 
-    // first try to find HTTP:// or Documents:// resources
-
+    // The order of checking if url path:
+    // 1. http:// or https://
+    // 2. documents://
+    // 3. cdvfile://
+    // 4. file://
+    // 5. custom app scheme+hostname (e.g. app://localhost/)
+    // 6. starts with a "/"
+    //
+    // For use case 4-6, it will attempt to find file path in "www" or "LocalFileSystem.TEMPORARY" directory
     if ([resourcePath hasPrefix:HTTP_SCHEME_PREFIX] || [resourcePath hasPrefix:HTTPS_SCHEME_PREFIX]) {
         // if it is a http url, use it
         NSLog(@"Will use resource '%@' from the Internet.", resourcePath);
@@ -117,28 +185,15 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
         if (filePath == nil) {
             resourceURL = [NSURL URLWithString:resourcePath];
         }
-    } else {
-        if ([resourcePath hasPrefix:FILE_PREFIX]) { // Support file scheme
-            resourcePath = [resourcePath substringFromIndex:[FILE_PREFIX length]];
-        }
-        // attempt to find file path in www directory or LocalFileSystem.TEMPORARY directory
-        filePath = [self.commandDelegate pathForResource:resourcePath];
-        if (filePath == nil) {
-            // see if this exists in the documents/temp directory from a previous recording
-            NSString* testPath = [NSString stringWithFormat:@"%@/%@", [NSTemporaryDirectory()stringByStandardizingPath], resourcePath];
-            if ([[NSFileManager defaultManager] fileExistsAtPath:testPath]) {
-                // inefficient as existence will be checked again below but only way to determine if file exists from previous recording
-                filePath = testPath;
-                NSLog(@"Will attempt to use file resource from LocalFileSystem.TEMPORARY directory");
-            } else {
-                // attempt to use path provided
-                filePath = resourcePath;
-                NSLog(@"Will attempt to use file resource '%@'", filePath);
-            }
-        } else {
-            NSLog(@"Found resource '%@' in the web folder.", filePath);
-        }
+    } else if ([resourcePath hasPrefix:FILE_PREFIX]) {
+        filePath = [self attemptFindFilePath:resourcePath prefix:FILE_PREFIX];
+    } else if ([self isCdvCustomSchemeUrl:resourcePath]) {
+        NSString *assetUrl = [self getCdvCustomSchemeAssetPrefix];
+        filePath = [self attemptFindFilePath:resourcePath prefix: assetUrl];
+    } else if ([resourcePath hasPrefix:@"/"]) {
+        filePath = [self attemptFindFilePath:resourcePath prefix:@"/"];
     }
+
     // if the resourcePath resolved to a file path, check that file exists
     if (filePath != nil) {
         // create resourceURL
