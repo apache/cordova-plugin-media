@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-media",
-  "version": "5.0.1-dev",
+  "version": "6.1.1-dev",
   "description": "Cordova Media Plugin",
   "types": "./types/index.d.ts",
   "cordova": {
@@ -12,13 +12,8 @@
       "windows"
     ]
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/apache/cordova-plugin-media"
-  },
-  "bugs": {
-    "url": "https://issues.apache.org/jira/browse/CB"
-  },
+  "repository": "github:apache/cordova-plugin-media",
+  "bugs": "https://github.com/apache/cordova-plugin-media/issues",
   "keywords": [
     "cordova",
     "media",
@@ -29,8 +24,8 @@
     "cordova-windows"
   ],
   "scripts": {
-    "test": "npm run jshint",
-    "jshint": "jshint www && jshint src && jshint tests"
+    "test": "npm run lint",
+    "lint": "eslint ."
   },
   "author": "Apache Software Foundation",
   "license": "Apache-2.0",
@@ -42,12 +37,15 @@
       "4.0.0": {
         "cordova-android": ">=6.3.0"
       },
-      "5.0.0": {
+      "6.0.0": {
+        "cordova-android": ">=10.0.0"
+      },
+      "7.0.0": {
         "cordova": ">100"
       }
     }
   },
   "devDependencies": {
-    "jshint": "^2.6.0"
+    "@cordova/eslint-config": "^4.0.0"
   }
 }

@@ -17,18 +17,18 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 
-/*global Windows:true */
+/* global Windows */
 
 var Media = require('cordova-plugin-media.Media');
 var MediaError = require('cordova-plugin-media.MediaError');
 
 var recordedFile;
-var tempFolderAppDataBasePath = 'ms-appdata:///temp/',
-    localFolderAppDataBasePath = 'ms-appdata:///local/',
-    tempFolderFullPath = Windows.Storage.ApplicationData.current.temporaryFolder.path,
-    localFolderFullPath = Windows.Storage.ApplicationData.current.localFolder.path;
+var tempFolderAppDataBasePath = 'ms-appdata:///temp/';
+var localFolderAppDataBasePath = 'ms-appdata:///local/';
+var tempFolderFullPath = Windows.Storage.ApplicationData.current.temporaryFolder.path;
+var localFolderFullPath = Windows.Storage.ApplicationData.current.localFolder.path;
 
 var PARAMETER_IS_INCORRECT = -2147024809;
 var SUPPORTED_EXTENSIONS = ['.mp3', '.wma', '.wav', '.cda', '.adx', '.wm', '.m3u', '.wmx', '.m4a'];
@@ -40,10 +40,10 @@ var fsTypes = {
 };
 
 module.exports = {
-    mediaCaptureMrg:null,
+    mediaCaptureMrg: null,
 
     // Initiates the audio file
-    create:function(win, lose, args) {
+    create: function (win, lose, args) {
         var id = args[0];
 
         var srcUri = processUri(args[1]);
@@ -66,7 +66,7 @@ module.exports = {
             // Don't create Audio object in case of record mode
             if (createAudioNode === true) {
                 thisM.node = new Audio();
-                thisM.node.msAudioCategory = "BackgroundCapableMedia";
+                thisM.node.msAudioCategory = 'BackgroundCapableMedia';
                 thisM.node.src = srcUri.absoluteCanonicalUri;
 
                 thisM.node.onloadstart = function () {
@@ -87,9 +87,10 @@ module.exports = {
 
                 thisM.node.onerror = function (e) {
                     // Due to media.spec.15 It should return MediaError for bad filename
-                    var err = e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED ?
-                        { code: MediaError.MEDIA_ERR_ABORTED } :
-                        e.target.error;
+                    var err =
+                        e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED
+                            ? { code: MediaError.MEDIA_ERR_ABORTED }
+                            : e.target.error;
 
                     Media.onStatus(id, Media.MEDIA_ERROR, err);
                 };
@@ -104,10 +105,10 @@ module.exports = {
     },
 
     // Start playing the audio
-    startPlayingAudio:function(win, lose, args) {
+    startPlayingAudio: function (win, lose, args) {
         var id = args[0];
-        //var src = args[1];
-        //var options = args[2];
+        // var src = args[1];
+        // var options = args[2];
 
         var thisM = Media.get(id);
         // if Media was released, then node will be null and we need to create it again
@@ -124,13 +125,13 @@ module.exports = {
             thisM.node.play();
         } catch (err) {
             if (lose) {
-                lose({code:MediaError.MEDIA_ERR_ABORTED});
+                lose({ code: MediaError.MEDIA_ERR_ABORTED });
             }
         }
     },
 
     // Stops the playing audio
-    stopPlayingAudio:function(win, lose, args) {
+    stopPlayingAudio: function (win, lose, args) {
         var id = args[0];
         try {
             var thisM = Media.get(id);
@@ -138,12 +139,12 @@ module.exports = {
             thisM.node.currentTime = 0;
             Media.onStatus(id, Media.MEDIA_STATE, Media.MEDIA_STOPPED);
         } catch (err) {
-            lose("Failed to stop: "+err);
+            lose('Failed to stop: ' + err);
         }
     },
 
     // Seeks to the position in the audio
-    seekToAudio:function(win, lose, args) {
+    seekToAudio: function (win, lose, args) {
         var id = args[0];
         var milliseconds = args[1];
         var thisM = Media.get(id);
@@ -151,27 +152,27 @@ module.exports = {
             thisM.node.currentTime = milliseconds / 1000;
             win(thisM.node.currentTime);
         } catch (err) {
-            lose("Failed to seek: "+err);
+            lose('Failed to seek: ' + err);
         }
     },
 
     // Pauses the playing audio
-    pausePlayingAudio:function(win, lose, args) {
+    pausePlayingAudio: function (win, lose, args) {
         var id = args[0];
         var thisM = Media.get(id);
         try {
             thisM.node.pause();
             Media.onStatus(id, Media.MEDIA_STATE, Media.MEDIA_PAUSED);
         } catch (err) {
-            lose("Failed to pause: "+err);
+            lose('Failed to pause: ' + err);
         }
     },
 
     // Gets current position in the audio
-    getCurrentPositionAudio:function(win, lose, args) {
+    getCurrentPositionAudio: function (win, lose, args) {
         var id = args[0];
         try {
-            var p = (Media.get(id)).node.currentTime;
+            var p = Media.get(id).node.currentTime;
             win(p);
         } catch (err) {
             lose(err);
@@ -179,7 +180,7 @@ module.exports = {
     },
 
     // Start recording audio
-    startRecordingAudio:function(win, lose, args) {
+    startRecordingAudio: function (win, lose, args) {
         var id = args[0];
         var srcUri = processUri(args[1]);
 
@@ -196,41 +197,49 @@ module.exports = {
 
         // Initialize device
         Media.prototype.mediaCaptureMgr = null;
-        var thisM = (Media.get(id));
+        var thisM = Media.get(id);
         var captureInitSettings = new Windows.Media.Capture.MediaCaptureInitializationSettings();
         captureInitSettings.streamingCaptureMode = Windows.Media.Capture.StreamingCaptureMode.audio;
         thisM.mediaCaptureMgr = new Windows.Media.Capture.MediaCapture();
-        thisM.mediaCaptureMgr.addEventListener("failed", error);
+        thisM.mediaCaptureMgr.addEventListener('failed', error);
 
         thisM.mediaCaptureMgr.initializeAsync(captureInitSettings).done(function (result) {
-            thisM.mediaCaptureMgr.addEventListener("recordlimitationexceeded", error);
-            thisM.mediaCaptureMgr.addEventListener("failed", error);
+            thisM.mediaCaptureMgr.addEventListener('recordlimitationexceeded', error);
+            thisM.mediaCaptureMgr.addEventListener('failed', error);
 
             // Start recording
-            Windows.Storage.ApplicationData.current.temporaryFolder.createFileAsync(destFileName, Windows.Storage.CreationCollisionOption.replaceExisting).done(function (newFile) {
-                recordedFile = newFile;
-                var encodingProfile = null;
-                switch (newFile.fileType) {
+            Windows.Storage.ApplicationData.current.temporaryFolder
+                .createFileAsync(destFileName, Windows.Storage.CreationCollisionOption.replaceExisting)
+                .done(function (newFile) {
+                    recordedFile = newFile;
+                    var encodingProfile = null;
+                    switch (newFile.fileType) {
                     case '.m4a':
-                        encodingProfile = Windows.Media.MediaProperties.MediaEncodingProfile.createM4a(Windows.Media.MediaProperties.AudioEncodingQuality.auto);
+                        encodingProfile = Windows.Media.MediaProperties.MediaEncodingProfile.createM4a(
+                            Windows.Media.MediaProperties.AudioEncodingQuality.auto
+                        );
                         break;
                     case '.mp3':
-                        encodingProfile = Windows.Media.MediaProperties.MediaEncodingProfile.createMp3(Windows.Media.MediaProperties.AudioEncodingQuality.auto);
+                        encodingProfile = Windows.Media.MediaProperties.MediaEncodingProfile.createMp3(
+                            Windows.Media.MediaProperties.AudioEncodingQuality.auto
+                        );
                         break;
                     case '.wma':
-                        encodingProfile = Windows.Media.MediaProperties.MediaEncodingProfile.createWma(Windows.Media.MediaProperties.AudioEncodingQuality.auto);
+                        encodingProfile = Windows.Media.MediaProperties.MediaEncodingProfile.createWma(
+                            Windows.Media.MediaProperties.AudioEncodingQuality.auto
+                        );
                         break;
                     default:
-                        error("Invalid file type for record");
+                        error('Invalid file type for record');
                         break;
-                }
-                thisM.mediaCaptureMgr.startRecordToStorageFileAsync(encodingProfile, newFile).done(success, error);
-            }, error);
+                    }
+                    thisM.mediaCaptureMgr.startRecordToStorageFileAsync(encodingProfile, newFile).done(success, error);
+                }, error);
         }, error);
     },
 
     // Stop recording audio
-    stopRecordingAudio:function(win, lose, args) {
+    stopRecordingAudio: function (win, lose, args) {
         var id = args[0];
         var thisM = Media.get(id);
         var srcUri = processUri(thisM.src);
@@ -255,16 +264,26 @@ module.exports = {
                     success();
                 } else {
                     Windows.Storage.ApplicationData.current.temporaryFolder.getFolderAsync(destPath).done(function (destFolder) {
-                        recordedFile.copyAsync(destFolder, destFileName, Windows.Storage.CreationCollisionOption.replaceExisting).done(success, error);
+                        recordedFile
+                            .copyAsync(destFolder, destFileName, Windows.Storage.CreationCollisionOption.replaceExisting)
+                            .done(success, error);
                     }, error);
                 }
             } else {
                 // Copying file to persistent storage
                 if (!destPath) {
-                    recordedFile.copyAsync(Windows.Storage.ApplicationData.current.localFolder, destFileName, Windows.Storage.CreationCollisionOption.replaceExisting).done(success, error);
+                    recordedFile
+                        .copyAsync(
+                            Windows.Storage.ApplicationData.current.localFolder,
+                            destFileName,
+                            Windows.Storage.CreationCollisionOption.replaceExisting
+                        )
+                        .done(success, error);
                 } else {
                     Windows.Storage.ApplicationData.current.localFolder.getFolderAsync(destPath).done(function (destFolder) {
-                        recordedFile.copyAsync(destFolder, destFileName, Windows.Storage.CreationCollisionOption.replaceExisting).done(success, error);
+                        recordedFile
+                            .copyAsync(destFolder, destFileName, Windows.Storage.CreationCollisionOption.replaceExisting)
+                            .done(success, error);
                     }, error);
                 }
             }
@@ -272,7 +291,7 @@ module.exports = {
     },
 
     // Release the media object
-    release:function(win, lose, args) {
+    release: function (win, lose, args) {
         var id = args[0];
         var thisM = Media.get(id);
         try {
@@ -285,10 +304,10 @@ module.exports = {
                 delete thisM.node;
             }
         } catch (err) {
-            lose("Failed to release: "+err);
+            lose('Failed to release: ' + err);
         }
     },
-    setVolume:function(win, lose, args) {
+    setVolume: function (win, lose, args) {
         var id = args[0];
         var volume = args[1];
         var thisM = Media.get(id);
@@ -297,12 +316,12 @@ module.exports = {
 };
 
 /**
- * Converts a path to Windows.Foundation.Uri basing on App data temporary folder 
+ * Converts a path to Windows.Foundation.Uri basing on App data temporary folder
  * if scheme is not defined, e.g.: path/to/file.m4a -> ms-appdata:///temp/path/to/file.m4a
  * @param  {String} src Input path
  * @return {Object}     Windows.Foundation.Uri
  */
-function setTemporaryFsByDefault(src) {
+function setTemporaryFsByDefault (src) {
     var uri;
     try {
         uri = new Windows.Foundation.Uri(src);
@@ -313,9 +332,8 @@ function setTemporaryFsByDefault(src) {
         } else {
             throw e;
         }
-    } finally {
-        return uri;
     }
+    return uri;
 }
 
 /**
@@ -323,13 +341,19 @@ function setTemporaryFsByDefault(src) {
  * @param  {Object} uri Windows.Foundation.Uri
  * @return {Object}     ms-appdata Windows.Foundation.Uri
  */
-function fullPathToAppData(uri) {
+function fullPathToAppData (uri) {
     if (uri.schemeName === 'file') {
         if (uri.rawUri.indexOf(Windows.Storage.ApplicationData.current.localFolder.path) !== -1) {
             // Also remove path' beginning slash to avoid losing folder name part
-            uri = new Windows.Foundation.Uri(localFolderAppDataBasePath, uri.rawUri.replace(localFolderFullPath, '').replace(/^[\\\/]{1,2}/, ''));
+            uri = new Windows.Foundation.Uri(
+                localFolderAppDataBasePath,
+                uri.rawUri.replace(localFolderFullPath, '').replace(/^[\\/]{1,2}/, '')
+            );
         } else if (uri.rawUri.indexOf(Windows.Storage.ApplicationData.current.temporaryFolder.path) !== -1) {
-            uri = new Windows.Foundation.Uri(tempFolderAppDataBasePath, uri.rawUri.replace(tempFolderFullPath, '').replace(/^[\\\/]{1,2}/, ''));
+            uri = new Windows.Foundation.Uri(
+                tempFolderAppDataBasePath,
+                uri.rawUri.replace(tempFolderFullPath, '').replace(/^[\\/]{1,2}/, '')
+            );
         } else {
             throw new Error('Not supported file uri: ' + uri.rawUri);
         }
@@ -343,7 +367,7 @@ function fullPathToAppData(uri) {
  * @param  {Object} uri Input cdvfile scheme Windows.Foundation.Uri
  * @return {Object}     Windows.Foundation.Uri based on App data path
  */
-function cdvfileToAppData(uri) {
+function cdvfileToAppData (uri) {
     var cdvFsRoot;
 
     if (uri.schemeName === 'cdvfile') {
@@ -365,12 +389,12 @@ function cdvfileToAppData(uri) {
  * @param  {String} src Input media path
  * @return {Object}     Windows.Foundation.Uri
  */
-function processUri(src) {
+function processUri (src) {
     // Collapse double slashes (File plugin issue): ms-appdata:///temp//recs/memos/media.m4a => ms-appdata:///temp/recs/memos/media.m4a
-    src = src.replace(/([^\/:])(\/\/)([^\/])/g, '$1/$3');
+    src = src.replace(/([^/:])(\/\/)([^/])/g, '$1/$3');
 
     // Remove beginning slashes
-    src = src.replace(/^[\\\/]{1,2}/, '');
+    src = src.replace(/^[\\/]{1,2}/, '');
 
     var uri = setTemporaryFsByDefault(src);
 
@@ -385,7 +409,7 @@ function processUri(src) {
  * @param  {Object} uri Windows.Foundation.Uri
  * @return {Object}     Object containing path, filename and filesystem type
  */
-function parseUriToPathAndFilename(uri) {
+function parseUriToPathAndFilename (uri) {
     // Removing scheme and location, using backslashes: ms-appdata:///local/path/to/file.m4a -> path\\to\\file.m4a
     var normalizedSrc = uri.path.split('/').slice(2).join('\\');
 
@@ -407,4 +431,4 @@ function parseUriToPathAndFilename(uri) {
     };
 }
 
-require("cordova/exec/proxy").add("Media",module.exports);
+require('cordova/exec/proxy').add('Media', module.exports);

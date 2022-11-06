@@ -19,22 +19,22 @@
 -->
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-xmlns:android="http://schemas.android.com/apk/res/android"
-id="cordova-plugin-media"
-    version="5.0.1-dev">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="cordova-plugin-media"
+    version="6.1.1-dev">
 
     <name>Media</name>
     <description>Cordova Media Plugin</description>
     <license>Apache 2.0</license>
     <keywords>cordova,media</keywords>
-    <repo>https://git-wip-us.apache.org/repos/asf/cordova-plugin-media.git</repo>
-    <issue>https://issues.apache.org/jira/browse/CB/component/12320647</issue>
+    <repo>https://github.com/apache/cordova-plugin-media</repo>
+    <issue>https://github.com/apache/cordova-plugin-media/issues</issue>
 
     <engines>
-        <engine name="cordova-android" version=">=6.3.0" />
+        <engine name="cordova-android" version=">=10.0.0" />
     </engines>
 
-    <dependency id="cordova-plugin-file" version="^6.0.0" />
+    <dependency id="cordova-plugin-file" version="^7.0.0" />
 
     <js-module src="www/MediaError.js" name="MediaError">
         <clobbers target="window.MediaError" />
@@ -55,8 +55,6 @@ id="cordova-plugin-media"
         <config-file target="AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.RECORD_AUDIO" />
             <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-            <uses-permission android:name="android.permission.READ_PHONE_STATE" />
         </config-file>
 
         <source-file src="src/android/AudioHandler.java" target-dir="src/org/apache/cordova/media" />
@@ -66,10 +64,14 @@ id="cordova-plugin-media"
 
     <!-- ios -->
     <platform name="ios">
+      <preference name="KEEP_AVAUDIOSESSION_ALWAYS_ACTIVE" default="NO" />
         <config-file target="config.xml" parent="/*">
             <feature name="Media">
                 <param name="ios-package" value="CDVSound" />
             </feature>
+            <preference
+              name="KeepAVAudioSessionAlwaysActive"
+              value="$KEEP_AVAUDIOSESSION_ALWAYS_ACTIVE" />
         </config-file>
         <header-file src="src/ios/CDVSound.h" />
         <source-file src="src/ios/CDVSound.m" />

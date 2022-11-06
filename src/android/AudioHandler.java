@@ -81,6 +81,9 @@ public class AudioHandler extends CordovaPlugin {
         this.pausedForFocus = new ArrayList<AudioPlayer>();
     }
 
+    public Context getApplicationContext() {
+        return cordova.getActivity().getApplicationContext();
+    }
 
     protected void getWritePermission(int requestCode)
     {
@@ -177,6 +180,10 @@ public class AudioHandler extends CordovaPlugin {
         } else if (action.equals("getCurrentAmplitudeAudio")) {
             float f = this.getCurrentAmplitudeAudio(args.getString(0));
             callbackContext.sendPluginResult(new PluginResult(status, f));
+            return true;
+        }
+        else if (action.equals("setRate")) {
+            this.setRate(args.getString(0), Float.parseFloat(args.getString(1)));
             return true;
         }
         else { // Unrecognized action.
@@ -486,6 +493,23 @@ public class AudioHandler extends CordovaPlugin {
           LOG.e(TAG3,"Unknown Audio Player " + id);
         }
     }
+
+    /**
+     * Set the playback rate of an audio file
+     * 
+     * @param id   The id of the audio player
+     * @param rate The playback rate
+     */
+    public void setRate(String id, float rate) {
+        String TAG3 = "AudioHandler.setRate(): Error : ";
+        AudioPlayer audio = this.players.get(id);
+        if (audio != null) {
+            audio.setRate(rate);
+        } else {
+            LOG.e(TAG3, "Unknown Audio Player " + id);
+        }
+    }
+    
 
     private void onFirstPlayerCreated() {
         origVolumeStream = cordova.getActivity().getVolumeControlStream();
