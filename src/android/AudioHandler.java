@@ -185,6 +185,13 @@ public class AudioHandler extends CordovaPlugin {
             callbackContext.sendPluginResult(new PluginResult(status));
             return true;
         }
+        else if (action.equals("setRate")) {
+            try {
+                this.setRate(args.getString(0), Float.parseFloat(args.getString(1)));
+            } catch (NumberFormatException nfe) {
+                //no-op
+            }
+        }
         else { // Unrecognized action.
             return false;
         }
@@ -201,6 +208,15 @@ public class AudioHandler extends CordovaPlugin {
             audio.destroy();
         }
         this.players.clear();
+    }
+
+    public void setRate(String id, float rate) {
+        AudioPlayer audio = this.players.get(id);
+        if (audio != null) {
+            audio.setRate(rate);
+        } else {
+          LOG.e("AudioHandler.setRate()","Unknown Audio Player " + id);
+        }
     }
 
     /**

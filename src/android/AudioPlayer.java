@@ -24,6 +24,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.media.MediaRecorder;
+import android.media.PlaybackParams;
 import android.os.Environment;
 
 import org.apache.cordova.LOG;
@@ -757,5 +758,17 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             }
         }
         return 0;
+    }
+
+    public void setRate(float rate) {
+        if (this.player != null) {
+            PlaybackParams pp = this.player.getPlaybackParams();
+            pp.setSpeed(rate);
+            this.player.setPlaybackParams(pp);
+
+        } else {
+            LOG.d(LOG_TAG, "AudioPlayer Error: Cannot set rate until the audio file is initialized.");
+            sendErrorStatus(MEDIA_ERR_NONE_ACTIVE);
+        }
     }
 }
