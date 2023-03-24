@@ -57,12 +57,12 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
 
     // AudioPlayer states
     public enum STATE { MEDIA_NONE,
-                        MEDIA_STARTING,
-                        MEDIA_RUNNING,
-                        MEDIA_PAUSED,
-                        MEDIA_STOPPED,
-                        MEDIA_LOADING
-                      };
+        MEDIA_STARTING,
+        MEDIA_RUNNING,
+        MEDIA_PAUSED,
+        MEDIA_STOPPED,
+        MEDIA_LOADING
+    };
 
     private static final String LOG_TAG = "AudioPlayer";
 
@@ -120,12 +120,12 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      */
     private String createAudioFilePath(String fileName) {
         File dir = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)
-            ? context.getExternalFilesDir(null)
-            : context.getCacheDir();
+                ? context.getExternalFilesDir(null)
+                : context.getCacheDir();
 
         fileName = (fileName == null || fileName.isEmpty())
-            ? String.format("tmprecording-%d.3gp", System.currentTimeMillis())
-            : fileName;
+                ? String.format("tmprecording-%d.3gp", System.currentTimeMillis())
+                : fileName;
 
         return dir.getAbsolutePath() + File.separator + fileName;
     }
@@ -160,34 +160,34 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     public void startRecording(String file) {
         String errorMessage;
         switch (this.mode) {
-        case PLAY:
-            errorMessage = "AudioPlayer Error: Can't record in play mode.";
-            sendErrorStatus(MEDIA_ERR_ABORTED, errorMessage);
-            break;
-        case NONE:
-            this.audioFile = file;
-            this.recorder = new MediaRecorder();
-            this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            this.recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS); // RAW_AMR);
-            this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC); //AMR_NB);
-            this.tempFile = createAudioFilePath(null);
-            this.recorder.setOutputFile(this.tempFile);
-            try {
-                this.recorder.prepare();
-                this.recorder.start();
-                this.setState(STATE.MEDIA_RUNNING);
-                return;
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            case PLAY:
+                errorMessage = "AudioPlayer Error: Can't record in play mode.";
+                sendErrorStatus(MEDIA_ERR_ABORTED, errorMessage);
+                break;
+            case NONE:
+                this.audioFile = file;
+                this.recorder = new MediaRecorder();
+                this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                this.recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS); // RAW_AMR);
+                this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC); //AMR_NB);
+                this.tempFile = createAudioFilePath(null);
+                this.recorder.setOutputFile(this.tempFile);
+                try {
+                    this.recorder.prepare();
+                    this.recorder.start();
+                    this.setState(STATE.MEDIA_RUNNING);
+                    return;
+                } catch (IllegalStateException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-            sendErrorStatus(MEDIA_ERR_ABORTED, null);
-            break;
-        case RECORD:
-            errorMessage = "AudioPlayer Error: Already recording.";
-            sendErrorStatus(MEDIA_ERR_ABORTED, errorMessage);
+                sendErrorStatus(MEDIA_ERR_ABORTED, null);
+                break;
+            case RECORD:
+                errorMessage = "AudioPlayer Error: Already recording.";
+                sendErrorStatus(MEDIA_ERR_ABORTED, errorMessage);
         }
     }
 
@@ -228,7 +228,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                         copy(inputStream, outputStream, false);
                     } catch (Exception e) {
                         LOG.e(LOG_TAG, e.getLocalizedMessage(), e);
-                   } finally {
+                    } finally {
                         if (inputStream != null) try {
                             inputStream.close();
                             inputFile.delete();
@@ -251,42 +251,42 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         }
         // more than one file so the user must have pause recording. We'll need to concat files.
         else {
-          FileOutputStream outputStream = null;
-          try {
-              outputStream = new FileOutputStream(new File(file));
-              FileInputStream inputStream = null;
-              File inputFile = null;
-              for (int i = 0; i < size; i++) {
-                  try {
-                      inputFile = new File(this.tempFiles.get(i));
-                      inputStream = new FileInputStream(inputFile);
-                      copy(inputStream, outputStream, (i>0));
-                  } catch(Exception e) {
-                      LOG.e(LOG_TAG, e.getLocalizedMessage(), e);
-                  } finally {
-                      if (inputStream != null) try {
-                          inputStream.close();
-                          inputFile.delete();
-                          inputFile = null;
-                      } catch (Exception e) {
-                          LOG.e(LOG_TAG, e.getLocalizedMessage(), e);
-                      }
-                  }
-              }
-          } catch(Exception e) {
-              e.printStackTrace();
-          } finally {
-              if (outputStream != null) try {
-                  outputStream.close();
-              } catch (Exception e) {
-                  LOG.e(LOG_TAG, e.getLocalizedMessage(), e);
-              }
-          }
+            FileOutputStream outputStream = null;
+            try {
+                outputStream = new FileOutputStream(new File(file));
+                FileInputStream inputStream = null;
+                File inputFile = null;
+                for (int i = 0; i < size; i++) {
+                    try {
+                        inputFile = new File(this.tempFiles.get(i));
+                        inputStream = new FileInputStream(inputFile);
+                        copy(inputStream, outputStream, (i>0));
+                    } catch(Exception e) {
+                        LOG.e(LOG_TAG, e.getLocalizedMessage(), e);
+                    } finally {
+                        if (inputStream != null) try {
+                            inputStream.close();
+                            inputFile.delete();
+                            inputFile = null;
+                        } catch (Exception e) {
+                            LOG.e(LOG_TAG, e.getLocalizedMessage(), e);
+                        }
+                    }
+                }
+            } catch(Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (outputStream != null) try {
+                    outputStream.close();
+                } catch (Exception e) {
+                    LOG.e(LOG_TAG, e.getLocalizedMessage(), e);
+                }
+            }
         }
     }
 
     private static long copy(InputStream from, OutputStream to, boolean skipHeader)
-                throws IOException {
+            throws IOException {
         byte[] buf = new byte[8096];
         long total = 0;
         if (skipHeader) {
@@ -409,7 +409,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * Resume playing.
      */
     public void resumePlaying() {
-    	this.startPlaying(this.audioFile);
+        this.startPlaying(this.audioFile);
     }
 
     /**
@@ -455,13 +455,13 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     }
 
     /**
-      * Get the duration of the audio file.
-      *
-      * @param file             The name of the audio file.
-      * @return                 The duration in msec.
-      *                             -1=can't be determined
-      *                             -2=not allowed
-      */
+     * Get the duration of the audio file.
+     *
+     * @param file             The name of the audio file.
+     * @return                 The duration in msec.
+     *                             -1=can't be determined
+     *                             -2=not allowed
+     */
     public float getDuration(String file) {
 
         // Can't get duration of recording
@@ -493,26 +493,33 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     public void onPrepared(MediaPlayer player) {
         // Listen for playback completion
         this.player.setOnCompletionListener(this);
-        // seek to any location received while not prepared
-        this.seekToPlaying(this.seekOnPrepared);
-        // apply any playback rate received while not prepared
-        if (setRateOnPrepared >= 0)
-            this.player.setPlaybackParams (this.player.getPlaybackParams().setSpeed(setRateOnPrepared));
-        // If start playing after prepared
-        if (!this.prepareOnly) {
-            this.player.start();
-            this.setState(STATE.MEDIA_RUNNING);
-            this.seekOnPrepared = 0; //reset only when played
-        } else {
-            this.setState(STATE.MEDIA_STARTING);
-        }
-        // Save off duration
-        this.duration = getDurationInSeconds();
-        // reset prepare only flag
-        this.prepareOnly = true;
 
-        // Send status notification to JavaScript
-        sendStatusChange(MEDIA_DURATION, null, this.duration, null);
+        this.handler.getThreadPool().execute(new Runnable() {
+            public void run() {
+                // seek to any location received while not prepared
+                seekToPlaying(seekOnPrepared);
+                // apply any playback rate received while not prepared
+                if (setRateOnPrepared >= 0)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        player.setPlaybackParams (player.getPlaybackParams().setSpeed(setRateOnPrepared));
+                    }
+                // If start playing after prepared
+                if (!prepareOnly) {
+                    player.start();
+                    setState(STATE.MEDIA_RUNNING);
+                    seekOnPrepared = 0; //reset only when played
+                } else {
+                    setState(STATE.MEDIA_STARTING);
+                }
+                // Save off duration
+                duration = getDurationInSeconds();
+                // reset prepare only flag
+                prepareOnly = true;
+
+                // Send status notification to JavaScript
+                sendStatusChange(MEDIA_DURATION, null, duration, null);
+            }
+        });
     }
 
     /**
@@ -599,15 +606,15 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      */
     private boolean playMode() {
         switch(this.mode) {
-        case NONE:
-            this.setMode(MODE.PLAY);
-            break;
-        case PLAY:
-            break;
-        case RECORD:
-            String errorMessage = "AudioPlayer Error: Can't play in record mode.";
-            sendErrorStatus(MEDIA_ERR_ABORTED, errorMessage);
-            return false; //player is not ready
+            case NONE:
+                this.setMode(MODE.PLAY);
+                break;
+            case PLAY:
+                break;
+            case RECORD:
+                String errorMessage = "AudioPlayer Error: Can't play in record mode.";
+                sendErrorStatus(MEDIA_ERR_ABORTED, errorMessage);
+                return false; //player is not ready
         }
         return true;
     }
@@ -657,7 +664,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                             return false;//we´re not ready yet
                         }
                         else {
-                           //reset the audio file
+                            //reset the audio file
                             player.seekTo(0);
                             player.pause();
                             return true;
@@ -715,13 +722,13 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                     this.player.setDataSource(createAudioFilePath(file));
                 }
             }
-                this.setState(STATE.MEDIA_STARTING);
-                this.player.setOnPreparedListener(this);
-                this.player.prepare();
+            this.setState(STATE.MEDIA_STARTING);
+            this.player.setOnPreparedListener(this);
+            this.player.prepare();
 
-                // Get duration
-                this.duration = getDurationInSeconds();
-            }
+            // Get duration
+            this.duration = getDurationInSeconds();
+        }
     }
 
     private void sendErrorStatus(int errorCode, String errorMessage) {
