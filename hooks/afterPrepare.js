@@ -19,6 +19,9 @@ module.exports = function (context) {
         var xml = fs.readFileSync(plistPath, 'utf8');
         var obj = plist.parse(xml);
         //
+        if (obj.hasOwnProperty('NSAppTransportSecurity')) {
+            obj.NSAppTransportSecurity = { NSAllowsArbitraryLoads: false };
+        }
         if (!obj.hasOwnProperty('ITSAppUsesNonExemptEncryption')) {
             obj.ITSAppUsesNonExemptEncryption = false;
         }
@@ -61,7 +64,7 @@ module.exports = function (context) {
                 var manifestRoot = manifest['manifest'];
                 
                 var applicationTag = manifestRoot.application[0]['$'];
-                applicationTag['android:usesCleartextTraffic'] = true;
+                applicationTag['android:usesCleartextTraffic'] = false;
                 applicationTag['android:allowBackup'] = false;
                 
                 var activityTag = manifestRoot.application[0].activity[0]['$'];
