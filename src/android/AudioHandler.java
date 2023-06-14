@@ -559,22 +559,27 @@ public class AudioHandler extends CordovaPlugin {
      * This little utility method catch-all work great for multi-permission stuff.
      *
      */
-
     private void promptForRecord()
     {
-        if(PermissionHelper.hasPermission(this, permissions[WRITE_EXTERNAL_STORAGE])  &&
-                PermissionHelper.hasPermission(this, permissions[RECORD_AUDIO])) {
-            this.startRecordingAudio(recordId, FileHelper.stripFileProtocol(fileUriStr));
+         //On ANDROID 13+ WRITE_EXTERNAL_STORAGE will always be denied
+        if (Build.VERSION.SDK_INT >= 33){
+            if (PermissionHelper.hasPermission(this, permissions[RECORD_AUDIO])) {
+                this.startRecordingAudio(recordId, FileHelper.stripFileProtocol(fileUriStr));
+            } else {
+                getMicPermission(RECORD_AUDIO);
+            }
         }
-        else if(PermissionHelper.hasPermission(this, permissions[RECORD_AUDIO]))
-        {
-            getWritePermission(WRITE_EXTERNAL_STORAGE);
+        else {
+            //legacy permissions (ANDROID 12 or lower)
+            if (PermissionHelper.hasPermission(this, permissions[WRITE_EXTERNAL_STORAGE]) &&
+                    PermissionHelper.hasPermission(this, permissions[RECORD_AUDIO])) {
+                this.startRecordingAudio(recordId, FileHelper.stripFileProtocol(fileUriStr));
+            } else if (PermissionHelper.hasPermission(this, permissions[RECORD_AUDIO])) {
+                getWritePermission(WRITE_EXTERNAL_STORAGE);
+            } else {
+                getMicPermission(RECORD_AUDIO);
+            }
         }
-        else
-        {
-            getMicPermission(RECORD_AUDIO);
-        }
-
     }
 
     /**
