@@ -167,10 +167,15 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         case NONE:
             this.audioFile = file;
             this.recorder = new MediaRecorder();
+             // support to record AAC with 44100 audio sampling
+            this.recorder.setAudioSamplingRate(44100);
+            this.recorder.setAudioEncodingBitRate(96000);
+            this.recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
             this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            this.recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS); // RAW_AMR);
-            this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC); //AMR_NB);
-            this.tempFile = createAudioFilePath(null);
+          //  this.recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS); // RAW_AMR);
+          //  this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC); //AMR_NB);
+            this.tempFile = generateTempFile();
             this.recorder.setOutputFile(this.tempFile);
             try {
                 this.recorder.prepare();
