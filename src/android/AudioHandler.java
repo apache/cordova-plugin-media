@@ -562,8 +562,10 @@ public class AudioHandler extends CordovaPlugin {
 
     private void promptForRecord()
     {
-        if(PermissionHelper.hasPermission(this, permissions[WRITE_EXTERNAL_STORAGE])  &&
-                PermissionHelper.hasPermission(this, permissions[RECORD_AUDIO])) {
+        boolean hasWritePermissions = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU 
+            || PermissionHelper.hasPermission(this, permissions[WRITE_EXTERNAL_STORAGE]);
+
+        if(hasWritePermissions  && PermissionHelper.hasPermission(this, permissions[RECORD_AUDIO])) {
             this.startRecordingAudio(recordId, FileHelper.stripFileProtocol(fileUriStr));
         }
         else if(PermissionHelper.hasPermission(this, permissions[RECORD_AUDIO]))
@@ -574,7 +576,6 @@ public class AudioHandler extends CordovaPlugin {
         {
             getMicPermission(RECORD_AUDIO);
         }
-
     }
 
     /**
