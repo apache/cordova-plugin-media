@@ -31,7 +31,6 @@ import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.net.Uri;
 import android.os.Build;
 
-import java.security.Permission;
 import java.util.ArrayList;
 
 import org.apache.cordova.LOG;
@@ -62,8 +61,7 @@ public class AudioHandler extends CordovaPlugin {
     private int origVolumeStream = -1;
     private CallbackContext messageChannel;
 
-
-    public static String [] permissions = { Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    // Permission Request Codes
     public static int RECORD_AUDIO = 0;
     public static int WRITE_EXTERNAL_STORAGE = 1;
 
@@ -83,17 +81,6 @@ public class AudioHandler extends CordovaPlugin {
 
     public Context getApplicationContext() {
         return cordova.getActivity().getApplicationContext();
-    }
-
-    protected void getWritePermission(int requestCode)
-    {
-        PermissionHelper.requestPermission(this, requestCode, permissions[WRITE_EXTERNAL_STORAGE]);
-    }
-
-
-    protected void getMicPermission(int requestCode)
-    {
-        PermissionHelper.requestPermission(this, requestCode, permissions[RECORD_AUDIO]);
     }
 
 
@@ -562,19 +549,22 @@ public class AudioHandler extends CordovaPlugin {
 
     private void promptForRecord()
     {
-        if(PermissionHelper.hasPermission(this, permissions[WRITE_EXTERNAL_STORAGE])  &&
-                PermissionHelper.hasPermission(this, permissions[RECORD_AUDIO])) {
-            this.startRecordingAudio(recordId, FileHelper.stripFileProtocol(fileUriStr));
-        }
-        else if(PermissionHelper.hasPermission(this, permissions[RECORD_AUDIO]))
-        {
-            getWritePermission(WRITE_EXTERNAL_STORAGE);
-        }
-        else
-        {
-            getMicPermission(RECORD_AUDIO);
+        // If Android < 33, check for WRITE_EXTERNAL_STORAGE permission
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            if (!PermissionHelper.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                PermissionHelper.requestPermission(this, WRITE_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                return;
+            }
         }
 
+        // For all Android versions, check for RECORD_AUDIO permission
+        if (!PermissionHelper.hasPermission(this, Manifest.permission.RECORD_AUDIO)) {
+            PermissionHelper.requestPermission(this, RECORD_AUDIO, Manifest.permission.RECORD_AUDIO);
+            return;
+        }
+
+        // Start recording if all necessary permissions were granted.
+        this.startRecordingAudio(recordId, FileHelper.stripFileProtocol(fileUriStr));
     }
 
     /**
