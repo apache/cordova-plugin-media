@@ -425,9 +425,9 @@ function parseUriToPathAndFilename (uri) {
     }
 
     return {
-        path: path,
-        fileName: fileName,
-        fsType: fsType
+        path,
+        fileName,
+        fsType
     };
 }
 

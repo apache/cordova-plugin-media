@@ -75,8 +75,8 @@ exports.defineAutoTests = function () {
                         compare: function (_, message) {
                             var pass = false;
                             return {
-                                pass: pass,
-                                message: message
+                                pass,
+                                message
                             };
                         }
                     };
