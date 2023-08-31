@@ -19,7 +19,7 @@
  *
  */
 
-/* global cordova, Media, MediaError, LocalFileSystem, halfSpeedBtn */
+/* global cordova, Media, MediaError, halfSpeedBtn */
 
 // increased timeout for actual playback to give device chance to download and play mp3 file
 // some emulators can be REALLY slow at this, so two minutes
@@ -34,8 +34,8 @@ var isBrowser = cordova.platformId === 'browser';
 // not supported on emulators w/out sound device connected to host PC but (which is
 // the case for Sauce Labs emulators - see CB-11430)
 var isAudioSupported = cordova.platformId === 'ios'
-        ? !window.SAUCELABS_ENV
-        : true;
+    ? !window.SAUCELABS_ENV
+    : true;
 
 // Detect OS version when running on Android
 var androidVersion = null;
