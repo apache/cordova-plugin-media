@@ -971,7 +971,7 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
 
 - (void)onStatus:(CDVMediaMsg)what mediaId:(NSString*)mediaId param:(NSObject*)param
 {
-    if (self.statusCallbackId!=nil) { //new way, android,windows compatible
+    if (self.statusCallbackId!=nil) { //new way, android compatible
         NSMutableDictionary* status=[NSMutableDictionary dictionary];
         status[@"msgType"] = @(what);
         //in the error case contains a dict with "code" and "message"
