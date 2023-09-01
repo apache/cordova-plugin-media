@@ -8,8 +8,7 @@
     "platforms": [
       "android",
       "browser",
-      "ios",
-      "windows"
+      "ios"
     ]
   },
   "repository": "github:apache/cordova-plugin-media",
@@ -20,8 +19,7 @@
     "ecosystem:cordova",
     "cordova-android",
     "cordova-browser",
-    "cordova-ios",
-    "cordova-windows"
+    "cordova-ios"
   ],
   "scripts": {
     "test": "npm run lint",
