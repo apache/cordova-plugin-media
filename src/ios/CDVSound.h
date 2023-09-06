@@ -15,6 +15,7 @@
  under the License.
  */
 
+@import WebKit;
 #import <Foundation/Foundation.h>
 #import <AudioToolbox/AudioServices.h>
 #import <AVFoundation/AVFoundation.h>
