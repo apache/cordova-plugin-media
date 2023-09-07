@@ -20,6 +20,24 @@
 -->
 # Release Notes
 
+### 7.0.0 (Sep 07, 2023)
+
+**Breaking Changes:**
+
+* [GH-384](https://github.com/apache/cordova-plugin-media/pull/384) fix!: remove deprecated `windows` platform
+* [GH-378](https://github.com/apache/cordova-plugin-media/pull/378) feat(android)!: bump file & **Android** requirements
+
+**Features:**
+
+* [GH-362](https://github.com/apache/cordova-plugin-media/pull/362) feat(ios): load media files with custom scheme+hostname and leading directory paths
+* [GH-383](https://github.com/apache/cordova-plugin-media/pull/383) feat(android): increase audio encoding bitrate and sampling rate
+* [GH-382](https://github.com/apache/cordova-plugin-media/pull/382) feat(android): support Android 13 permission checks and requests
+
+**Others:**
+
+* [GH-381](https://github.com/apache/cordova-plugin-media/pull/381) dep(dev)!: bump `@cordova/eslint-config@5.0.0`
+* [GH-377](https://github.com/apache/cordova-plugin-media/pull/377) ci: sync github action workflow w/ paramedic base configs
+
 ### 6.1.0 (Sep 06, 2022)
 
 * [GH-357](https://github.com/apache/cordova-plugin-media/pull/357) feat(android): add '`message`' field to media error [CB-11641](https://issues.apache.org/jira/browse/CB-11641)
