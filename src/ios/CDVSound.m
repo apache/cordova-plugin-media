@@ -34,6 +34,7 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
 
 -(void) pluginInitialize
 {
+    NSLog(@"[cordova media plugin] pluginInitialize");
     NSDictionary* settings = self.commandDelegate.settings;
     keepAvAudioSessionAlwaysActive = [[settings objectForKey:[@"KeepAVAudioSessionAlwaysActive" lowercaseString]] boolValue];
     if (keepAvAudioSessionAlwaysActive) {
@@ -402,6 +403,22 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
 
 - (void)startPlayingAudio:(CDVInvokedUrlCommand*)command
 {
+    NSLog(@"[cordova media plugin] start playing audio");
+    
+        for (CDVAudioFile* audioFile in [[self soundCache] allValues]) {
+            if (audioFile != nil) {
+                if (audioFile.player != nil) {
+                    [audioFile.player stop];
+                    audioFile.player.currentTime = 0;
+                }
+                if (audioFile.recorder != nil) {
+                    [audioFile.recorder stop];
+                }
+            }
+        }
+    
+        [[self soundCache] removeAllObjects];
+    
     [self.commandDelegate runInBackground:^{
 
     NSString* callbackId = command.callbackId;
@@ -566,6 +583,7 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
 
 - (void)stopPlayingAudio:(CDVInvokedUrlCommand*)command
 {
+    NSLog(@"[cordova media plugin] Stop playing audio");
     NSString* mediaId = [command argumentAtIndex:0];
     CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
 
@@ -598,6 +616,7 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
 
 - (void)pausePlayingAudio:(CDVInvokedUrlCommand*)command
 {
+    NSLog(@"[cordova media plugin] Pause playing audio");
     NSString* mediaId = [command argumentAtIndex:0];
     CDVAudioFile* audioFile = [[self soundCache] objectForKey:mediaId];
 
@@ -670,6 +689,7 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
 
 - (void)release:(CDVInvokedUrlCommand*)command
 {
+    NSLog(@"[cordova media plugin] release plugin media");
     NSString* mediaId = [command argumentAtIndex:0];
     //NSString* mediaId = self.currMediaId;
 
@@ -693,7 +713,7 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
                 self.avSession = nil;
             }
             [[self soundCache] removeObjectForKey:mediaId];
-            NSLog(@"Media with id %@ released", mediaId);
+            NSLog(@"[cordova media plugin] Media with id %@ released", mediaId);
         }
     }
 }
@@ -872,6 +892,7 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer*)player successfully:(BOOL)flag
 {
+    NSLog(@"[cordova media plugin] audioPlayerDidFinishPlaying");
     //commented as unused
     CDVAudioPlayer* aPlayer = (CDVAudioPlayer*)player;
     NSString* mediaId = aPlayer.mediaId;
@@ -893,6 +914,7 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
 }
 
 -(void)itemDidFinishPlaying:(NSNotification *) notification {
+    NSLog(@"[cordova media plugin] itemdidfinish");
     // Will be called when AVPlayer finishes playing playerItem
     NSString* mediaId = self.currMediaId;
 
@@ -904,7 +926,7 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
 
 -(void)itemStalledPlaying:(NSNotification *) notification {
     // Will be called when playback stalls due to buffer empty
-    NSLog(@"Stalled playback");
+    NSLog(@"[cordova media plugin] Stalled playback");
     NSString* errMsg = @"stalled_playback";
     NSString* mediaId = self.currMediaId;
     [self onStatus:MEDIA_ERROR mediaId:mediaId param:
@@ -940,24 +962,26 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
 
 - (void)dealloc
 {
+    NSLog(@"[cordova media plugin] dealloc");
     [[self soundCache] removeAllObjects];
 }
 
 - (void)onReset
 {
-    for (CDVAudioFile* audioFile in [[self soundCache] allValues]) {
-        if (audioFile != nil) {
-            if (audioFile.player != nil) {
-                [audioFile.player stop];
-                audioFile.player.currentTime = 0;
-            }
-            if (audioFile.recorder != nil) {
-                [audioFile.recorder stop];
-            }
-        }
-    }
-
-    [[self soundCache] removeAllObjects];
+    NSLog(@"[cordova media plugin] onreset -> do nothing");
+//    for (CDVAudioFile* audioFile in [[self soundCache] allValues]) {
+//        if (audioFile != nil) {
+//            if (audioFile.player != nil) {
+//                [audioFile.player stop];
+//                audioFile.player.currentTime = 0;
+//            }
+//            if (audioFile.recorder != nil) {
+//                [audioFile.recorder stop];
+//            }
+//        }
+//    }
+//
+//    [[self soundCache] removeAllObjects];
 }
 
 - (void)getCurrentAmplitudeAudio:(CDVInvokedUrlCommand*)command
