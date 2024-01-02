@@ -200,7 +200,7 @@ public class AudioHandler extends CordovaPlugin {
      */
     @Override
     public void onReset() {
-        onDestroy();
+        // onDestroy();
     }
 
     /**
@@ -310,6 +310,9 @@ public class AudioHandler extends CordovaPlugin {
      * @param file				The name of the audio file.
      */
     public void startPlayingAudio(String id, String file) {
+
+        onDestroy();
+
         AudioPlayer audio = getOrCreatePlayer(id, file);
         audio.startPlaying(file);
         getAudioFocus();
