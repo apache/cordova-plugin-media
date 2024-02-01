@@ -22,6 +22,9 @@ import android.net.Uri;
 
 public class FileHelper {
 
+    private static final String CDVFILE_PREFIX = "cdvfile://localhost/temporary";
+    private static final String CDVFILE_PREFIX1 = "cdvfile";
+
     /**
      * Removes the "file://" prefix from the given URI string, if applicable.
      * If the given URI string doesn't have a "file://" prefix, it is returned unchanged.
@@ -32,6 +35,9 @@ public class FileHelper {
     public static String stripFileProtocol(String uriString) {
         if (uriString.startsWith("file://")) {
             return Uri.parse(uriString).getPath();
+        }
+        if (uriString.startsWith(CDVFILE_PREFIX) || uriString.startsWith(CDVFILE_PREFIX1)) {
+            return Uri.parse(uriString).getLastPathSegment();
         }
         return uriString;
     }
