@@ -625,6 +625,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                 case MEDIA_NONE:
                     if (this.player == null) {
                         this.player = new MediaPlayer();
+                        this.player.setWakeMode(this.context, PowerManager.PARTIAL_WAKE_LOCK);
                         this.player.setOnErrorListener(this);
                     }
                     try {
@@ -644,27 +645,27 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                     return true;
                 case MEDIA_STOPPED:
                     //if we are readying the same file
-                    if (file!=null && this.audioFile.compareTo(file) == 0) {
-                        //maybe it was recording?
-                        if (player == null) {
-                            this.player = new MediaPlayer();
-                            this.player.setOnErrorListener(this);
-                            this.prepareOnly = false;
+                    // if (file!=null && this.audioFile.compareTo(file) == 0) {
+                    //     //maybe it was recording?
+                    //     if (player == null) {
+                    //         this.player = new MediaPlayer();
+                    //         this.player.setOnErrorListener(this);
+                    //         this.prepareOnly = false;
 
-                            try {
-                                this.loadAudioFile(file);
-                            } catch (Exception e) {
-                                sendErrorStatus(MEDIA_ERR_ABORTED, e.getMessage());
-                            }
-                            return false;//we´re not ready yet
-                        }
-                        else {
-                           //reset the audio file
-                            player.seekTo(0);
-                            player.pause();
-                            return true;
-                        }
-                    } else {
+                    //         try {
+                    //             this.loadAudioFile(file);
+                    //         } catch (Exception e) {
+                    //             sendErrorStatus(MEDIA_ERR_ABORTED, e.getMessage());
+                    //         }
+                    //         return false;//we´re not ready yet
+                    //     }
+                    //     else {
+                    //        //reset the audio file
+                    //         player.seekTo(0);
+                    //         player.pause();
+                    //         return true;
+                    //     }
+                    // } else {
                         //reset the player
                         this.player.reset();
                         try {
@@ -674,7 +675,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                         }
                         //if we had to prepare the file, we won't be in the correct state for playback
                         return false;
-                    }
+                    // }
                 default:
                     String errorMessage = "AudioPlayer Error: startPlaying() called during invalid state: " + this.state;
                     sendErrorStatus(MEDIA_ERR_ABORTED, errorMessage);
