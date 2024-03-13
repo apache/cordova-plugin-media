@@ -190,7 +190,7 @@ public class AudioHandler extends CordovaPlugin {
             onLastPlayerReleased();
         }
         for (AudioPlayer audio : this.players.values()) {
-            audio.destroy();
+            audio.onHandlerDestroyed();
         }
         this.players.clear();
     }
@@ -267,7 +267,7 @@ public class AudioHandler extends CordovaPlugin {
         if (players.isEmpty()) {
             onLastPlayerReleased();
         }
-        audio.destroy();
+        audio.destroy(true);
         return true;
     }
 
