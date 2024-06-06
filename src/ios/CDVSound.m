@@ -447,7 +447,7 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
                     CMTime time = avPlayer.currentItem.asset.duration;
                     duration = CMTimeGetSeconds(time);
                     if (isnan(duration)) {
-                        NSLog(@"Duration is infifnite, setting it to -1");
+                        NSLog(@"Duration is infinite, setting it to -1");
                         duration = -1;
                     }
 
