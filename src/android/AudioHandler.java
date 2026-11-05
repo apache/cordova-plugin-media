@@ -550,7 +550,7 @@ public class AudioHandler extends CordovaPlugin {
     private void promptForRecord()
     {
         // If Android < 33, check for WRITE_EXTERNAL_STORAGE permission
-        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             if (!PermissionHelper.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 PermissionHelper.requestPermission(this, WRITE_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
                 return;
